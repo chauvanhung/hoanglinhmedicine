@@ -51,50 +51,183 @@ export default function AIConsultation({ onClose }: AIConsultationProps) {
     setIsLoading(true)
 
     try {
-      // Simulate AI response
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      const aiResponse = generateAIResponse(inputValue)
-      
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        content: aiResponse,
-        role: 'assistant',
-        timestamp: new Date()
+      // Tìm tên sản phẩm trong câu hỏi
+      const match = inputValue.match(/paracetamol|vitamin c|omeprazole|hapacol|decolgen/i)
+      if (match) {
+        const productName = match[0]
+        const res = await fetch(`/api/products?name=${encodeURIComponent(productName)}`)
+        const data = await res.json()
+        if (data.length > 0) {
+          const info = data[0]
+          const response = `**${info.name}**\n\n- Giá: ${info.price} VNĐ\n- Hoạt chất: ${info.ingredient}\n- Công dụng: ${info.uses}`
+          setMessages(prev => [...prev, {
+            id: Date.now().toString(),
+            content: response,
+            role: 'assistant',
+            timestamp: new Date()
+          }])
+          setIsLoading(false)
+          return
+        } else {
+          setMessages(prev => [...prev, {
+            id: Date.now().toString(),
+            content: 'Xin lỗi, tôi không tìm thấy thông tin sản phẩm bạn hỏi. Vui lòng kiểm tra lại tên sản phẩm.',
+            role: 'assistant',
+            timestamp: new Date()
+          }])
+          setIsLoading(false)
+          return
+        }
       }
 
-      setMessages(prev => [...prev, assistantMessage])
+      // Nếu hỏi về bệnh/lâm sàng thì trả về hướng dẫn liên hệ
+      if (includesMany(inputValue.toLowerCase(), [
+        'đau', 'sốt', 'cảm', 'cúm', 'ho', 'viêm', 'mất ngủ', 'khó ngủ', 'ngủ không được', 'trằn trọc', 'không thể ngủ',
+        'dạ dày', 'đau bụng', 'bao tử', 'ợ chua', 'viêm loét', 'tiêu hóa', 'táo bón', 'khó tiêu', 'đầy bụng',
+        'dị ứng', 'ngứa', 'mề đay', 'mẩn đỏ', 'huyết áp', 'cao huyết áp', 'máu cao', 'tăng huyết áp',
+        'giảm cân', 'tăng cân', 'béo', 'gầy', 'ốm', 'covid', 'dương tính', 'f0', 'test covid'
+      ])) {
+        setMessages(prev => [...prev, {
+          id: Date.now().toString(),
+          content: 'Vui lòng liên hệ qua Zalo hoặc số điện thoại của Hoàng Linh Medicine để được dược sĩ tư vấn trực tiếp về vấn đề sức khỏe của bạn.',
+          role: 'assistant',
+          timestamp: new Date()
+        }])
+        setIsLoading(false)
+        return
+      }
+
+      // Nếu không match, trả về mặc định
+      setMessages(prev => [...prev, {
+        id: Date.now().toString(),
+        content: 'Bạn chỉ có thể hỏi về sản phẩm hoặc thuốc. Nếu cần tư vấn về bệnh, vui lòng liên hệ qua Zalo hoặc số điện thoại của Hoàng Linh Medicine.',
+        role: 'assistant',
+        timestamp: new Date()
+      }])
     } catch (error) {
       console.error('Error sending message:', error)
+      setMessages(prev => [...prev, {
+        id: Date.now().toString(),
+        content: 'Có lỗi xảy ra, vui lòng thử lại sau.',
+        role: 'assistant',
+        timestamp: new Date()
+      }])
     } finally {
       setIsLoading(false)
     }
   }
 
+  const includesMany = (input: string, keywords: string[]) => {
+    return keywords.some(keyword => input.includes(keyword))
+  }
+
+  const random = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)]
+  const [lastTopic, setLastTopic] = useState<string | null>(null)
+
   const generateAIResponse = (userInput: string): string => {
     const input = userInput.toLowerCase()
-    
-    if (input.includes('đau đầu') || input.includes('nhức đầu')) {
-      return 'Đau đầu có thể do nhiều nguyên nhân như căng thẳng, thiếu ngủ, hoặc các vấn đề về thị giác. Tôi khuyên bạn:\n\n1. Nghỉ ngơi đầy đủ\n2. Uống đủ nước\n3. Có thể dùng Paracetamol 500mg nếu cần\n4. Nếu đau kéo dài, hãy đến gặp bác sĩ\n\nBạn có muốn tôi tư vấn thêm về thuốc giảm đau không?'
+
+    // Đau đầu
+    if (includesMany(input, ['đau đầu', 'nhức đầu', 'đầu căng', 'đầu quay'])) {
+      return random([
+        'Đau đầu có thể do thiếu ngủ, căng thẳng hoặc môi trường. Bạn có thể nghỉ ngơi, uống nước và thử dùng Paracetamol nếu cần.',
+        'Bạn bị đau đầu thường xuyên không? Nếu có kèm theo chóng mặt hoặc mờ mắt, nên đi khám bác sĩ.',
+        'Để giảm đau đầu, bạn có thể chườm mát vùng trán và tránh nhìn vào màn hình quá lâu.'
+      ])
     }
-    
-    if (input.includes('sốt') || input.includes('nóng')) {
-      return 'Khi bị sốt, bạn nên:\n\n1. Đo nhiệt độ cơ thể\n2. Nghỉ ngơi và uống nhiều nước\n3. Dùng thuốc hạ sốt như Paracetamol\n4. Theo dõi các triệu chứng khác\n\nNếu sốt cao trên 39°C hoặc kéo dài, hãy đến bệnh viện ngay. Bạn có cần tư vấn về thuốc hạ sốt không?'
+
+    // Mất ngủ
+    if (includesMany(input, ['mất ngủ', 'khó ngủ', 'ngủ không được', 'trằn trọc', 'không thể ngủ'])) {
+      return random([
+        'Khó ngủ khiến bạn mệt mỏi cả ngày đúng không? Bạn nên hạn chế sử dụng điện thoại trước khi ngủ và giữ phòng ngủ yên tĩnh.',
+        'Bạn có thể thử uống trà tâm sen hoặc dùng thực phẩm chức năng như melatonin. Muốn tôi gợi ý vài sản phẩm không?',
+        'Thư giãn trước khi ngủ, tắm nước ấm hoặc nghe nhạc nhẹ cũng có thể giúp bạn dễ ngủ hơn.'
+      ])
     }
-    
-    if (input.includes('vitamin') || input.includes('sức đề kháng')) {
-      return 'Để tăng cường sức đề kháng, bạn có thể:\n\n1. Bổ sung Vitamin C 1000mg hàng ngày\n2. Ăn nhiều rau xanh và trái cây\n3. Tập thể dục đều đặn\n4. Ngủ đủ giấc\n\nTôi có thể giới thiệu một số sản phẩm vitamin chất lượng cao. Bạn có quan tâm không?'
+
+    // Sốt
+    if (includesMany(input, ['sốt', 'nóng', 'sốt cao', 'sốt nhẹ'])) {
+      return random([
+        'Khi bị sốt, bạn nên đo nhiệt độ thường xuyên, uống nhiều nước và nghỉ ngơi. Paracetamol có thể giúp hạ sốt.',
+        'Bạn bị sốt bao lâu rồi? Nếu sốt trên 39°C hoặc kéo dài >3 ngày, hãy đến cơ sở y tế.',
+        'Ngoài sốt, bạn có cảm thấy mệt, ho hay đau họng không? Tôi có thể tư vấn thuốc theo triệu chứng.'
+      ])
     }
-    
-    if (input.includes('dạ dày') || input.includes('đau bụng')) {
-      return 'Các vấn đề về dạ dày có thể do:\n\n1. Ăn uống không đúng giờ\n2. Stress\n3. Vi khuẩn HP\n4. Loét dạ dày\n\nTôi khuyên bạn:\n- Ăn chậm, nhai kỹ\n- Tránh đồ cay nóng\n- Có thể dùng thuốc bảo vệ dạ dày\n\nBạn có muốn tôi tư vấn về thuốc điều trị dạ dày không?'
+
+    // Cảm cúm, ho
+    if (includesMany(input, ['cảm', 'cúm', 'ho', 'sổ mũi', 'viêm họng'])) {
+      return random([
+        'Cảm cúm thường do virus, bạn nên nghỉ ngơi, uống nhiều nước và giữ ấm cơ thể.',
+        'Bạn có thể dùng thuốc giảm ho, chống sổ mũi như Decolgen, Hapacol C. Muốn tôi tư vấn cụ thể hơn không?',
+        'Rửa tay thường xuyên và đeo khẩu trang để tránh lây lan cho người khác nhé.'
+      ])
     }
-    
-    if (input.includes('cảm cúm') || input.includes('ho')) {
-      return 'Khi bị cảm cúm, bạn nên:\n\n1. Nghỉ ngơi nhiều\n2. Uống nhiều nước ấm\n3. Dùng thuốc giảm triệu chứng\n4. Rửa tay thường xuyên\n\nTôi có thể giới thiệu một số thuốc trị cảm cúm hiệu quả. Bạn có cần tư vấn không?'
+
+    // Dạ dày
+    if (includesMany(input, ['dạ dày', 'đau bụng', 'bao tử', 'ợ chua', 'viêm loét'])) {
+      return random([
+        'Vấn đề dạ dày thường liên quan đến ăn uống, stress hoặc vi khuẩn HP. Bạn nên ăn đúng giờ, tránh đồ cay nóng.',
+        'Có thể dùng thuốc như Omeprazole, Gaviscon để giảm triệu chứng. Muốn tôi giới thiệu vài sản phẩm không?',
+        'Nếu đau bụng liên tục hoặc kèm theo nôn, bạn nên đi khám bác sĩ để kiểm tra chính xác.'
+      ])
     }
-    
-    return 'Cảm ơn câu hỏi của bạn. Tôi là trợ lý AI chuyên về tư vấn sức khỏe và thuốc men. Tuy nhiên, tôi không thể thay thế chẩn đoán của bác sĩ. Nếu bạn có vấn đề sức khỏe nghiêm trọng, hãy đến gặp bác sĩ ngay.\n\nBạn có thể hỏi tôi về:\n- Cách sử dụng thuốc\n- Tác dụng phụ\n- Tương tác thuốc\n- Chế độ ăn uống\n- Lối sống lành mạnh'
+
+    // Tiêu hóa kém, táo bón
+    if (includesMany(input, ['tiêu hóa', 'táo bón', 'khó tiêu', 'đầy bụng'])) {
+      return random([
+        'Bạn nên uống nhiều nước, ăn nhiều rau xanh và trái cây để hỗ trợ tiêu hóa.',
+        'Men vi sinh hoặc chất xơ hòa tan như psyllium có thể giúp cải thiện táo bón. Bạn có muốn tôi tư vấn thêm không?',
+        'Tình trạng này xảy ra thường xuyên không? Có thể liên quan đến chế độ ăn uống hoặc lối sống đấy.'
+      ])
+    }
+
+    // Tăng đề kháng, vitamin
+    if (includesMany(input, ['sức đề kháng', 'tăng đề kháng', 'vitamin', 'vitamin c'])) {
+      return random([
+        'Vitamin C, D, và kẽm là những chất giúp tăng sức đề kháng. Bạn có thể bổ sung hàng ngày.',
+        'Ngoài vitamin, giấc ngủ đủ và vận động đều đặn cũng rất quan trọng với hệ miễn dịch.',
+        'Bạn có đang ăn uống đủ rau củ quả không? Tôi có thể gợi ý một vài sản phẩm bổ sung.'
+      ])
+    }
+
+    // Dị ứng
+    if (includesMany(input, ['dị ứng', 'ngứa', 'mề đay', 'mẩn đỏ'])) {
+      return random([
+        'Dị ứng có thể do thức ăn, thời tiết hoặc bụi. Bạn nên tránh tác nhân nghi ngờ và có thể dùng Cetirizin hoặc Loratadin.',
+        'Nếu ngứa lan rộng hoặc khó thở, hãy đến cơ sở y tế ngay. Bạn có muốn tôi gợi ý thuốc dị ứng không?',
+        'Bạn bị dị ứng vào thời điểm nhất định hay quanh năm? Tôi có thể giúp bạn xác định nguyên nhân.'
+      ])
+    }
+
+    // Huyết áp
+    if (includesMany(input, ['huyết áp', 'cao huyết áp', 'máu cao', 'tăng huyết áp'])) {
+      return random([
+        'Bạn nên đo huyết áp mỗi ngày, ăn ít muối và vận động nhẹ nhàng. Dùng thuốc đúng theo chỉ định của bác sĩ.',
+        'Có nhiều loại thực phẩm chức năng hỗ trợ huyết áp như tỏi đen, nattokinase. Tôi có thể giới thiệu nếu bạn cần.',
+        'Bạn đang dùng loại thuốc nào? Nếu muốn, tôi có thể kiểm tra giúp tương tác thuốc.'
+      ])
+    }
+
+    // Cân nặng
+    if (includesMany(input, ['giảm cân', 'tăng cân', 'béo', 'gầy', 'ốm'])) {
+      return random([
+        'Bạn muốn tăng hay giảm cân? Tôi có thể gợi ý chế độ ăn và thực phẩm hỗ trợ phù hợp.',
+        'Tăng cân: nên ăn đủ bữa, bổ sung protein, sữa dinh dưỡng. Giảm cân: ăn kiểm soát, vận động, ngủ đủ.',
+        'Bạn có thường xuyên ăn sáng và vận động không? Đây là 2 yếu tố rất quan trọng.'
+      ])
+    }
+
+    // Covid / F0
+    if (includesMany(input, ['covid', 'dương tính', 'f0', 'test covid'])) {
+      return random([
+        'Nếu bạn dương tính, nên nghỉ ngơi, cách ly và theo dõi triệu chứng. Dùng thuốc hạ sốt, giảm ho nếu cần.',
+        'Bạn có thể uống nước ấm, xông mũi họng nhẹ nhàng và bổ sung vitamin C/D để hỗ trợ phục hồi.',
+        'Nếu cảm thấy khó thở hoặc sốt cao liên tục, hãy đến bệnh viện sớm.'
+      ])
+    }
+
+    // Fallback
+    return 'Tôi chưa rõ câu hỏi của bạn. Bạn có thể hỏi về:\n\n- Tác dụng thuốc\n- Tư vấn khi cảm cúm, ho, sốt, đau bụng\n- Giấc ngủ, tiêu hóa, huyết áp, dị ứng, tăng sức đề kháng\n\nCứ thoải mái hỏi, tôi sẽ cố gắng hỗ trợ bạn nhé!'
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -206,4 +339,4 @@ export default function AIConsultation({ onClose }: AIConsultationProps) {
       </div>
     </div>
   )
-} 
+}
