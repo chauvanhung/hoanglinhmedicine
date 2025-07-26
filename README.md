@@ -59,8 +59,8 @@
 
 ### Bước 1: Clone repository
 ```bash
-git clone https://github.com/your-username/hoanglinh-medicine.git
-cd hoanglinh-medicine
+git clone https://github.com/chauvanhung/hoanglinhmedicine.git
+cd hoanglinhmedicine
 ```
 
 ### Bước 2: Cài đặt dependencies
@@ -110,7 +110,7 @@ Truy cập: http://localhost:3000
 ## 🏗️ Cấu trúc dự án
 
 ```
-hoanglinh-medicine/
+hoanglinhmedicine/
 ├── app/                    # Next.js App Router
 │   ├── globals.css        # Global styles
 │   ├── layout.tsx         # Root layout
@@ -241,4 +241,4 @@ MIT License - xem file [LICENSE](LICENSE) để biết thêm chi tiết.
 1. Cấu hình đầy đủ security measures
 2. Tích hợp với hệ thống thanh toán thực
 3. Tuân thủ quy định về bán thuốc online
-4. Có giấy phép kinh doanh dược phẩm 
+4. Có giấy phép kinh doanh dược phẩm
