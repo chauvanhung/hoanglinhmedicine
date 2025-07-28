@@ -36,7 +36,7 @@ vercel --prod
 ```javascript
 // next.config.js
 const nextConfig = {
-  output: 'export',
+  output: 'standalone',
   trailingSlash: true,
   images: {
     unoptimized: true

@@ -120,7 +120,7 @@ docker run -d -p 80:3000 --name hoanglinh-medicine hoanglinh-medicine
 ```bash
 # Thêm vào next.config.js
 module.exports = {
-  output: 'export',
+  output: 'standalone',
   trailingSlash: true,
   images: {
     unoptimized: true
