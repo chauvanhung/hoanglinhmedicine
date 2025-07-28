@@ -1,11 +1,8 @@
 # 🌐 Hướng dẫn Deploy Thay thế - Hoàng Linh Medicine
-
 ## ⚠️ Vercel không hoạt động? Không sao! Có nhiều cách khác!
-
 ---
 
 ## ☁️ **Phương pháp 1: Netlify (Khuyến nghị)**
-
 ### Ưu điểm:
 - ✅ Miễn phí hoàn toàn
 - ✅ Dễ sử dụng
@@ -78,7 +75,6 @@ npm run build
 3. **Cấu hình**:
    - Build Command: `npm install && npm run build`
    - Start Command: `npm start`
-
 ### Kết quả: `https://your-app-name.onrender.com`
 
 ---
