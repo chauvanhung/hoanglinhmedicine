@@ -6,9 +6,4 @@ services:
     startCommand: npm start
     envVars:
       - key: NODE_ENV
-        value: production
-      - key: NEXTAUTH_URL
-        value: https://hoanglinh-medicine.onrender.com
-      - key: NEXTAUTH_SECRET
-        generateValue: true
-    healthCheckPath: / 
+        value: production 
