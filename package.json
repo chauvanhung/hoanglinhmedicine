@@ -28,7 +28,8 @@
     "@hookform/resolvers": "^3.3.2",
     "zod": "^3.22.4",
     "zustand": "^4.4.7",
-    "react-hot-toast": "^2.4.1"
+    "react-hot-toast": "^2.4.1",
+    "sharp": "^0.33.0"
   },
   "devDependencies": {
     "eslint": "^8",
