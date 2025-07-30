@@ -11,7 +11,31 @@ let conversationContext = {
 function searchProducts(query: string) {
   const lowerQuery = query.toLowerCase().trim()
   
-  // Tìm kiếm chính xác tên thuốc trước
+  // Tìm kiếm theo từ khóa đặc biệt (ưu tiên cao nhất)
+  const specialKeywords = {
+    'loãng xương': ['Alendronate', 'Risedronate', 'Calcium Carbonate', 'Vitamin D3'],
+    'đau đầu': ['Paracetamol', 'Ibuprofen', 'Aspirin'],
+    'sốt': ['Paracetamol', 'Ibuprofen'],
+    'dạ dày': ['Omeprazole', 'Pantoprazole', 'Ranitidine'],
+    'dị ứng': ['Cetirizine', 'Loratadine', 'Fexofenadine'],
+    'tiểu đường': ['Metformin', 'Glimepiride'],
+    'huyết áp': ['Losartan', 'Amlodipine', 'Atorvastatin'],
+    'canxi': ['Calcium Carbonate', 'Vitamin D3'],
+    'vitamin': ['Vitamin C', 'Vitamin D3', 'Vitamin B12']
+  }
+  
+  for (const [keyword, productNames] of Object.entries(specialKeywords)) {
+    if (lowerQuery.includes(keyword)) {
+      const matchedProducts = productsDB.filter(product =>
+        productNames.includes(product.name)
+      )
+      if (matchedProducts.length > 0) {
+        return matchedProducts
+      }
+    }
+  }
+  
+  // Tìm kiếm chính xác tên thuốc
   const exactMatch = productsDB.find(product =>
     product.name.toLowerCase() === lowerQuery ||
     product.activeIngredient.toLowerCase() === lowerQuery
@@ -31,11 +55,21 @@ function searchProducts(query: string) {
     return nameMatches
   }
   
+  // Tìm kiếm theo công dụng và triệu chứng
+  const usageMatches = productsDB.filter(product =>
+    product.uses.toLowerCase().includes(lowerQuery) ||
+    product.symptoms.some(symptom => symptom.toLowerCase().includes(lowerQuery))
+  )
+  
+  if (usageMatches.length > 0) {
+    return usageMatches
+  }
+  
   // Tìm kiếm theo từng từ trong câu hỏi
-  const words = lowerQuery.split(' ').filter(word => word.length > 1)
+  const words = lowerQuery.split(' ').filter(word => word.length > 2)
   
   if (words.length > 0) {
-    return productsDB.filter(product =>
+    const wordMatches = productsDB.filter(product =>
       words.some(word =>
         product.name.toLowerCase().includes(word) ||
         product.activeIngredient.toLowerCase().includes(word) ||
@@ -43,6 +77,10 @@ function searchProducts(query: string) {
         product.uses.toLowerCase().includes(word)
       )
     )
+    
+    if (wordMatches.length > 0) {
+      return wordMatches
+    }
   }
   
   return []
@@ -114,8 +152,25 @@ function processQuestion(question: string): string {
 
   // Cập nhật ngữ cảnh cho câu hỏi mới (không phải hỏi sản phẩm khác)
   if (products.length > 0 && !isAskingForSimilar) {
-    conversationContext.lastProducts = [products[0]]
+    conversationContext.lastProducts = products.slice(0, 3) // Lưu tối đa 3 sản phẩm
     conversationContext.lastTopic = products[0].uses
+  }
+
+  // Nếu có nhiều sản phẩm và hỏi về bệnh/triệu chứng, hiển thị danh sách
+  if (products.length > 1 && (lowerQuestion.includes('loãng xương') || lowerQuestion.includes('đau đầu') || lowerQuestion.includes('dạ dày') || lowerQuestion.includes('dị ứng'))) {
+    let response = `🔍 **Tìm thấy ${products.length} sản phẩm phù hợp:**\n\n`
+    
+    products.slice(0, 3).forEach((product, index) => {
+      response += `${index + 1}. **${product.name}** - ${product.activeIngredient} ${product.dosage}\n` +
+                 `💰 **Giá:** ${product.price.toLocaleString('vi-VN')} VNĐ\n` +
+                 `🎯 **Công dụng:** ${product.uses}\n\n`
+    })
+    
+    response += `**Để được tư vấn chi tiết, vui lòng liên hệ:**\n` +
+                `📞 **Hotline:** 1900-xxxx\n` +
+                `🏥 **Nhà thuốc:** Hoàng Linh Medicine`
+    
+    return response
   }
 
   const product = products[0]
