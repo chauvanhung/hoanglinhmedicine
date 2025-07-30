@@ -9,17 +9,43 @@ let conversationContext = {
 
 // Tìm kiếm sản phẩm
 function searchProducts(query: string) {
-  const lowerQuery = query.toLowerCase()
-  const words = lowerQuery.split(' ').filter(word => word.length > 2)
+  const lowerQuery = query.toLowerCase().trim()
   
-  return productsDB.filter(product =>
-    words.some(word =>
-      product.name.toLowerCase().includes(word) ||
-      product.activeIngredient.toLowerCase().includes(word) ||
-      product.symptoms.some(symptom => symptom.toLowerCase().includes(word)) ||
-      product.uses.toLowerCase().includes(word)
-    )
+  // Tìm kiếm chính xác tên thuốc trước
+  const exactMatch = productsDB.find(product =>
+    product.name.toLowerCase() === lowerQuery ||
+    product.activeIngredient.toLowerCase() === lowerQuery
   )
+  
+  if (exactMatch) {
+    return [exactMatch]
+  }
+  
+  // Tìm kiếm tên thuốc chứa từ khóa
+  const nameMatches = productsDB.filter(product =>
+    product.name.toLowerCase().includes(lowerQuery) ||
+    product.activeIngredient.toLowerCase().includes(lowerQuery)
+  )
+  
+  if (nameMatches.length > 0) {
+    return nameMatches
+  }
+  
+  // Tìm kiếm theo từng từ trong câu hỏi
+  const words = lowerQuery.split(' ').filter(word => word.length > 1)
+  
+  if (words.length > 0) {
+    return productsDB.filter(product =>
+      words.some(word =>
+        product.name.toLowerCase().includes(word) ||
+        product.activeIngredient.toLowerCase().includes(word) ||
+        product.symptoms.some(symptom => symptom.toLowerCase().includes(word)) ||
+        product.uses.toLowerCase().includes(word)
+      )
+    )
+  }
+  
+  return []
 }
 
 // Xử lý câu hỏi
