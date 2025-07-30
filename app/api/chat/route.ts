@@ -75,10 +75,32 @@ function processQuestion(question: string): string {
 
   let products = searchProducts(question)
 
-  // Nếu hỏi về sản phẩm khác và không tìm thấy sản phẩm cụ thể
-  if (isAskingForSimilar && products.length === 0) {
-    if (conversationContext.lastTopic && conversationContext.lastProducts.length > 0) {
-      products = conversationContext.lastProducts
+  // Nếu hỏi về sản phẩm khác và có context trước đó
+  if (isAskingForSimilar && conversationContext.lastTopic) {
+    // Tìm sản phẩm khác cùng loại dựa trên lastTopic
+    const relatedProducts = productsDB.filter(product => 
+      product.uses.toLowerCase().includes(conversationContext.lastTopic.toLowerCase()) ||
+      product.symptoms.some(symptom => 
+        symptom.toLowerCase().includes(conversationContext.lastTopic.toLowerCase())
+      )
+    )
+    
+    // Loại bỏ sản phẩm đã hiển thị trước đó
+    const newProducts = relatedProducts.filter(product => 
+      !conversationContext.lastProducts.some(lastProduct => lastProduct.id === product.id)
+    )
+    
+    if (newProducts.length > 0) {
+      products = [newProducts[0]] // Lấy sản phẩm đầu tiên chưa hiển thị
+      // Cập nhật context với sản phẩm mới
+      conversationContext.lastProducts.push(products[0])
+    } else {
+      // Nếu không còn sản phẩm mới, trả về thông báo
+      return `✅ **Đã hiển thị tất cả sản phẩm liên quan đến ${conversationContext.lastTopic}**\n\n` +
+             `**Để được tư vấn chi tiết hơn, vui lòng liên hệ:**\n` +
+             `📞 **Hotline:** 1900-xxxx\n` +
+             `🏥 **Nhà thuốc:** Hoàng Linh Medicine\n` +
+             `📍 **Địa chỉ:** [Địa chỉ nhà thuốc]`
     }
   }
 
@@ -90,9 +112,9 @@ function processQuestion(question: string): string {
            `📍 **Địa chỉ:** [Địa chỉ nhà thuốc]`
   }
 
-  // Cập nhật ngữ cảnh
+  // Cập nhật ngữ cảnh cho câu hỏi mới (không phải hỏi sản phẩm khác)
   if (products.length > 0 && !isAskingForSimilar) {
-    conversationContext.lastProducts = products
+    conversationContext.lastProducts = [products[0]]
     conversationContext.lastTopic = products[0].uses
   }
 
