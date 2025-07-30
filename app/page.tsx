@@ -8,14 +8,25 @@ import AIConsultation from '@/components/AIConsultation'
 import Footer from '@/components/Footer'
 import { Product } from '@/types/product'
 
-// Dữ liệu mẫu sản phẩm
+// Mảng hình ảnh đa dạng cho sản phẩm
+const productImages = [
+  'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=400&fit=crop', // Thuốc viên
+  'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop', // Vitamin
+  'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=400&fit=crop', // Thuốc dạ dày
+  'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=400&h=400&fit=crop', // Thuốc dị ứng
+  'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=400&fit=crop', // Tim mạch
+  'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop', // Xương khớp
+  'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=400&fit=crop', // Thực phẩm chức năng
+]
+
+// Dữ liệu sản phẩm nổi bật
 const sampleProducts: Product[] = [
   {
     id: '1',
     name: 'Paracetamol 500mg',
     description: 'Thuốc giảm đau, hạ sốt hiệu quả',
-    price: 25000,
-    image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=400&fit=crop',
+    price: 15000,
+    image: productImages[0],
     category: 'Thuốc giảm đau',
     stock: 100,
     prescription: false,
@@ -24,8 +35,8 @@ const sampleProducts: Product[] = [
     id: '2',
     name: 'Vitamin C 1000mg',
     description: 'Tăng cường sức đề kháng, chống oxy hóa',
-    price: 150000,
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop',
+    price: 35000,
+    image: productImages[1],
     category: 'Vitamin',
     stock: 50,
     prescription: false,
@@ -34,8 +45,8 @@ const sampleProducts: Product[] = [
     id: '3',
     name: 'Omeprazole 20mg',
     description: 'Điều trị viêm loét dạ dày, trào ngược axit',
-    price: 85000,
-    image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=400&fit=crop',
+    price: 45000,
+    image: productImages[2],
     category: 'Thuốc tiêu hóa',
     stock: 30,
     prescription: true,
@@ -44,10 +55,50 @@ const sampleProducts: Product[] = [
     id: '4',
     name: 'Cetirizine 10mg',
     description: 'Thuốc kháng histamine, điều trị dị ứng',
-    price: 45000,
-    image: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=400&h=400&fit=crop',
+    price: 28000,
+    image: productImages[3],
     category: 'Thuốc dị ứng',
     stock: 75,
+    prescription: false,
+  },
+  {
+    id: '5',
+    name: 'Ibuprofen 400mg',
+    description: 'Thuốc chống viêm, giảm đau',
+    price: 25000,
+    image: productImages[0],
+    category: 'Thuốc giảm đau',
+    stock: 60,
+    prescription: false,
+  },
+  {
+    id: '6',
+    name: 'Vitamin D3 1000IU',
+    description: 'Bổ sung vitamin D, tăng cường xương',
+    price: 35000,
+    image: productImages[1],
+    category: 'Vitamin',
+    stock: 40,
+    prescription: false,
+  },
+  {
+    id: '7',
+    name: 'Alendronate 70mg',
+    description: 'Điều trị loãng xương',
+    price: 120000,
+    image: productImages[5],
+    category: 'Thuốc xương khớp',
+    stock: 20,
+    prescription: true,
+  },
+  {
+    id: '8',
+    name: 'Omega-3 1000mg',
+    description: 'Bổ sung omega-3, hỗ trợ tim mạch',
+    price: 85000,
+    image: productImages[6],
+    category: 'Thực phẩm chức năng',
+    stock: 50,
     prescription: false,
   },
 ]
@@ -62,12 +113,12 @@ export default function Home() {
       <main>
         <Hero onConsultationClick={() => setShowAIConsultation(true)} />
         
-        <section className="py-16 px-4 max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+        <section className="py-8 sm:py-16 px-4 max-w-7xl mx-auto">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
               Sản phẩm nổi bật
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto px-4">
               Chúng tôi cung cấp đầy đủ các loại thuốc chất lượng cao, 
               được kiểm định nghiêm ngặt và có nguồn gốc rõ ràng.
             </p>
@@ -76,15 +127,15 @@ export default function Home() {
           <ProductGrid products={sampleProducts} />
         </section>
 
-        <section className="py-16 bg-primary-50">
+        <section className="py-8 sm:py-16 bg-primary-50">
           <div className="max-w-7xl mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            <div className="text-center mb-8 sm:mb-12">
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
                 Tại sao chọn Hoàng Linh Medicine?
               </h2>
             </div>
             
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
               <div className="text-center">
                 <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <svg className="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
