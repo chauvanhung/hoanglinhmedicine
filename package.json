@@ -28,16 +28,7 @@
     "@hookform/resolvers": "^3.3.2",
     "zod": "^3.22.4",
     "zustand": "^4.4.7",
-    "react-hot-toast": "^2.4.1",
-    "openai": "^4.20.1",
-    "ai": "^2.2.31",
-    "prisma": "^5.7.1",
-    "@prisma/client": "^5.7.1",
-    "bcryptjs": "^2.4.3",
-    "@types/bcryptjs": "^2.4.6",
-    "next-auth": "^4.24.5",
-    "stripe": "^14.9.0",
-    "@stripe/stripe-js": "^2.2.0"
+    "react-hot-toast": "^2.4.1"
   },
   "devDependencies": {
     "eslint": "^8",
