@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { ShoppingCart, Search, User, Menu, X } from 'lucide-react'
+import { ShoppingCart, Search, User, Menu, X, MessageCircle } from 'lucide-react'
 import { useCartStore } from '@/store/cart'
 
 export default function Header() {
@@ -58,6 +58,11 @@ export default function Header() {
 
           {/* Right side icons */}
           <div className="flex items-center space-x-4">
+            <Link href="/chat" className="hidden md:flex items-center space-x-1 p-2 text-gray-700 hover:text-primary-600 transition-colors">
+              <MessageCircle className="w-5 h-5" />
+              <span>Chat AI</span>
+            </Link>
+            
             <Link href="/cart" className="relative p-2 text-gray-700 hover:text-primary-600 transition-colors">
               <ShoppingCart className="w-6 h-6" />
               {cartItemCount > 0 && (
@@ -134,6 +139,14 @@ export default function Header() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Liên hệ
+              </Link>
+              <Link 
+                href="/chat" 
+                className="text-gray-700 hover:text-primary-600 transition-colors py-2 flex items-center space-x-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <MessageCircle className="w-5 h-5" />
+                <span>Chat AI</span>
               </Link>
               <Link 
                 href="/login" 

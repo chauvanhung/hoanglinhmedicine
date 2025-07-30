@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { Toaster } from 'react-hot-toast'
+import ProductChat from '@/components/ProductChat'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,6 +21,7 @@ export default function RootLayout({
     <html lang="vi">
       <body className={inter.className}>
         {children}
+        <ProductChat />
         <Toaster 
           position="top-right"
           toastOptions={{
