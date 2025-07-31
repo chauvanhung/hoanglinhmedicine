@@ -112,10 +112,15 @@ export default function NotificationSettings({ bookingId, consultationInfo, onCl
           body: JSON.stringify({
             type: preference.type,
             recipient: preference.recipient,
-            subject: preference.type === 'email' ? 'Cài đặt thông báo - Hoàng Linh Medicine' : undefined,
-            message,
-            bookingId,
-            consultationInfo
+            notificationType: 'reminder',
+            reminderType: timingOptions.find(t => t.value === preference.timing)?.label || '1 giờ trước',
+            consultationInfo: {
+              doctorName: consultationInfo?.doctorName || '',
+              specialty: consultationInfo?.specialty || '',
+              date: consultationInfo?.date || '',
+              time: consultationInfo?.time || '',
+              patientName: consultationInfo?.patientName || ''
+            }
           })
         })
       }

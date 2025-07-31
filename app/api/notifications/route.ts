@@ -1,167 +1,204 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { sendEmail, generateConsultationConfirmationEmail, generateReminderEmail } from '@/lib/email'
+import { sendSMS, generateConsultationConfirmationSMS, generateReminderSMS } from '@/lib/sms'
 
 interface NotificationRequest {
   type: 'sms' | 'email'
   recipient: string
-  subject?: string
-  message: string
-  bookingId?: string
+  message?: string
   consultationInfo?: {
     doctorName: string
+    specialty?: string
     date: string
     time: string
     patientName: string
+    bookingId?: string
+    paymentId?: string
+    amount?: number
   }
+  notificationType?: 'confirmation' | 'reminder'
+  reminderType?: string
 }
 
-interface NotificationResponse {
-  success: boolean
-  message: string
-  notificationId?: string
-  sentAt?: string
-}
-
-// Mock SMS service
-async function sendSMS(phone: string, message: string): Promise<boolean> {
-  // Simulate SMS sending
-  console.log(`📱 SMS sent to ${phone}: ${message}`)
-  await new Promise(resolve => setTimeout(resolve, 1000))
-  return Math.random() > 0.1 // 90% success rate
-}
-
-// Mock Email service
-async function sendEmail(email: string, subject: string, message: string): Promise<boolean> {
-  // Simulate email sending
-  console.log(`📧 Email sent to ${email}`)
-  console.log(`Subject: ${subject}`)
-  console.log(`Message: ${message}`)
-  await new Promise(resolve => setTimeout(resolve, 1500))
-  return Math.random() > 0.05 // 95% success rate
-}
+// Mock notification history (in real app, this would be in database)
+const notificationHistory: any[] = [
+  {
+    id: 'notif_001',
+    type: 'email',
+    recipient: 'patient@example.com',
+    message: 'Xác nhận đặt lịch tư vấn',
+    status: 'sent',
+    sentAt: '2024-01-15T10:30:00Z'
+  },
+  {
+    id: 'notif_002',
+    type: 'sms',
+    recipient: '+84901234567',
+    message: 'Nhắc nhở lịch tư vấn',
+    status: 'sent',
+    sentAt: '2024-01-15T09:00:00Z'
+  }
+]
 
 export async function POST(request: NextRequest) {
   try {
     const body: NotificationRequest = await request.json()
     
     // Validate required fields
-    if (!body.type || !body.recipient || !body.message) {
-      return NextResponse.json({
-        success: false,
-        message: 'Thiếu thông tin bắt buộc'
-      }, { status: 400 })
+    if (!body.type || !body.recipient) {
+      return NextResponse.json(
+        { error: 'Thiếu thông tin thông báo' },
+        { status: 400 }
+      )
     }
 
-    const notificationId = `NOTIF_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-    let success = false
-
-    if (body.type === 'sms') {
-      // Validate phone number format (Vietnamese)
-      const phoneRegex = /^(\+84|84|0)[3|5|7|8|9][0-9]{8}$/
-      if (!phoneRegex.test(body.recipient)) {
-        return NextResponse.json({
-          success: false,
-          message: 'Số điện thoại không hợp lệ'
-        }, { status: 400 })
-      }
-      
-      success = await sendSMS(body.recipient, body.message)
-    } else if (body.type === 'email') {
-      // Validate email format
+    // Validate recipient format
+    if (body.type === 'email') {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
       if (!emailRegex.test(body.recipient)) {
-        return NextResponse.json({
-          success: false,
-          message: 'Email không hợp lệ'
-        }, { status: 400 })
+        return NextResponse.json(
+          { error: 'Email không hợp lệ' },
+          { status: 400 }
+        )
       }
-      
-      success = await sendEmail(body.recipient, body.subject || 'Thông báo từ Hoàng Linh Medicine', body.message)
-    } else {
-      return NextResponse.json({
-        success: false,
-        message: 'Loại thông báo không hợp lệ'
-      }, { status: 400 })
+    } else if (body.type === 'sms') {
+      const phoneRegex = /^(\+84|84|0)[0-9]{9}$/
+      if (!phoneRegex.test(body.recipient)) {
+        return NextResponse.json(
+          { error: 'Số điện thoại không hợp lệ' },
+          { status: 400 }
+        )
+      }
     }
 
-    if (success) {
-      console.log('Notification sent successfully:', {
-        id: notificationId,
-        type: body.type,
-        recipient: body.recipient,
-        bookingId: body.bookingId,
-        timestamp: new Date().toISOString()
-      })
+    let result: { success: boolean; message: string }
+    let notificationMessage: string
 
-      return NextResponse.json({
-        success: true,
-        message: body.type === 'sms' ? 'SMS đã được gửi thành công' : 'Email đã được gửi thành công',
-        notificationId,
-        sentAt: new Date().toISOString()
-      })
+    // Generate appropriate message based on notification type
+    if (body.notificationType === 'confirmation' && body.consultationInfo) {
+      if (body.type === 'email') {
+        const emailData = generateConsultationConfirmationEmail({
+          patientName: body.consultationInfo.patientName,
+          doctorName: body.consultationInfo.doctorName,
+          specialty: body.consultationInfo.specialty || 'Chuyên khoa',
+          date: body.consultationInfo.date,
+          time: body.consultationInfo.time,
+          bookingId: body.consultationInfo.bookingId || 'N/A',
+          paymentId: body.consultationInfo.paymentId || 'N/A',
+          amount: body.consultationInfo.amount || 0
+        })
+        
+        result = await sendEmail({
+          to: body.recipient,
+          subject: emailData.subject,
+          html: emailData.html
+        })
+        notificationMessage = emailData.subject
+      } else {
+        const smsData = generateConsultationConfirmationSMS({
+          patientName: body.consultationInfo.patientName,
+          doctorName: body.consultationInfo.doctorName,
+          date: body.consultationInfo.date,
+          time: body.consultationInfo.time,
+          bookingId: body.consultationInfo.bookingId || 'N/A'
+        })
+        
+        result = await sendSMS({
+          to: body.recipient,
+          message: smsData.message
+        })
+        notificationMessage = smsData.message
+      }
+    } else if (body.notificationType === 'reminder' && body.consultationInfo) {
+      if (body.type === 'email') {
+        const emailData = generateReminderEmail({
+          patientName: body.consultationInfo.patientName,
+          doctorName: body.consultationInfo.doctorName,
+          specialty: body.consultationInfo.specialty || 'Chuyên khoa',
+          date: body.consultationInfo.date,
+          time: body.consultationInfo.time,
+          reminderType: body.reminderType || '30 phút trước'
+        })
+        
+        result = await sendEmail({
+          to: body.recipient,
+          subject: emailData.subject,
+          html: emailData.html
+        })
+        notificationMessage = emailData.subject
+      } else {
+        const smsData = generateReminderSMS({
+          patientName: body.consultationInfo.patientName,
+          doctorName: body.consultationInfo.doctorName,
+          date: body.consultationInfo.date,
+          time: body.consultationInfo.time,
+          reminderType: body.reminderType || '30 phút trước'
+        })
+        
+        result = await sendSMS({
+          to: body.recipient,
+          message: smsData.message
+        })
+        notificationMessage = smsData.message
+      }
     } else {
-      return NextResponse.json({
-        success: false,
-        message: body.type === 'sms' ? 'Không thể gửi SMS' : 'Không thể gửi email'
-      }, { status: 500 })
+      // Custom message
+      if (body.type === 'email') {
+        result = await sendEmail({
+          to: body.recipient,
+          subject: 'Thông báo từ Hoàng Linh Medicine',
+          html: body.message || 'Thông báo từ hệ thống'
+        })
+      } else {
+        result = await sendSMS({
+          to: body.recipient,
+          message: body.message || 'Thông báo từ Hoàng Linh Medicine'
+        })
+      }
+      notificationMessage = body.message || 'Thông báo tùy chỉnh'
     }
-  } catch (error) {
-    console.error('Notification error:', error)
+
+    // Add to notification history
+    const notification = {
+      id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      type: body.type,
+      recipient: body.recipient,
+      message: notificationMessage,
+      status: result.success ? 'sent' : 'failed',
+      sentAt: new Date().toISOString(),
+      result: result.message
+    }
+    
+    notificationHistory.push(notification)
+
     return NextResponse.json({
-      success: false,
-      message: 'Có lỗi xảy ra khi gửi thông báo'
-    }, { status: 500 })
+      success: result.success,
+      message: result.message,
+      notificationId: notification.id
+    })
+
+  } catch (error) {
+    console.error('Error sending notification:', error)
+    return NextResponse.json(
+      { error: 'Có lỗi xảy ra khi gửi thông báo' },
+      { status: 500 }
+    )
   }
 }
 
-// Get notification history
-export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url)
-  const bookingId = searchParams.get('bookingId')
-  const type = searchParams.get('type')
-
-  // Mock notification history
-  const mockNotifications = [
-    {
-      id: 'NOTIF_1234567890_abc123',
-      type: 'sms',
-      recipient: '0901234567',
-      message: 'Nhắc nhở: Bạn có lịch tư vấn với BS. Nguyễn Văn A vào ngày 15/12/2024 lúc 14:00',
-      bookingId: 'CONS_1234567890_abc123',
-      status: 'sent',
-      sentAt: '2024-12-14T10:00:00Z'
-    },
-    {
-      id: 'NOTIF_1234567891_def456',
-      type: 'email',
-      recipient: 'patient@example.com',
-      message: 'Nhắc nhở: Bạn có lịch tư vấn với BS. Nguyễn Văn A vào ngày 15/12/2024 lúc 14:00',
-      bookingId: 'CONS_1234567890_abc123',
-      status: 'sent',
-      sentAt: '2024-12-14T10:00:00Z'
-    },
-    {
-      id: 'NOTIF_1234567892_ghi789',
-      type: 'sms',
-      recipient: '0909876543',
-      message: 'Nhắc nhở: Bạn có lịch tư vấn với BS. Trần Thị B vào ngày 16/12/2024 lúc 09:00',
-      bookingId: 'CONS_1234567891_def456',
-      status: 'failed',
-      sentAt: '2024-12-15T08:00:00Z'
-    }
-  ]
-
-  let filteredNotifications = mockNotifications
-
-  if (bookingId) {
-    filteredNotifications = filteredNotifications.filter(n => n.bookingId === bookingId)
+export async function GET() {
+  try {
+    // Return notification history
+    return NextResponse.json({
+      notifications: notificationHistory.sort((a, b) => 
+        new Date(b.sentAt).getTime() - new Date(a.sentAt).getTime()
+      )
+    })
+  } catch (error) {
+    console.error('Error fetching notifications:', error)
+    return NextResponse.json(
+      { error: 'Có lỗi xảy ra khi lấy lịch sử thông báo' },
+      { status: 500 }
+    )
   }
-
-  if (type) {
-    filteredNotifications = filteredNotifications.filter(n => n.type === type)
-  }
-
-  return NextResponse.json({
-    success: true,
-    notifications: filteredNotifications
-  })
 } 

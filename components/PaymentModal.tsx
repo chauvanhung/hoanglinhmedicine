@@ -182,6 +182,33 @@ export default function PaymentModal({
           }
           localStorage.setItem('lastBookingDetails', JSON.stringify(bookingDetails))
           
+          // Send confirmation email if email is provided
+          if (patientInfo.email) {
+            try {
+              await fetch('/api/notifications', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  type: 'email',
+                  recipient: patientInfo.email,
+                  notificationType: 'confirmation',
+                  consultationInfo: {
+                    doctorName: consultationInfo.doctorName,
+                    specialty: consultationInfo.specialty || 'Chuyên khoa',
+                    date: consultationInfo.date,
+                    time: consultationInfo.time,
+                    patientName: patientInfo.name,
+                    bookingId,
+                    paymentId,
+                    amount
+                  }
+                })
+              })
+            } catch (error) {
+              console.error('Error sending confirmation email:', error)
+            }
+          }
+          
           onPaymentSuccess(paymentId)
           return
         }
