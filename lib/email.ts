@@ -1,37 +1,4 @@
-import nodemailer from 'nodemailer'
-import sgMail from '@sendgrid/mail'
-
-// Cấu hình SendGrid (ưu tiên)
-const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY
-const FROM_EMAIL = process.env.FROM_EMAIL || 'noreply@hoanglinhmedicine.com'
-
-// Cấu hình Nodemailer (backup)
-const SMTP_HOST = process.env.SMTP_HOST || 'smtp.gmail.com'
-const SMTP_PORT = parseInt(process.env.SMTP_PORT || '587')
-const SMTP_USER = process.env.SMTP_USER
-const SMTP_PASS = process.env.SMTP_PASS
-
-// Khởi tạo SendGrid
-if (SENDGRID_API_KEY) {
-  sgMail.setApiKey(SENDGRID_API_KEY)
-}
-
-// Khởi tạo Nodemailer transporter
-const createTransporter = () => {
-  if (SMTP_USER && SMTP_PASS) {
-    return nodemailer.createTransporter({
-      host: SMTP_HOST,
-      port: SMTP_PORT,
-      secure: SMTP_PORT === 465,
-      auth: {
-        user: SMTP_USER,
-        pass: SMTP_PASS,
-      },
-    })
-  }
-  return null
-}
-
+// Mô phỏng gửi email (không gửi thật)
 export interface EmailData {
   to: string
   subject: string
@@ -41,39 +8,26 @@ export interface EmailData {
 
 export async function sendEmail(data: EmailData): Promise<{ success: boolean; message: string }> {
   try {
-    // Thử SendGrid trước
-    if (SENDGRID_API_KEY) {
-      const msg = {
-        to: data.to,
-        from: FROM_EMAIL,
-        subject: data.subject,
-        html: data.html,
-        text: data.text || data.html.replace(/<[^>]*>/g, ''),
-      }
-
-      await sgMail.send(msg)
-      return { success: true, message: 'Email sent via SendGrid' }
+    // Mô phỏng thời gian gửi email
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    
+    // Log email để debug
+    console.log('📧 Email simulation:', {
+      to: data.to,
+      subject: data.subject,
+      timestamp: new Date().toISOString()
+    })
+    
+    return { 
+      success: true, 
+      message: 'Email sent successfully (simulation)' 
     }
-
-    // Fallback to Nodemailer
-    const transporter = createTransporter()
-    if (transporter) {
-      await transporter.sendMail({
-        from: FROM_EMAIL,
-        to: data.to,
-        subject: data.subject,
-        html: data.html,
-        text: data.text || data.html.replace(/<[^>]*>/g, ''),
-      })
-      return { success: true, message: 'Email sent via Nodemailer' }
-    }
-
-    // Nếu không có cấu hình email, trả về lỗi
-    return { success: false, message: 'No email configuration found' }
-
   } catch (error) {
-    console.error('Email sending error:', error)
-    return { success: false, message: `Email sending failed: ${error}` }
+    console.error('Email simulation error:', error)
+    return { 
+      success: false, 
+      message: `Email sending failed: ${error}` 
+    }
   }
 }
 
