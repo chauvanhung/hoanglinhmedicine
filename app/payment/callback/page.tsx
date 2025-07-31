@@ -18,6 +18,12 @@ export default function PaymentCallbackPage() {
     const checkPaymentStatus = async () => {
       try {
         // Get payment ID from URL params
+        if (!searchParams) {
+          setStatus('failed')
+          setMessage('Không tìm thấy thông tin thanh toán')
+          return
+        }
+        
         const paymentIdParam = searchParams.get('paymentId') || searchParams.get('vnp_TxnRef')
         if (!paymentIdParam) {
           setStatus('failed')

@@ -7,6 +7,7 @@ import { useToast } from './Toast'
 interface ReminderProps {
   consultationInfo: {
     doctorName: string
+    specialty?: string
     date: string
     time: string
     patientName: string

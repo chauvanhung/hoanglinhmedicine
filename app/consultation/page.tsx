@@ -490,6 +490,7 @@ export default function ConsultationPage() {
         }}
         consultationInfo={{
           doctorName: selectedDoctor?.name || '',
+          specialty: selectedDoctor?.specialty || '',
           date: selectedDate,
           time: selectedTime
         }}
@@ -504,6 +505,7 @@ export default function ConsultationPage() {
               bookingId={bookingId}
               consultationInfo={{
                 doctorName: selectedDoctor?.name || '',
+                specialty: selectedDoctor?.specialty || '',
                 date: selectedDate,
                 time: selectedTime,
                 patientName: formData.name

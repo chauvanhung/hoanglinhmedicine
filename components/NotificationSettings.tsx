@@ -8,6 +8,7 @@ interface NotificationSettingsProps {
   bookingId?: string
   consultationInfo?: {
     doctorName: string
+    specialty?: string
     date: string
     time: string
     patientName: string

@@ -8,21 +8,52 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import NotificationReminder from '@/components/NotificationReminder'
 
+interface BookingDetails {
+  paymentId: string
+  bookingId: string
+  doctorName: string
+  specialty: string
+  date: string
+  time: string
+  patientName: string
+  amount: number
+  paymentMethod: string
+}
+
 export default function PaymentSuccessPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [bookingDetails, setBookingDetails] = useState<any>(null)
+  const [bookingDetails, setBookingDetails] = useState<BookingDetails | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [showReminders, setShowReminders] = useState(false)
 
   useEffect(() => {
-    // Get booking details from URL params or localStorage
+    // Get booking details from URL params and localStorage
     const paymentId = searchParams.get('paymentId')
     const bookingId = searchParams.get('bookingId')
     
-    // In a real app, you would fetch booking details from API
-    // For now, we'll use mock data
-    const mockBookingDetails = {
+    // Try to get booking details from localStorage first
+    const storedBookingDetails = localStorage.getItem('lastBookingDetails')
+    
+    if (storedBookingDetails) {
+      try {
+        const parsedDetails = JSON.parse(storedBookingDetails)
+        // Update with actual payment ID from URL
+        const actualDetails: BookingDetails = {
+          ...parsedDetails,
+          paymentId: paymentId || parsedDetails.paymentId,
+          bookingId: bookingId || parsedDetails.bookingId
+        }
+        setBookingDetails(actualDetails)
+        setIsLoading(false)
+        return
+      } catch (error) {
+        console.error('Error parsing stored booking details:', error)
+      }
+    }
+    
+    // Fallback to mock data if no stored details found
+    const mockBookingDetails: BookingDetails = {
       paymentId: paymentId || 'PAY_1703123456789_abc123',
       bookingId: bookingId || 'CONS_1703123456789_abc123',
       doctorName: 'BS. Nguyễn Văn An',
@@ -108,12 +139,12 @@ export default function PaymentSuccessPage() {
               <div>
                 <p className="text-sm text-gray-600">Ngày tư vấn</p>
                 <p className="font-semibold text-gray-900">
-                  {new Date(bookingDetails?.date).toLocaleDateString('vi-VN', {
+                  {bookingDetails?.date ? new Date(bookingDetails.date).toLocaleDateString('vi-VN', {
                     weekday: 'long',
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric'
-                  })}
+                  }) : 'N/A'}
                 </p>
               </div>
             </div>
@@ -143,10 +174,10 @@ export default function PaymentSuccessPage() {
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Phí tư vấn:</span>
               <span className="text-lg font-bold text-primary-600">
-                {new Intl.NumberFormat('vi-VN', {
+                {bookingDetails?.amount ? new Intl.NumberFormat('vi-VN', {
                   style: 'currency',
                   currency: 'VND'
-                }).format(bookingDetails?.amount)}
+                }).format(bookingDetails.amount) : 'N/A'}
               </span>
             </div>
             <div className="flex justify-between items-center mt-2">

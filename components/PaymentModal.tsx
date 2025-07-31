@@ -28,6 +28,7 @@ interface PaymentModalProps {
   }
   consultationInfo: {
     doctorName: string
+    specialty?: string
     date: string
     time: string
   }
@@ -166,6 +167,21 @@ export default function PaymentModal({
         if (result.status === 'completed') {
           setPaymentStatus('success')
           success('Thanh toán thành công! Đặt lịch tư vấn đã được xác nhận.')
+          
+          // Store booking details in localStorage for the success page
+          const bookingDetails = {
+            paymentId,
+            bookingId,
+            doctorName: consultationInfo.doctorName,
+            specialty: consultationInfo.specialty || 'Chuyên khoa',
+            date: consultationInfo.date,
+            time: consultationInfo.time,
+            patientName: patientInfo.name,
+            amount,
+            paymentMethod: selectedMethod
+          }
+          localStorage.setItem('lastBookingDetails', JSON.stringify(bookingDetails))
+          
           onPaymentSuccess(paymentId)
           return
         }
