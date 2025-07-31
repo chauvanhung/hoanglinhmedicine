@@ -15,9 +15,6 @@ const nextConfig = {
   },
   // Optimize build performance
   swcMinify: true,
-  experimental: {
-    optimizeCss: true,
-  },
 }
 
 module.exports = nextConfig 
