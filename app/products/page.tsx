@@ -65,7 +65,7 @@ const productImages = [
 ]
 
 // Dữ liệu sản phẩm mở rộng với nhiều hình ảnh đa dạng
-const allProducts: Product[] = [
+export const allProducts: Product[] = [
   {
     id: '1',
     name: 'Paracetamol 500mg',
@@ -75,6 +75,28 @@ const allProducts: Product[] = [
     category: 'Thuốc giảm đau',
     stock: 100,
     prescription: false,
+    manufacturer: 'Dược phẩm Quốc tế',
+    origin: 'Việt Nam',
+    expiry: '36 tháng',
+    dosage: '1-2 viên/lần, tối đa 4 lần/ngày',
+    ingredients: 'Paracetamol 500mg',
+    sideEffects: 'Buồn nôn, đau dạ dày (hiếm gặp)',
+    contraindications: 'Người mẫn cảm với Paracetamol',
+    storage: 'Bảo quản nơi khô ráo, tránh ánh sáng trực tiếp',
+    packaging: 'Hộp 10 vỉ x 10 viên',
+    usage: 'Uống sau bữa ăn',
+    target: 'Người lớn và trẻ em trên 12 tuổi',
+    benefits: [
+      'Giảm đau đầu, đau răng, đau cơ',
+      'Hạ sốt nhanh chóng',
+      'An toàn cho dạ dày',
+      'Không gây buồn ngủ'
+    ],
+    reviews: [
+      { user: 'Nguyễn Văn A', rating: 5, comment: 'Thuốc rất hiệu quả, giảm đau nhanh' },
+      { user: 'Trần Thị B', rating: 4, comment: 'Giá cả hợp lý, chất lượng tốt' },
+      { user: 'Lê Văn C', rating: 5, comment: 'Đã sử dụng nhiều lần, rất hài lòng' }
+    ]
   },
   {
     id: '2',
@@ -85,6 +107,28 @@ const allProducts: Product[] = [
     category: 'Vitamin',
     stock: 50,
     prescription: false,
+    manufacturer: 'Công ty TNHH Dược phẩm ABC',
+    origin: 'Việt Nam',
+    expiry: '24 tháng',
+    dosage: '1 viên/ngày',
+    ingredients: 'Vitamin C 1000mg, tá dược vừa đủ',
+    sideEffects: 'Tiêu chảy nhẹ (nếu dùng quá liều)',
+    contraindications: 'Người bị sỏi thận',
+    storage: 'Bảo quản nơi khô ráo, nhiệt độ dưới 30°C',
+    packaging: 'Lọ 60 viên',
+    usage: 'Uống sau bữa ăn sáng',
+    target: 'Người lớn cần bổ sung vitamin C',
+    benefits: [
+      'Tăng cường hệ miễn dịch',
+      'Chống oxy hóa, làm đẹp da',
+      'Hỗ trợ hấp thu sắt',
+      'Tăng sức đề kháng'
+    ],
+    reviews: [
+      { user: 'Phạm Thị D', rating: 5, comment: 'Uống thường xuyên, ít bị cảm cúm' },
+      { user: 'Hoàng Văn E', rating: 4, comment: 'Viên thuốc dễ uống, hiệu quả tốt' },
+      { user: 'Vũ Thị F', rating: 5, comment: 'Da đẹp hơn sau khi uống vitamin C' }
+    ]
   },
   {
     id: '3',
@@ -95,6 +139,28 @@ const allProducts: Product[] = [
     category: 'Thuốc tiêu hóa',
     stock: 30,
     prescription: true,
+    manufacturer: 'Công ty Dược phẩm XYZ',
+    origin: 'Việt Nam',
+    expiry: '36 tháng',
+    dosage: '1 viên/ngày, uống trước bữa sáng',
+    ingredients: 'Omeprazole 20mg',
+    sideEffects: 'Đau đầu, buồn nôn, tiêu chảy',
+    contraindications: 'Phụ nữ có thai, trẻ em dưới 18 tuổi',
+    storage: 'Bảo quản nơi khô ráo, tránh ánh sáng',
+    packaging: 'Hộp 3 vỉ x 10 viên',
+    usage: 'Uống trước bữa sáng 30 phút',
+    target: 'Người bị viêm loét dạ dày, trào ngược axit',
+    benefits: [
+      'Giảm tiết axit dạ dày',
+      'Điều trị viêm loét dạ dày',
+      'Chống trào ngược axit',
+      'Bảo vệ niêm mạc dạ dày'
+    ],
+    reviews: [
+      { user: 'Đỗ Văn G', rating: 4, comment: 'Giảm đau dạ dày rõ rệt' },
+      { user: 'Ngô Thị H', rating: 5, comment: 'Bác sĩ kê đơn, hiệu quả tốt' },
+      { user: 'Lý Văn I', rating: 4, comment: 'Uống đúng liều, không có tác dụng phụ' }
+    ]
   },
   {
     id: '4',

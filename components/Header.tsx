@@ -141,14 +141,20 @@ export default function Header() {
               <Link href="/products" className="text-gray-700 hover:text-primary-600 transition-colors font-medium">
                 Sản phẩm
               </Link>
-              <Link href="/categories" className="text-gray-700 hover:text-primary-600 transition-colors font-medium">
-                Danh mục
-              </Link>
+                      <Link href="/consultation" className="text-gray-700 hover:text-primary-600 transition-colors font-medium">
+          Tư vấn bác sĩ
+        </Link>
+        <Link href="/payment/history" className="text-gray-700 hover:text-primary-600 transition-colors font-medium">
+          Lịch sử thanh toán
+        </Link>
+        <Link href="/notifications" className="text-gray-700 hover:text-primary-600 transition-colors font-medium">
+          Thông báo
+        </Link>
+        <Link href="/categories" className="text-gray-700 hover:text-primary-600 transition-colors font-medium">
+          Danh mục
+        </Link>
               <Link href="/health-articles" className="text-gray-700 hover:text-primary-600 transition-colors font-medium">
                 Góc sức khỏe
-              </Link>
-              <Link href="/consultation" className="text-gray-700 hover:text-primary-600 transition-colors font-medium">
-                Tư vấn
               </Link>
               <Link href="/contact" className="text-gray-700 hover:text-primary-600 transition-colors font-medium">
                 Liên hệ
@@ -183,9 +189,15 @@ export default function Header() {
             <Link href="/consultation" className="block py-2 text-gray-700 hover:text-primary-600">
               Tư vấn
             </Link>
-            <Link href="/contact" className="block py-2 text-gray-700 hover:text-primary-600">
-              Liên hệ
-            </Link>
+                    <Link href="/payment/history" className="block py-2 text-gray-700 hover:text-primary-600">
+          Lịch sử thanh toán
+        </Link>
+        <Link href="/notifications" className="block py-2 text-gray-700 hover:text-primary-600">
+          Thông báo
+        </Link>
+        <Link href="/contact" className="block py-2 text-gray-700 hover:text-primary-600">
+          Liên hệ
+        </Link>
             <div className="border-t border-gray-200 pt-2 mt-2">
               <Link href="/login" className="block py-2 text-gray-700 hover:text-primary-600">
                 Đăng nhập

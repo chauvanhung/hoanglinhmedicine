@@ -7,12 +7,23 @@ export interface Product {
   category: string
   stock: number
   prescription: boolean
-  dosage?: string
-  sideEffects?: string[]
-  ingredients?: string[]
   manufacturer?: string
-  expiryDate?: string
-  requiresPrescription?: boolean
+  origin?: string
+  expiry?: string
+  dosage?: string
+  ingredients?: string
+  sideEffects?: string
+  contraindications?: string
+  storage?: string
+  packaging?: string
+  usage?: string
+  target?: string
+  benefits?: string[]
+  reviews?: Array<{
+    user: string
+    rating: number
+    comment: string
+  }>
 }
 
 export interface CartItem {

@@ -49,10 +49,17 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
     return 'Hộp'
   }
 
+  const handleViewDetail = () => {
+    router.push(`/products/${product.id}`)
+  }
+
   return (
-    <div className={`group bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all duration-200 overflow-hidden ${
-      viewMode === 'list' ? 'flex' : 'h-full flex flex-col'
-    }`}>
+    <div 
+      className={`group bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all duration-200 overflow-hidden cursor-pointer ${
+        viewMode === 'list' ? 'flex' : 'h-full flex flex-col'
+      }`}
+      onClick={handleViewDetail}
+    >
       {/* Image Container */}
       <div className={`relative ${viewMode === 'list' ? 'w-48 flex-shrink-0' : ''}`}>
         <div className={`relative ${viewMode === 'list' ? 'h-32' : 'h-48 sm:h-52'}`}>
@@ -101,7 +108,10 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
         {/* Action Button */}
         <div className={`${viewMode === 'list' ? '' : 'mt-auto'}`}>
           <Button
-            onClick={handleAddToCart}
+            onClick={(e) => {
+              e.stopPropagation()
+              handleAddToCart()
+            }}
             disabled={isLoading || product.prescription || product.stock === 0}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg"
             size="sm"
