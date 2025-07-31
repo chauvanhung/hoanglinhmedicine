@@ -29,6 +29,11 @@ export default function PaymentSuccessPage() {
 
   useEffect(() => {
     // Get booking details from URL params and localStorage
+    if (!searchParams) {
+      setIsLoading(false)
+      return
+    }
+    
     const paymentId = searchParams.get('paymentId')
     const bookingId = searchParams.get('bookingId')
     
