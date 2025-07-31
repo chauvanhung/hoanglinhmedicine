@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
+  // Remove standalone output for faster builds
   images: {
     remotePatterns: [
       {
@@ -11,19 +11,12 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'via.placeholder.com',
       },
-      {
-        protocol: 'http',
-        hostname: 'login.medlatec.vn',
-      },
-      {
-        protocol: 'https',
-        hostname: 'images.pexels.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'cdn.pixabay.com',
-      },
     ],
+  },
+  // Optimize build performance
+  swcMinify: true,
+  experimental: {
+    optimizeCss: true,
   },
 }
 
