@@ -24,8 +24,8 @@ import {
   Award
 } from 'lucide-react'
 
-// Import dữ liệu sản phẩm từ trang products
-import { allProducts } from '../page'
+// Import dữ liệu sản phẩm từ lib/products
+import { allProducts } from '@/lib/products'
 
 export default function ProductDetailPage() {
   const params = useParams()
@@ -34,7 +34,7 @@ export default function ProductDetailPage() {
   const [selectedTab, setSelectedTab] = useState('description')
   const [isWishlisted, setIsWishlisted] = useState(false)
 
-  const product = allProducts.find(p => p.id === params.id)
+  const product = allProducts.find(p => p.id === params?.id)
 
   if (!product) {
     return (

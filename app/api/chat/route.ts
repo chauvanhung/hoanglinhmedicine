@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { productsDB } from '@/lib/products'
+import { allProducts } from '@/lib/products'
 
 // Lưu trữ ngữ cảnh cuộc hội thoại (đơn giản)
 let conversationContext = {
@@ -26,7 +26,7 @@ function searchProducts(query: string) {
   
   for (const [keyword, productNames] of Object.entries(specialKeywords)) {
     if (lowerQuery.includes(keyword)) {
-      const matchedProducts = productsDB.filter(product =>
+      const matchedProducts = allProducts.filter((product: any) =>
         productNames.includes(product.name)
       )
       if (matchedProducts.length > 0) {
@@ -36,9 +36,9 @@ function searchProducts(query: string) {
   }
   
   // Tìm kiếm chính xác tên thuốc
-  const exactMatch = productsDB.find(product =>
+  const exactMatch = allProducts.find((product: any) =>
     product.name.toLowerCase() === lowerQuery ||
-    product.activeIngredient.toLowerCase() === lowerQuery
+    (product.ingredients && product.ingredients.toLowerCase() === lowerQuery)
   )
   
   if (exactMatch) {
@@ -46,9 +46,9 @@ function searchProducts(query: string) {
   }
   
   // Tìm kiếm tên thuốc chứa từ khóa
-  const nameMatches = productsDB.filter(product =>
+  const nameMatches = allProducts.filter((product: any) =>
     product.name.toLowerCase().includes(lowerQuery) ||
-    product.activeIngredient.toLowerCase().includes(lowerQuery)
+    (product.ingredients && product.ingredients.toLowerCase().includes(lowerQuery))
   )
   
   if (nameMatches.length > 0) {
@@ -56,9 +56,9 @@ function searchProducts(query: string) {
   }
   
   // Tìm kiếm theo công dụng và triệu chứng
-  const usageMatches = productsDB.filter(product =>
-    product.uses.toLowerCase().includes(lowerQuery) ||
-    product.symptoms.some(symptom => symptom.toLowerCase().includes(lowerQuery))
+  const usageMatches = allProducts.filter((product: any) =>
+    product.description.toLowerCase().includes(lowerQuery) ||
+    (product.benefits && product.benefits.some((benefit: string) => benefit.toLowerCase().includes(lowerQuery)))
   )
   
   if (usageMatches.length > 0) {
@@ -69,12 +69,12 @@ function searchProducts(query: string) {
   const words = lowerQuery.split(' ').filter(word => word.length > 2)
   
   if (words.length > 0) {
-    const wordMatches = productsDB.filter(product =>
+    const wordMatches = allProducts.filter((product: any) =>
       words.some(word =>
         product.name.toLowerCase().includes(word) ||
-        product.activeIngredient.toLowerCase().includes(word) ||
-        product.symptoms.some(symptom => symptom.toLowerCase().includes(word)) ||
-        product.uses.toLowerCase().includes(word)
+        (product.ingredients && product.ingredients.toLowerCase().includes(word)) ||
+        product.description.toLowerCase().includes(word) ||
+        (product.benefits && product.benefits.some((benefit: string) => benefit.toLowerCase().includes(word)))
       )
     )
     
@@ -116,16 +116,16 @@ function processQuestion(question: string): string {
   // Nếu hỏi về sản phẩm khác và có context trước đó
   if (isAskingForSimilar && conversationContext.lastTopic) {
     // Tìm sản phẩm khác cùng loại dựa trên lastTopic
-    const relatedProducts = productsDB.filter(product => 
-      product.uses.toLowerCase().includes(conversationContext.lastTopic.toLowerCase()) ||
-      product.symptoms.some(symptom => 
-        symptom.toLowerCase().includes(conversationContext.lastTopic.toLowerCase())
-      )
+    const relatedProducts = allProducts.filter((product: any) => 
+      product.description.toLowerCase().includes(conversationContext.lastTopic.toLowerCase()) ||
+      (product.benefits && product.benefits.some((benefit: string) => 
+        benefit.toLowerCase().includes(conversationContext.lastTopic.toLowerCase())
+      ))
     )
     
     // Loại bỏ sản phẩm đã hiển thị trước đó
-    const newProducts = relatedProducts.filter(product => 
-      !conversationContext.lastProducts.some(lastProduct => lastProduct.id === product.id)
+    const newProducts = relatedProducts.filter((product: any) => 
+      !conversationContext.lastProducts.some((lastProduct: any) => lastProduct.id === product.id)
     )
     
     if (newProducts.length > 0) {
@@ -153,17 +153,17 @@ function processQuestion(question: string): string {
   // Cập nhật ngữ cảnh cho câu hỏi mới (không phải hỏi sản phẩm khác)
   if (products.length > 0 && !isAskingForSimilar) {
     conversationContext.lastProducts = products.slice(0, 3) // Lưu tối đa 3 sản phẩm
-    conversationContext.lastTopic = products[0].uses
+    conversationContext.lastTopic = products[0].description
   }
 
   // Nếu có nhiều sản phẩm và hỏi về bệnh/triệu chứng, hiển thị danh sách
   if (products.length > 1 && (lowerQuestion.includes('loãng xương') || lowerQuestion.includes('đau đầu') || lowerQuestion.includes('dạ dày') || lowerQuestion.includes('dị ứng'))) {
     let response = `🔍 **Tìm thấy ${products.length} sản phẩm phù hợp:**\n\n`
     
-    products.slice(0, 3).forEach((product, index) => {
-      response += `${index + 1}. **${product.name}** - ${product.activeIngredient} ${product.dosage}\n` +
+    products.slice(0, 3).forEach((product: any, index) => {
+      response += `${index + 1}. **${product.name}** - ${product.ingredients || 'N/A'}\n` +
                  `💰 **Giá:** ${product.price.toLocaleString('vi-VN')} VNĐ\n` +
-                 `🎯 **Công dụng:** ${product.uses}\n\n`
+                 `🎯 **Công dụng:** ${product.description}\n\n`
     })
     
     response += `**Để được tư vấn chi tiết, vui lòng liên hệ:**\n` +
@@ -177,33 +177,30 @@ function processQuestion(question: string): string {
   
   // Trả lời dựa trên loại câu hỏi
   if (lowerQuestion.includes('giá') || lowerQuestion.includes('bao nhiêu')) {
-    return `💰 **${product.name}** - ${product.activeIngredient} ${product.dosage}\n` +
+    return `💰 **${product.name}** - ${product.ingredients || 'N/A'}\n` +
            `**Giá:** ${product.price.toLocaleString('vi-VN')} VNĐ\n` +
-           `**Nhà sản xuất:** ${product.manufacturer}`
+           `**Nhà sản xuất:** ${product.manufacturer || 'N/A'}`
   }
   
   if (lowerQuestion.includes('thành phần') || lowerQuestion.includes('hoạt chất')) {
     return `🧪 **${product.name}**\n` +
-           `**Thành phần:** ${product.ingredient}\n` +
-           `**Hoạt chất:** ${product.activeIngredient}\n` +
-           `**Hàm lượng:** ${product.dosage}`
+           `**Thành phần:** ${product.ingredients || 'N/A'}\n` +
+           `**Hàm lượng:** ${product.dosage || 'N/A'}`
   }
   
   if (lowerQuestion.includes('dùng cho') || lowerQuestion.includes('triệu chứng')) {
     return `🎯 **${product.name}**\n` +
-           `**Công dụng:** ${product.uses}\n` +
-           `**Triệu chứng phù hợp:** ${product.symptoms.join(', ')}\n` +
-           `**Hướng dẫn:** ${product.instructions}`
+           `**Công dụng:** ${product.description}\n` +
+           `**Hướng dẫn:** ${product.usage || 'N/A'}`
   }
   
   // Trả lời tổng quan
-  return `💊 **${product.name}** - ${product.activeIngredient} ${product.dosage}\n\n` +
+  return `💊 **${product.name}** - ${product.ingredients || 'N/A'}\n\n` +
          `💰 **Giá:** ${product.price.toLocaleString('vi-VN')} VNĐ\n` +
-         `🎯 **Công dụng:** ${product.uses}\n` +
-         `📋 **Triệu chứng:** ${product.symptoms.join(', ')}\n` +
-         `⚠️ **Tác dụng phụ:** ${product.sideEffects.join(', ')}\n` +
-         `📋 **Hướng dẫn:** ${product.instructions}\n` +
-         `🏭 **Nhà sản xuất:** ${product.manufacturer}`
+         `🎯 **Công dụng:** ${product.description}\n` +
+         `⚠️ **Tác dụng phụ:** ${product.sideEffects || 'N/A'}\n` +
+         `📋 **Hướng dẫn:** ${product.usage || 'N/A'}\n` +
+         `🏭 **Nhà sản xuất:** ${product.manufacturer || 'N/A'}`
 }
 
 export async function POST(req: NextRequest) {
