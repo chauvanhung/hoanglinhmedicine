@@ -138,38 +138,46 @@ export default function Header() {
 
                 {showUserMenu && (
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                    <Link
-                      href="/profile"
-                      onClick={() => setShowUserMenu(false)}
+                    <button
+                      onClick={() => {
+                        setShowUserMenu(false)
+                        window.location.href = '/profile'
+                      }}
                       className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
                       <User className="w-4 h-4 mr-3" />
                       Thông tin tài khoản
-                    </Link>
-                    <Link
-                      href="/orders"
-                      onClick={() => setShowUserMenu(false)}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowUserMenu(false)
+                        window.location.href = '/orders'
+                      }}
                       className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
                       <Settings className="w-4 h-4 mr-3" />
                       Đơn hàng của tôi
-                    </Link>
-                    <Link
-                      href="/consultations"
-                      onClick={() => setShowUserMenu(false)}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowUserMenu(false)
+                        window.location.href = '/consultations'
+                      }}
                       className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
                       <Stethoscope className="w-4 h-4 mr-3" />
                       Lịch sử tư vấn
-                    </Link>
-                    <Link
-                      href="/history"
-                      onClick={() => setShowUserMenu(false)}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowUserMenu(false)
+                        window.location.href = '/history'
+                      }}
                       className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
                       <Activity className="w-4 h-4 mr-3" />
                       Lịch sử tổng hợp
-                    </Link>
+                    </button>
                     <hr className="my-2" />
                     <button
                       onClick={async () => {
