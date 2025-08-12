@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/auth'
 
@@ -11,24 +11,16 @@ interface AuthGuardProps {
 export default function AuthGuard({ children }: AuthGuardProps) {
   const { user, isAuthenticated, isLoading } = useAuthStore()
   const router = useRouter()
-  const [hasChecked, setHasChecked] = useState(false)
 
   useEffect(() => {
-    // Chỉ redirect khi đã load xong và chắc chắn không authenticated
-    if (!isLoading && !isAuthenticated && hasChecked) {
+    // Chỉ redirect khi đã load xong và không authenticated
+    if (!isLoading && !isAuthenticated) {
       router.push('/login')
     }
-  }, [isAuthenticated, isLoading, hasChecked, router])
-
-  useEffect(() => {
-    // Đánh dấu đã check authentication
-    if (!isLoading) {
-      setHasChecked(true)
-    }
-  }, [isLoading])
+  }, [isAuthenticated, isLoading, router])
 
   // Hiển thị loading khi đang check authentication
-  if (isLoading || !hasChecked) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
