@@ -44,3 +44,6 @@ next-env.d.ts
 Thumbs.db 
 # Local Netlify folder
 .netlify
+
+# Firebase Functions (not needed for Next.js deployment)
+/functions/
