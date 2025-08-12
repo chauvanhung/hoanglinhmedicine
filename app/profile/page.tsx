@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { User, Mail, Phone, LogOut, Edit, Save, X } from 'lucide-react'
 import Header from '@/components/Header'
@@ -18,8 +18,13 @@ export default function ProfilePage() {
   })
 
   // Redirect if not logged in
+  useEffect(() => {
+    if (!user) {
+      router.push('/login')
+    }
+  }, [user, router])
+
   if (!user) {
-    router.push('/login')
     return null
   }
 
