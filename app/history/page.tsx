@@ -6,22 +6,20 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { Button } from '@/components/ui/Button'
 import { useAuthStore } from '@/store/auth'
-import { getUserOrders, getRecentOrders } from '@/lib/orderService'
-import { getUserConsultations, getRecentConsultations } from '@/lib/consultationService'
+import { getUserOrders } from '@/lib/orderService'
+import { getUserConsultations } from '@/lib/consultationService'
 import { Order } from '@/types/order'
 import { Consultation } from '@/lib/consultationService'
-import AuthGuard from '@/components/AuthGuard'
 import { 
   Package, 
   Stethoscope, 
   Clock, 
   CheckCircle, 
   XCircle, 
-  ArrowRight,
+  Eye,
   Calendar,
   TrendingUp,
-  Activity,
-  Eye
+  Activity
 } from 'lucide-react'
 
 export default function HistoryPage() {
@@ -32,26 +30,35 @@ export default function HistoryPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<'orders' | 'consultations'>('orders')
 
+  // Simple redirect if not authenticated
+  useEffect(() => {
+    if (!user) {
+      router.push('/login')
+    }
+  }, [user, router])
+
   // Load data
   useEffect(() => {
     const loadData = async () => {
       try {
         setIsLoading(true)
         const [ordersData, consultationsData] = await Promise.all([
-          getRecentOrders(5),
-          getRecentConsultations(5)
+          getUserOrders(),
+          getUserConsultations()
         ])
         setOrders(ordersData)
         setConsultations(consultationsData)
       } catch (error) {
-        console.error('Error loading data:', error)
+        console.error('Error loading history data:', error)
       } finally {
         setIsLoading(false)
       }
     }
 
-    loadData()
-  }, [])
+    if (user) {
+      loadData()
+    }
+  }, [user?.id])
 
   const getStatusIcon = (status: string) => {
     switch (status) {
