@@ -1,19 +1,13 @@
-const { initializeApp } = require('firebase/app');
-const { getFirestore, collection, addDoc } = require('firebase/firestore');
+const admin = require('firebase-admin');
 
-// Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyBvOkJqHqHqHqHqHqHqHqHqHqHqHqHqHqHq",
-  authDomain: "hoanglinh-medicine.firebaseapp.com",
-  projectId: "hoanglinh-medicine",
-  storageBucket: "hoanglinh-medicine.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abcdef123456"
-};
+// Initialize Firebase Admin SDK
+if (!admin.apps.length) {
+  admin.initializeApp({
+    projectId: 'hoanglinh-medicine'
+  });
+}
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const db = admin.firestore();
 
 // Sample consultation data
 const sampleConsultations = [
@@ -92,7 +86,7 @@ async function seedConsultations() {
     console.log('🌱 Bắt đầu seed dữ liệu consultations...');
     
     for (const consultation of sampleConsultations) {
-      const docRef = await addDoc(collection(db, 'consultations'), consultation);
+      const docRef = await db.collection('consultations').add(consultation);
       console.log(`✅ Đã tạo consultation với ID: ${docRef.id}`);
     }
     

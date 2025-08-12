@@ -26,6 +26,8 @@ import {
   Phone,
   MapPin
 } from 'lucide-react'
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 export default function ConsultationsPage() {
   const { user } = useAuthStore()
@@ -208,6 +210,39 @@ export default function ConsultationsPage() {
               <Button onClick={() => router.push('/consultation')}>
                 <Plus className="w-4 h-4 mr-2" />
                 Đặt lịch tư vấn mới
+              </Button>
+              <Button 
+                onClick={async () => {
+                  try {
+                    const testConsultation = {
+                      userId: user?.id || 'test-user',
+                      doctorName: "Bác sĩ Nguyễn Văn An",
+                      doctorSpecialty: "Tim mạch",
+                      doctorImage: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&h=400&fit=crop&crop=face",
+                      date: new Date("2024-01-15"),
+                      time: "09:00",
+                      duration: 30,
+                      status: "completed",
+                      symptoms: "Đau ngực, khó thở khi vận động",
+                      notes: "Bệnh nhân cần theo dõi huyết áp thường xuyên",
+                      price: 500000,
+                      paymentStatus: "paid",
+                      paymentMethod: "bank_transfer",
+                      createdAt: new Date("2024-01-10"),
+                      updatedAt: new Date("2024-01-15")
+                    };
+                    
+                    await addDoc(collection(db, 'consultations'), testConsultation);
+                    alert('Đã tạo test consultation!');
+                    window.location.reload();
+                  } catch (error) {
+                    alert('Lỗi: ' + (error as Error).message);
+                  }
+                }}
+                variant="outline"
+                className="ml-2"
+              >
+                Tạo test data
               </Button>
             </div>
           </div>
