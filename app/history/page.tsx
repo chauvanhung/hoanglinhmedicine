@@ -19,7 +19,8 @@ import {
   Eye,
   Calendar,
   TrendingUp,
-  Activity
+  Activity,
+  ArrowRight
 } from 'lucide-react'
 
 export default function HistoryPage() {
