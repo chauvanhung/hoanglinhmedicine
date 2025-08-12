@@ -1,11 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { Button } from '@/components/ui/Button'
+import { useCartStore } from '@/store/cart'
+import { Product } from '@/types/product'
 import { 
   ArrowLeft, 
   Star, 
@@ -24,8 +26,8 @@ import {
   Award
 } from 'lucide-react'
 
-// Import dữ liệu sản phẩm từ lib/products
-import { allProducts } from '@/lib/products'
+// Import service từ Firestore
+import { getProductById } from '@/lib/firebaseData'
 
 export default function ProductDetailPage() {
   const params = useParams()
@@ -33,8 +35,45 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1)
   const [selectedTab, setSelectedTab] = useState('description')
   const [isWishlisted, setIsWishlisted] = useState(false)
+  const [product, setProduct] = useState<Product | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const { addItem } = useCartStore()
 
-  const product = allProducts.find(p => p.id === params?.id)
+  // Load product data from Firestore
+  useEffect(() => {
+    const loadProduct = async () => {
+      if (params?.id) {
+        try {
+          setIsLoading(true)
+          const productData = await getProductById(params.id as string)
+          setProduct(productData)
+        } catch (error) {
+          console.error('Error loading product:', error)
+        } finally {
+          setIsLoading(false)
+        }
+      }
+    }
+    
+    loadProduct()
+  }, [params?.id])
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Đang tải sản phẩm...</h1>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
 
   if (!product) {
     return (
@@ -53,7 +92,7 @@ export default function ProductDetailPage() {
     )
   }
 
-  const averageRating = product.reviews ? product.reviews.reduce((acc, review) => acc + review.rating, 0) / product.reviews.length : 0
+  const averageRating = product.reviews ? product.reviews.reduce((acc: number, review: any) => acc + review.rating, 0) / product.reviews.length : 0
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -178,7 +217,14 @@ export default function ProductDetailPage() {
                 </div>
 
                 <div className="flex space-x-3">
-                  <Button className="flex-1">
+                  <Button 
+                    className="flex-1"
+                    onClick={() => {
+                      addItem(product, quantity)
+                      alert(`Đã thêm ${quantity} ${product.name} vào giỏ hàng!`)
+                    }}
+                    disabled={product.stock === 0}
+                  >
                     <ShoppingCart className="w-5 h-5 mr-2" />
                     Thêm vào giỏ hàng
                   </Button>

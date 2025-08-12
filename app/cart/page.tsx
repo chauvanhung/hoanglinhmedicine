@@ -1,17 +1,21 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { useCartStore } from '@/store/cart'
+import { useAuthStore } from '@/store/auth'
 import { Button } from '@/components/ui/Button'
 import { Trash2, Plus, Minus, ArrowLeft, ShoppingBag } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, getTotal, clearCart } = useCartStore()
+  const { isAuthenticated } = useAuthStore()
+  const router = useRouter()
   const [isCheckingOut, setIsCheckingOut] = useState(false)
 
   const formatPrice = (price: number) => {
@@ -31,13 +35,13 @@ export default function CartPage() {
   }
 
   const handleCheckout = () => {
-    setIsCheckingOut(true)
-    // Simulate checkout process
-    setTimeout(() => {
-      toast.success('Đơn hàng đã được đặt thành công!')
-      clearCart()
-      setIsCheckingOut(false)
-    }, 2000)
+    if (!isAuthenticated) {
+      toast.error('Bạn cần đăng nhập để thanh toán!')
+      router.push('/login?redirect=/checkout')
+      return
+    }
+    // Redirect to checkout page
+    router.push('/checkout')
   }
 
   const total = getTotal()

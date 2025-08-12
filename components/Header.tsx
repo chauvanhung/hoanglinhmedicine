@@ -1,19 +1,38 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Search, ShoppingCart, Menu, X, Phone, MapPin, User } from 'lucide-react'
+import { Search, ShoppingCart, Menu, X, Phone, MapPin, User, LogOut, Settings, Stethoscope, Activity } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useCartStore } from '@/store/cart'
+import { useAuthStore } from '@/store/auth'
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [showUserMenu, setShowUserMenu] = useState(false)
   const cartItems = useCartStore((state) => state.items)
+  const { user, isAuthenticated, logout } = useAuthStore()
   const router = useRouter()
+  const userMenuRef = useRef<HTMLDivElement>(null)
   
   const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0)
+
+  // Close user menu when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setShowUserMenu(false)
+      }
+    }
+
+    // Use capture phase to handle clicks before they bubble
+    document.addEventListener('mousedown', handleClickOutside, true)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside, true)
+    }
+  }, [])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -39,12 +58,20 @@ export default function Header() {
               </div>
             </div>
             <div className="hidden md:flex items-center space-x-4">
-              <Link href="/login" className="hover:text-secondary-300 transition-colors">
-                Đăng nhập
-              </Link>
-              <Link href="/register" className="hover:text-secondary-300 transition-colors">
-                Đăng ký
-              </Link>
+              {isAuthenticated ? (
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm">Xin chào, {user?.name}</span>
+                </div>
+              ) : (
+                <>
+                  <Link href="/login" className="hover:text-secondary-300 transition-colors">
+                    Đăng nhập
+                  </Link>
+                  <Link href="/register" className="hover:text-secondary-300 transition-colors">
+                    Đăng ký
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -97,9 +124,80 @@ export default function Header() {
             </Link>
 
             {/* User menu */}
-            <Link href="/profile" className="hidden md:block">
-              <User className="w-6 h-6 text-gray-700 hover:text-primary-600 transition-colors" />
-            </Link>
+            {isAuthenticated ? (
+              <div className="relative" ref={userMenuRef}>
+                <button
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className="flex items-center space-x-2 text-gray-700 hover:text-primary-600 transition-colors"
+                >
+                  <div className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center">
+                    <User className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="hidden sm:block text-sm font-medium">{user?.name}</span>
+                </button>
+
+                {showUserMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                    <button
+                      onClick={() => {
+                        setShowUserMenu(false)
+                        window.location.href = '/profile'
+                      }}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <User className="w-4 h-4 mr-3" />
+                      Thông tin tài khoản
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowUserMenu(false)
+                        window.location.href = '/orders'
+                      }}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <Settings className="w-4 h-4 mr-3" />
+                      Đơn hàng của tôi
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowUserMenu(false)
+                        window.location.href = '/consultations'
+                      }}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <Stethoscope className="w-4 h-4 mr-3" />
+                      Lịch sử tư vấn
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowUserMenu(false)
+                        window.location.href = '/history'
+                      }}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <Activity className="w-4 h-4 mr-3" />
+                      Lịch sử tổng hợp
+                    </button>
+                    <hr className="my-2" />
+                    <button
+                      onClick={async () => {
+                        await logout()
+                        setShowUserMenu(false)
+                        router.push('/')
+                      }}
+                      className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                    >
+                      <LogOut className="w-4 h-4 mr-3" />
+                      Đăng xuất
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link href="/login" className="hidden md:block">
+                <User className="w-6 h-6 text-gray-700 hover:text-primary-600 transition-colors" />
+              </Link>
+            )}
 
             {/* Mobile menu button */}
             <button

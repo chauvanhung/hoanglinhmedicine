@@ -6,13 +6,16 @@ import Header from '@/components/Header'
 import ProductGrid from '@/components/ProductGrid'
 import Footer from '@/components/Footer'
 import { Product } from '@/types/product'
-import { allProducts, categories } from '@/lib/products'
+import { getAllProducts, getCategories, searchProducts, getProductsByCategory, getProductsByPriceRange } from '@/lib/firebaseData'
+import { Category } from '@/lib/firebaseData'
 import { Search, Filter, X, Grid, List, Star, Truck, Shield, ChevronRight, SlidersHorizontal, Check } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 
 export default function ProductsPage() {
   const searchParams = useSearchParams()
-  const [products, setProducts] = useState<Product[]>(allProducts)
+  const [products, setProducts] = useState<Product[]>([])
+  const [allProducts, setAllProducts] = useState<Product[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('Tất cả')
   const [showFilters, setShowFilters] = useState(false)
@@ -21,6 +24,29 @@ export default function ProductsPage() {
   const [sortBy, setSortBy] = useState('name')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [showSidebar, setShowSidebar] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Load data from Firestore
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setIsLoading(true)
+        const [productsData, categoriesData] = await Promise.all([
+          getAllProducts(),
+          getCategories()
+        ])
+        setAllProducts(productsData)
+        setCategories(categoriesData)
+        setProducts(productsData)
+      } catch (error) {
+        console.error('Error loading data:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    
+    loadData()
+  }, [])
 
   // Read search query from URL on component mount
   useEffect(() => {
@@ -31,15 +57,17 @@ export default function ProductsPage() {
   }, [searchParams])
 
   useEffect(() => {
-    filterProducts()
-  }, [searchQuery, selectedCategory, priceRange, prescriptionOnly, sortBy])
+    if (allProducts.length > 0) {
+      filterProducts()
+    }
+  }, [searchQuery, selectedCategory, priceRange, prescriptionOnly, sortBy, allProducts])
 
   const filterProducts = () => {
-    let filtered = allProducts
+    let filtered = [...allProducts]
 
     // Filter by search query
     if (searchQuery) {
-      filtered = filtered.filter(product =>
+      filtered = filtered.filter((product: Product) =>
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         product.description.toLowerCase().includes(searchQuery.toLowerCase())
       )
@@ -47,21 +75,21 @@ export default function ProductsPage() {
 
     // Filter by category
     if (selectedCategory !== 'Tất cả') {
-      filtered = filtered.filter(product => product.category === selectedCategory)
+      filtered = filtered.filter((product: Product) => product.category === selectedCategory)
     }
 
     // Filter by price range
-    filtered = filtered.filter(product =>
+    filtered = filtered.filter((product: Product) =>
       product.price >= priceRange[0] && product.price <= priceRange[1]
     )
 
     // Filter by prescription requirement
     if (prescriptionOnly) {
-      filtered = filtered.filter(product => product.prescription)
+      filtered = filtered.filter((product: Product) => product.prescription)
     }
 
     // Sort products
-    filtered.sort((a, b) => {
+    filtered.sort((a: Product, b: Product) => {
       switch (sortBy) {
         case 'name':
           return a.name.localeCompare(b.name)
@@ -197,7 +225,7 @@ export default function ProductsPage() {
                   Danh mục
                 </label>
                 <div className="space-y-2">
-                  {categories.map((category) => (
+                  {categories.map((category: Category) => (
                     <label key={category.name} className="flex items-center cursor-pointer">
                       <input
                         type="radio"
@@ -390,7 +418,19 @@ export default function ProductsPage() {
             </div>
 
             {/* Products Grid */}
-            {products.length > 0 ? (
+            {isLoading ? (
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  Đang tải sản phẩm...
+                </h3>
+                <p className="text-gray-600">
+                  Vui lòng chờ trong giây lát
+                </p>
+              </div>
+            ) : products.length > 0 ? (
               <ProductGrid products={products} viewMode={viewMode} />
             ) : (
               <div className="text-center py-12">
@@ -451,7 +491,7 @@ export default function ProductsPage() {
                       Danh mục
                     </label>
                     <div className="space-y-2">
-                      {categories.map((category) => (
+                      {categories.map((category: Category) => (
                         <label key={category.name} className="flex items-center cursor-pointer">
                           <input
                             type="radio"

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Header from '@/components/Header'
 import Hero from '@/components/Hero'
@@ -9,6 +9,7 @@ import AIConsultation from '@/components/AIConsultation'
 import Footer from '@/components/Footer'
 import { Button } from '@/components/ui/Button'
 import { Product } from '@/types/product'
+import { getFeaturedProducts } from '@/lib/firebaseData'
 
 // Mảng hình ảnh đa dạng cho sản phẩm
 const productImages = [
@@ -108,6 +109,46 @@ const sampleProducts: Product[] = [
 export default function Home() {
   const router = useRouter()
   const [showAIConsultation, setShowAIConsultation] = useState(false)
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Check for lastPath and redirect to loading page
+  // useEffect(() => {
+  //   const lastPath = localStorage.getItem('navigation-storage')
+  //   if (lastPath) {
+  //     try {
+  //       const parsed = JSON.parse(lastPath)
+  //       const savedPath = parsed.state?.lastPath
+  //       
+  //       if (savedPath && savedPath !== '/') {
+  //         console.log('Redirecting to loading from home, savedPath:', savedPath)
+  //         router.push('/loading')
+  //         return
+  //       }
+  //     } catch (error) {
+  //       console.error('Error parsing navigation storage:', error)
+  //     }
+  //   }
+  // }, [router])
+
+  // Load featured products from Firestore
+  useEffect(() => {
+    const loadFeaturedProducts = async () => {
+      try {
+        setIsLoading(true)
+        const products = await getFeaturedProducts(8)
+        setFeaturedProducts(products)
+      } catch (error) {
+        console.error('Error loading featured products:', error)
+        // Fallback to sample products if Firestore fails
+        setFeaturedProducts(sampleProducts)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadFeaturedProducts()
+  }, [])
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -127,7 +168,16 @@ export default function Home() {
             </p>
           </div>
           
-          <ProductGrid products={sampleProducts} />
+          {isLoading ? (
+            <div className="text-center py-12">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Đang tải sản phẩm...</h3>
+            </div>
+          ) : (
+            <ProductGrid products={featuredProducts} />
+          )}
         </section>
 
         {/* Doctor Consultation Section */}
