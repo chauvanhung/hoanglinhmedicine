@@ -9,16 +9,23 @@ interface AuthProviderProps {
 }
 
 export default function AuthProvider({ children }: AuthProviderProps) {
-  const { user, isAuthenticated } = useAuthStore()
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     // Lắng nghe trạng thái đăng nhập từ Firebase
     const unsubscribe = onAuthStateChange((user) => {
       if (user) {
-        useAuthStore.setState({ user, isAuthenticated: true })
+        useAuthStore.setState({ 
+          user, 
+          isAuthenticated: true,
+          isLoading: false 
+        })
       } else {
-        useAuthStore.setState({ user: null, isAuthenticated: false })
+        useAuthStore.setState({ 
+          user: null, 
+          isAuthenticated: false,
+          isLoading: false 
+        })
       }
       setIsLoading(false)
     })
