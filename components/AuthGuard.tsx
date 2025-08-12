@@ -9,26 +9,30 @@ interface AuthGuardProps {
 }
 
 export default function AuthGuard({ children }: AuthGuardProps) {
-  const { user, isAuthenticated } = useAuthStore()
+  const { user, isAuthenticated, isLoading } = useAuthStore()
   const router = useRouter()
 
   useEffect(() => {
-    if (!isAuthenticated || !user) {
+    if (!isLoading && !isAuthenticated) {
       router.push('/login')
     }
-  }, [isAuthenticated, user, router])
+  }, [isAuthenticated, isLoading, router])
 
-  if (!isAuthenticated || !user) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Đang kiểm tra đăng nhập...</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Đang tải...</h3>
         </div>
       </div>
     )
+  }
+
+  if (!isAuthenticated) {
+    return null
   }
 
   return <>{children}</>

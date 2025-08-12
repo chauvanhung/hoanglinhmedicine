@@ -10,6 +10,7 @@ import { getUserOrders, getRecentOrders } from '@/lib/orderService'
 import { getUserConsultations, getRecentConsultations } from '@/lib/consultationService'
 import { Order } from '@/types/order'
 import { Consultation } from '@/lib/consultationService'
+import AuthGuard from '@/components/AuthGuard'
 import { 
   Package, 
   Stethoscope, 
@@ -24,57 +25,33 @@ import {
 } from 'lucide-react'
 
 export default function HistoryPage() {
-  const { user, isAuthenticated, isLoading } = useAuthStore()
+  const { user } = useAuthStore()
   const router = useRouter()
   const [orders, setOrders] = useState<Order[]>([])
   const [consultations, setConsultations] = useState<Consultation[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<'orders' | 'consultations'>('orders')
 
-  // Redirect if not logged in (only after loading is complete)
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.push('/login')
-      return
-    }
-  }, [isAuthenticated, isLoading, router])
-
-  // Show loading if auth is still loading
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-          </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Đang tải...</h3>
-        </div>
-      </div>
-    )
-  }
-
   // Load data
   useEffect(() => {
     const loadData = async () => {
-      if (isAuthenticated) {
-        try {
-          setIsLoading(true)
-          const [ordersData, consultationsData] = await Promise.all([
-            getRecentOrders(5),
-            getRecentConsultations(5)
-          ])
-          setOrders(ordersData)
-          setConsultations(consultationsData)
-        } catch (error) {
-          console.error('Error loading data:', error)
-        } finally {
-          setIsLoading(false)
-        }
+      try {
+        setIsLoading(true)
+        const [ordersData, consultationsData] = await Promise.all([
+          getRecentOrders(5),
+          getRecentConsultations(5)
+        ])
+        setOrders(ordersData)
+        setConsultations(consultationsData)
+      } catch (error) {
+        console.error('Error loading data:', error)
+      } finally {
+        setIsLoading(false)
       }
     }
 
     loadData()
-  }, [isAuthenticated])
+  }, [])
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -150,7 +127,7 @@ export default function HistoryPage() {
     }).format(date)
   }
 
-  if (!isAuthenticated) {
+  if (!user) {
     return null
   }
 

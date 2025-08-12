@@ -12,7 +12,6 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Lắng nghe trạng thái đăng nhập từ Firebase
     const unsubscribe = onAuthStateChange((user) => {
       if (user) {
         useAuthStore.setState({ 
@@ -30,11 +29,9 @@ export default function AuthProvider({ children }: AuthProviderProps) {
       setIsLoading(false)
     })
 
-    // Cleanup listener khi component unmount
     return () => unsubscribe()
   }, [])
 
-  // Hiển thị loading khi đang kiểm tra authentication
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
