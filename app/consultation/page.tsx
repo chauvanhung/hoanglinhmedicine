@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { Button } from '@/components/ui/Button'
-import PaymentModal from '@/components/PaymentModal'
-import NotificationSettings from '@/components/NotificationSettings'
+import { useAuthStore } from '@/store/auth'
+import { createConsultation } from '@/lib/consultationService'
 import { 
   Calendar, 
   Clock, 
@@ -62,7 +62,7 @@ const doctors: Doctor[] = [
     experience: '12 năm kinh nghiệm',
     rating: 4.9,
     reviews: 89,
-    image: 'https://images.unsplash.com/photo-1594824475544-3c0b0c0c0c0c?w=200&h=200&fit=crop&crop=face&q=80',
+    image: 'https://images.unsplash.com/photo-1594824475545-9d0c7c4951c1?w=200&h=200&fit=crop&crop=face&q=80',
     availableSlots: ['08:00', '09:00', '13:00', '14:00', '15:00'],
     price: 450000,
     description: 'Chuyên gia nội tiết chuyên điều trị đái tháo đường, bệnh tuyến giáp và các rối loạn nội tiết khác.',
@@ -98,20 +98,37 @@ const doctors: Doctor[] = [
 
 export default function ConsultationPage() {
   const router = useRouter()
+  const { user } = useAuthStore()
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null)
   const [selectedDate, setSelectedDate] = useState('')
   const [selectedTime, setSelectedTime] = useState('')
   const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    email: '',
+    name: user?.name || '',
+    phone: user?.phone || '',
+    email: user?.email || '',
     symptoms: '',
     notes: ''
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [showPaymentModal, setShowPaymentModal] = useState(false)
-  const [showNotificationSettings, setShowNotificationSettings] = useState(false)
-  const [bookingId, setBookingId] = useState('')
+
+  // Simple redirect if not authenticated
+  useEffect(() => {
+    if (!user) {
+      router.push('/login')
+    }
+  }, [user, router])
+
+  // Update form data when user changes
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        name: user.name || '',
+        phone: user.phone || '',
+        email: user.email || ''
+      }))
+    }
+  }, [user])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -122,27 +139,26 @@ export default function ConsultationPage() {
     
     setIsSubmitting(true)
     try {
-      const response = await fetch('/api/consultation', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          doctorId: selectedDoctor.id,
-          doctorName: selectedDoctor.name,
-          date: selectedDate,
-          time: selectedTime,
-          patient: formData
-        })
-      })
+      const consultationData = {
+        doctorName: selectedDoctor.name,
+        doctorSpecialty: selectedDoctor.specialty,
+        doctorImage: selectedDoctor.image,
+        date: selectedDate,
+        time: selectedTime,
+        duration: 30,
+        symptoms: formData.symptoms,
+        notes: formData.notes,
+        price: selectedDoctor.price,
+        paymentMethod: 'cod' as const
+      }
 
-      const result = await response.json()
+      const result = await createConsultation(consultationData)
 
-      if (response.ok) {
-        setBookingId(result.bookingId)
-        setShowPaymentModal(true)
+      if (result.success) {
+        alert('Đặt lịch tư vấn thành công!')
+        router.push('/consultations')
       } else {
-        alert(`Lỗi: ${result.error}`)
+        alert(`Lỗi: ${result.message}`)
       }
     } catch (error) {
       console.error('Error booking consultation:', error)
@@ -150,11 +166,6 @@ export default function ConsultationPage() {
     } finally {
       setIsSubmitting(false)
     }
-  }
-
-  const handlePaymentSuccess = (paymentId: string) => {
-    setShowPaymentModal(false)
-    router.push(`/payment/success?paymentId=${paymentId}&bookingId=${bookingId}`)
   }
 
   const getAvailableDates = () => {
@@ -166,6 +177,10 @@ export default function ConsultationPage() {
       dates.push(date.toISOString().split('T')[0])
     }
     return dates
+  }
+
+  if (!user) {
+    return null
   }
 
   return (
@@ -418,18 +433,7 @@ export default function ConsultationPage() {
                     disabled={!selectedDoctor || !selectedDate || !selectedTime || isSubmitting}
                   >
                     <CreditCard className="w-5 h-5 mr-2" />
-                    {isSubmitting ? 'Đang xử lý...' : 'Đặt lịch & Thanh toán'}
-                  </Button>
-                  
-                  <Button
-                    type="button"
-                    onClick={() => setShowNotificationSettings(true)}
-                    variant="outline"
-                    className="w-full"
-                    disabled={!selectedDoctor || !selectedDate || !selectedTime}
-                  >
-                    <Bell className="w-5 h-5 mr-2" />
-                    Cài đặt nhắc nhở
+                    {isSubmitting ? 'Đang xử lý...' : 'Đặt lịch tư vấn'}
                   </Button>
                 </div>
               </form>
@@ -476,45 +480,6 @@ export default function ConsultationPage() {
       </main>
 
       <Footer />
-
-      {/* Payment Modal */}
-      <PaymentModal
-        isOpen={showPaymentModal}
-        onClose={() => setShowPaymentModal(false)}
-        bookingId={bookingId}
-        amount={selectedDoctor?.price || 0}
-        patientInfo={{
-          name: formData.name,
-          phone: formData.phone,
-          email: formData.email
-        }}
-        consultationInfo={{
-          doctorName: selectedDoctor?.name || '',
-          specialty: selectedDoctor?.specialty || '',
-          date: selectedDate,
-          time: selectedTime
-        }}
-        onPaymentSuccess={handlePaymentSuccess}
-      />
-
-      {/* Notification Settings Modal */}
-      {showNotificationSettings && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <NotificationSettings
-              bookingId={bookingId}
-              consultationInfo={{
-                doctorName: selectedDoctor?.name || '',
-                specialty: selectedDoctor?.specialty || '',
-                date: selectedDate,
-                time: selectedTime,
-                patientName: formData.name
-              }}
-              onClose={() => setShowNotificationSettings(false)}
-            />
-          </div>
-        </div>
-      )}
     </div>
   )
 } 
