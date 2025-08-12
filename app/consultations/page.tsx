@@ -45,7 +45,9 @@ export default function ConsultationsPage() {
     const loadConsultations = async () => {
       try {
         setIsLoading(true)
+        console.log('Loading consultations for user:', user?.id)
         const consultationsData = await getUserConsultations()
+        console.log('Fetched consultations:', consultationsData)
         setConsultations(consultationsData)
         setFilteredConsultations(consultationsData)
       } catch (error) {
@@ -56,7 +58,7 @@ export default function ConsultationsPage() {
     }
 
     loadConsultations()
-  }, [])
+  }, [user?.id])
 
   // Filter and sort consultations
   useEffect(() => {
@@ -214,6 +216,7 @@ export default function ConsultationsPage() {
               <Button 
                 onClick={async () => {
                   try {
+                    console.log('Creating test consultation for user:', user?.id)
                     const testConsultation = {
                       userId: user?.id || 'test-user',
                       doctorName: "Bác sĩ Nguyễn Văn An",
@@ -232,10 +235,13 @@ export default function ConsultationsPage() {
                       updatedAt: new Date("2024-01-15")
                     };
                     
-                    await addDoc(collection(db, 'consultations'), testConsultation);
+                    console.log('Test consultation data:', testConsultation)
+                    const docRef = await addDoc(collection(db, 'consultations'), testConsultation);
+                    console.log('Created consultation with ID:', docRef.id)
                     alert('Đã tạo test consultation!');
                     window.location.reload();
                   } catch (error) {
+                    console.error('Error creating test consultation:', error)
                     alert('Lỗi: ' + (error as Error).message);
                   }
                 }}
