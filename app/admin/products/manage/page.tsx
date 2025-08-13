@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, Edit, Trash2, Search } from 'lucide-react'
+import { Plus, Edit, Trash2, Search, Upload, X } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useAuthStore } from '@/store/auth'
 import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs } from 'firebase/firestore'
@@ -20,6 +20,9 @@ export default function AdminProductManagePage() {
   const [showAddModal, setShowAddModal] = useState(false)
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [deletingProduct, setDeletingProduct] = useState<Product | null>(null)
+  const [selectedImage, setSelectedImage] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string>('')
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [formData, setFormData] = useState({
     name: '',
@@ -114,6 +117,40 @@ export default function AdminProductManagePage() {
     }))
   }
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast.error('Vui lòng chọn file hình ảnh')
+        return
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('File quá lớn. Vui lòng chọn file nhỏ hơn 5MB')
+        return
+      }
+
+      setSelectedImage(file)
+      
+      // Create preview
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const removeImage = () => {
+    setSelectedImage(null)
+    setImagePreview('')
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
   const resetForm = () => {
     setFormData({
       name: '',
@@ -123,12 +160,49 @@ export default function AdminProductManagePage() {
       image: '',
       stock: ''
     })
+    setSelectedImage(null)
+    setImagePreview('')
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
   }
 
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault()
     
     try {
+      let imageUrl = formData.image // Use URL if provided
+      
+      // If file is selected, convert to base64 for now (in production, upload to cloud storage)
+      if (selectedImage) {
+        const reader = new FileReader()
+        reader.onload = async (e) => {
+          const base64String = e.target?.result as string
+          
+          const productData = {
+            ...formData,
+            price: parseInt(formData.price),
+            originalPrice: parseInt(formData.price),
+            stock: parseInt(formData.stock),
+            rating: 4.5,
+            reviews: [],
+            images: [base64String],
+            image: base64String, // Use base64 as image URL
+            createdAt: new Date(),
+            updatedAt: new Date()
+          }
+
+          await addDoc(collection(db, 'products'), productData)
+          toast.success('Thêm sản phẩm thành công!')
+          setShowAddModal(false)
+          resetForm()
+          loadProducts()
+        }
+        reader.readAsDataURL(selectedImage)
+        return
+      }
+
+      // If no file selected, use URL
       const productData = {
         ...formData,
         price: parseInt(formData.price),
@@ -136,7 +210,7 @@ export default function AdminProductManagePage() {
         stock: parseInt(formData.stock),
         rating: 4.5,
         reviews: [],
-        images: [formData.image],
+        images: [imageUrl],
         createdAt: new Date(),
         updatedAt: new Date()
       }
@@ -158,6 +232,34 @@ export default function AdminProductManagePage() {
     if (!editingProduct) return
 
     try {
+      let imageUrl = formData.image // Use URL if provided
+      
+      // If file is selected, convert to base64
+      if (selectedImage) {
+        const reader = new FileReader()
+        reader.onload = async (e) => {
+          const base64String = e.target?.result as string
+          
+          const productData = {
+            ...formData,
+            price: parseInt(formData.price),
+            originalPrice: parseInt(formData.price),
+            stock: parseInt(formData.stock),
+            image: base64String,
+            updatedAt: new Date()
+          }
+
+          await updateDoc(doc(db, 'products', editingProduct.id), productData)
+          toast.success('Cập nhật sản phẩm thành công!')
+          setEditingProduct(null)
+          resetForm()
+          loadProducts()
+        }
+        reader.readAsDataURL(selectedImage)
+        return
+      }
+
+      // If no file selected, use URL
       const productData = {
         ...formData,
         price: parseInt(formData.price),
@@ -201,6 +303,11 @@ export default function AdminProductManagePage() {
       image: product.image,
       stock: product.stock.toString()
     })
+    setSelectedImage(null) // Clear selected image when opening edit modal
+    setImagePreview('')
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
   }
 
   if (isLoading) {
@@ -420,16 +527,48 @@ export default function AdminProductManagePage() {
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    URL hình ảnh *
+                    Hình ảnh sản phẩm *
                   </label>
-                  <input
-                    type="url"
-                    name="image"
-                    value={formData.image}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="url"
+                      name="image"
+                      value={formData.image}
+                      onChange={handleInputChange}
+                      placeholder="Hoặc nhập URL hình ảnh"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                    {imagePreview && (
+                      <div className="relative">
+                        <img src={imagePreview} alt="Preview" className="w-10 h-10 rounded-lg object-cover" />
+                        <button
+                          type="button"
+                          onClick={removeImage}
+                          className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                          title="Xóa hình ảnh"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleImageChange}
+                      accept="image/*"
+                      className="hidden"
+                    />
+                    <Button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      variant="outline"
+                      size="sm"
+                      className="flex-shrink-0"
+                    >
+                      <Upload className="w-4 h-4 mr-1" />
+                      Chọn hình
+                    </Button>
+                  </div>
                 </div>
                 
                 <div className="flex justify-end space-x-3 pt-4">
@@ -540,16 +679,48 @@ export default function AdminProductManagePage() {
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    URL hình ảnh *
+                    Hình ảnh sản phẩm *
                   </label>
-                  <input
-                    type="url"
-                    name="image"
-                    value={formData.image}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="url"
+                      name="image"
+                      value={formData.image}
+                      onChange={handleInputChange}
+                      placeholder="Hoặc nhập URL hình ảnh"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                    {imagePreview && (
+                      <div className="relative">
+                        <img src={imagePreview} alt="Preview" className="w-10 h-10 rounded-lg object-cover" />
+                        <button
+                          type="button"
+                          onClick={removeImage}
+                          className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                          title="Xóa hình ảnh"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleImageChange}
+                      accept="image/*"
+                      className="hidden"
+                    />
+                    <Button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      variant="outline"
+                      size="sm"
+                      className="flex-shrink-0"
+                    >
+                      <Upload className="w-4 h-4 mr-1" />
+                      Chọn hình
+                    </Button>
+                  </div>
                 </div>
                 
                 <div className="flex justify-end space-x-3 pt-4">
