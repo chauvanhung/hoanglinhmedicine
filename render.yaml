@@ -3,10 +3,13 @@ services:
     name: hoanglinh-medicine
     env: node
     buildCommand: npm install && npm run build
-    startCommand: npm start
+    startCommand: chmod +x start.sh && ./start.sh
     envVars:
       - key: NODE_ENV
         value: production
+      - key: PORT
+        value: 3000
     healthCheckPath: /
+    healthCheckTimeout: 180
     autoDeploy: true
     plan: free 

@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p $PORT",
     "lint": "next lint",
     "deploy:rules": "node deploy-rules.js",
     "seed:data": "node scripts/seed-data.js",
