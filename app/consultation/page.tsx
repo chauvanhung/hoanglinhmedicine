@@ -173,7 +173,24 @@ export default function ConsultationPage() {
   }
 
   if (!user) {
-    return null
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <User className="w-8 h-8 text-gray-400" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Vui lòng đăng nhập</h3>
+            <p className="text-gray-600 mb-4">Bạn cần đăng nhập để đặt lịch tư vấn</p>
+            <Button onClick={() => window.location.href = '/login'}>
+              Đăng nhập
+            </Button>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
   }
 
   return (
