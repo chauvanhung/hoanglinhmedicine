@@ -8,8 +8,10 @@ import Footer from '@/components/Footer'
 import { Product } from '@/types/product'
 import { getAllProducts, getCategories, searchProducts, getProductsByCategory, getProductsByPriceRange } from '@/lib/firebaseData'
 import { Category } from '@/lib/firebaseData'
-import { Search, Filter, X, Grid, List, Star, Truck, Shield, ChevronRight, SlidersHorizontal, Check } from 'lucide-react'
+import { Search, Filter, X, Grid, List, Star, Truck, Shield, ChevronRight, SlidersHorizontal, Check, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 export default function ProductsPage() {
   const searchParams = useSearchParams()
@@ -400,18 +402,107 @@ export default function ProductsPage() {
                   {selectedCategory !== 'Tất cả' && ` trong danh mục "${selectedCategory}"`}
                 </p>
                 
-                <div className="flex items-center space-x-6 text-sm text-gray-500">
-                  <div className="flex items-center space-x-1">
-                    <Shield className="w-4 h-4 text-green-500" />
-                    <span>Chất lượng đảm bảo</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <Truck className="w-4 h-4 text-blue-500" />
-                    <span>Giao hàng nhanh</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <Star className="w-4 h-4 text-yellow-500" />
-                    <span>Đánh giá cao</span>
+                <div className="flex items-center space-x-4">
+                  <Button 
+                    onClick={async () => {
+                      try {
+                        const testProducts = [
+                          {
+                            name: "Paracetamol 500mg",
+                            description: "Thuốc giảm đau, hạ sốt hiệu quả, an toàn cho người lớn và trẻ em",
+                            price: 25000,
+                            originalPrice: 30000,
+                            category: "Thuốc giảm đau",
+                            manufacturer: "Dược phẩm Hậu Giang",
+                            image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=400&fit=crop",
+                            images: [
+                              "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=400&fit=crop",
+                              "https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=400&h=400&fit=crop"
+                            ],
+                            stock: 150,
+                            rating: 4.5,
+                            reviews: [
+                              {
+                                id: "1",
+                                userId: "user1",
+                                userName: "Nguyễn Văn A",
+                                rating: 5,
+                                comment: "Thuốc rất hiệu quả, giảm đau nhanh",
+                                date: new Date("2024-01-15")
+                              }
+                            ],
+                            ingredients: "Paracetamol 500mg",
+                            usage: "Uống 1-2 viên mỗi 4-6 giờ khi cần thiết",
+                            sideEffects: "Có thể gây buồn nôn, đau dạ dày",
+                            contraindications: "Không dùng cho người dị ứng với paracetamol",
+                            createdAt: new Date(),
+                            updatedAt: new Date()
+                          },
+                          {
+                            name: "Vitamin C 1000mg",
+                            description: "Bổ sung vitamin C tăng cường sức đề kháng, chống oxy hóa",
+                            price: 45000,
+                            originalPrice: 55000,
+                            category: "Vitamin & Thực phẩm chức năng",
+                            manufacturer: "Công ty TNHH Dược phẩm VN",
+                            image: "https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=400&h=400&fit=crop",
+                            images: [
+                              "https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=400&h=400&fit=crop",
+                              "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=400&fit=crop"
+                            ],
+                            stock: 200,
+                            rating: 4.8,
+                            reviews: [
+                              {
+                                id: "2",
+                                userId: "user2",
+                                userName: "Trần Thị B",
+                                rating: 5,
+                                comment: "Tăng sức đề kháng rất tốt",
+                                date: new Date("2024-01-12")
+                              }
+                            ],
+                            ingredients: "Vitamin C 1000mg, tá dược vừa đủ",
+                            usage: "Uống 1 viên mỗi ngày sau bữa ăn",
+                            sideEffects: "Có thể gây tiêu chảy nếu dùng quá liều",
+                            contraindications: "Không dùng cho người bị sỏi thận",
+                            createdAt: new Date(),
+                            updatedAt: new Date()
+                          }
+                        ];
+                        
+                        for (const product of testProducts) {
+                          await addDoc(collection(db, 'products'), product);
+                        }
+                        
+                        alert('Đã tạo test products!');
+                        window.location.reload();
+                      } catch (error) {
+                        console.error('Error creating test products:', error);
+                        alert('Lỗi: ' + (error as Error).message);
+                      }
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Tạo test data
+                  </Button>
+                  
+                  <div className="flex items-center space-x-6 text-sm text-gray-500">
+                    <div className="flex items-center space-x-1">
+                      <Shield className="w-4 h-4 text-green-500" />
+                      <span>Chất lượng đảm bảo</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <Truck className="w-4 h-4 text-blue-500" />
+                      <span>Giao hàng nhanh</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <Star className="w-4 h-4 text-yellow-500" />
+                      <span>Đánh giá cao</span>
+                    </div>
                   </div>
                 </div>
               </div>
