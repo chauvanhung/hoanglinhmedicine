@@ -170,6 +170,12 @@ export default function AdminProductManagePage() {
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault()
     
+    // Validate that either image file or URL is provided
+    if (!selectedImage && !formData.image.trim()) {
+      toast.error('Vui lòng chọn hình ảnh hoặc nhập URL hình ảnh')
+      return
+    }
+    
     try {
       let imageUrl = formData.image // Use URL if provided
       
@@ -230,6 +236,12 @@ export default function AdminProductManagePage() {
     e.preventDefault()
     
     if (!editingProduct) return
+
+    // Validate that either image file or URL is provided
+    if (!selectedImage && !formData.image.trim()) {
+      toast.error('Vui lòng chọn hình ảnh hoặc nhập URL hình ảnh')
+      return
+    }
 
     try {
       let imageUrl = formData.image // Use URL if provided
