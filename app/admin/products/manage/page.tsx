@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, Edit, Trash2, Search, Upload, X } from 'lucide-react'
+import { Plus, Edit, Trash2, Search, Upload, X, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useAuthStore } from '@/store/auth'
 import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs } from 'firebase/firestore'
@@ -339,8 +339,20 @@ export default function AdminProductManagePage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Quản lý sản phẩm</h1>
-          <p className="mt-2 text-gray-600">Thêm, sửa, xóa sản phẩm trong hệ thống</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Quản lý sản phẩm</h1>
+              <p className="mt-2 text-gray-600">Thêm, sửa, xóa sản phẩm trong hệ thống</p>
+            </div>
+            <Button
+              onClick={() => router.push('/admin')}
+              variant="outline"
+              className="flex items-center"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Quay lại Admin
+            </Button>
+          </div>
         </div>
 
         {/* Search and Add Button */}
