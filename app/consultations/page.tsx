@@ -39,13 +39,6 @@ export default function ConsultationsPage() {
   const [sortBy, setSortBy] = useState<'date' | 'price'>('date')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
 
-  // Simple redirect if not authenticated
-  useEffect(() => {
-    if (!user) {
-      router.push('/login')
-    }
-  }, [user, router])
-
   // Load consultations
   useEffect(() => {
     const loadConsultations = async () => {

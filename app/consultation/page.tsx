@@ -111,13 +111,6 @@ export default function ConsultationPage() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Simple redirect if not authenticated
-  useEffect(() => {
-    if (!user) {
-      router.push('/login')
-    }
-  }, [user, router])
-
   // Update form data when user changes
   useEffect(() => {
     if (user) {

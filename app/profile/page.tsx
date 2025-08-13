@@ -19,13 +19,6 @@ export default function ProfilePage() {
     phone: user?.phone || ''
   })
 
-  // Simple redirect if not authenticated
-  useEffect(() => {
-    if (!user) {
-      router.push('/login')
-    }
-  }, [user, router])
-
   if (!user) {
     return null
   }

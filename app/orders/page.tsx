@@ -33,13 +33,6 @@ export default function OrdersPage() {
   const [sortBy, setSortBy] = useState<'date' | 'total'>('date')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
 
-  // Simple redirect if not authenticated
-  useEffect(() => {
-    if (!user) {
-      router.push('/login')
-    }
-  }, [user, router])
-
   // Load orders
   useEffect(() => {
     const loadOrders = async () => {

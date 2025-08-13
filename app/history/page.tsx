@@ -31,13 +31,6 @@ export default function HistoryPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<'orders' | 'consultations'>('orders')
 
-  // Simple redirect if not authenticated
-  useEffect(() => {
-    if (!user) {
-      router.push('/login')
-    }
-  }, [user, router])
-
   // Load data
   useEffect(() => {
     const loadData = async () => {
