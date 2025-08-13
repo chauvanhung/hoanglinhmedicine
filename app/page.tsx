@@ -9,9 +9,9 @@ import AIConsultation from '@/components/AIConsultation'
 import Footer from '@/components/Footer'
 import { Button } from '@/components/ui/Button'
 import { Product } from '@/types/product'
-import { getFeaturedProducts, getProductsByCategory, getAllCategories, addCategory } from '@/lib/firebaseData'
+import { getFeaturedProducts, getProductsByCategory, getAllCategories, addCategory, updateCategory, deleteCategory } from '@/lib/firebaseData'
 import { useAuthStore } from '@/store/auth'
-import { Plus } from 'lucide-react'
+import { Plus, Edit, Trash2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 export default function Home() {
@@ -23,7 +23,11 @@ export default function Home() {
   const [productsByCategory, setProductsByCategory] = useState<{ [key: string]: Product[] }>({})
   const [isLoading, setIsLoading] = useState(true)
   const [showAddCategory, setShowAddCategory] = useState(false)
+  const [showEditCategory, setShowEditCategory] = useState(false)
+  const [showDeleteCategory, setShowDeleteCategory] = useState(false)
   const [newCategoryName, setNewCategoryName] = useState('')
+  const [editingCategory, setEditingCategory] = useState({ oldName: '', newName: '' })
+  const [deletingCategory, setDeletingCategory] = useState('')
 
   // Load data
   useEffect(() => {
@@ -78,6 +82,80 @@ export default function Home() {
       console.error('Error adding category:', error)
       toast.error('Có lỗi khi thêm danh mục')
     }
+  }
+
+  const handleEditCategory = async () => {
+    if (!editingCategory.newName.trim()) {
+      toast.error('Vui lòng nhập tên danh mục')
+      return
+    }
+
+    if (categories.includes(editingCategory.newName.trim()) && editingCategory.newName.trim() !== editingCategory.oldName) {
+      toast.error('Danh mục này đã tồn tại')
+      return
+    }
+
+    try {
+      await updateCategory(editingCategory.oldName, editingCategory.newName.trim())
+      
+      // Update local state
+      const updatedCategories = categories.map(cat => 
+        cat === editingCategory.oldName ? editingCategory.newName.trim() : cat
+      )
+      setCategories(updatedCategories)
+      
+      // Update productsByCategory
+      const updatedProductsByCategory = { ...productsByCategory }
+      if (updatedProductsByCategory[editingCategory.oldName]) {
+        updatedProductsByCategory[editingCategory.newName.trim()] = updatedProductsByCategory[editingCategory.oldName]
+        delete updatedProductsByCategory[editingCategory.oldName]
+      }
+      setProductsByCategory(updatedProductsByCategory)
+      
+      setEditingCategory({ oldName: '', newName: '' })
+      setShowEditCategory(false)
+      toast.success('Cập nhật danh mục thành công')
+    } catch (error) {
+      console.error('Error updating category:', error)
+      toast.error('Có lỗi khi cập nhật danh mục')
+    }
+  }
+
+  const handleDeleteCategory = async () => {
+    if (!deletingCategory) {
+      toast.error('Không tìm thấy danh mục để xóa')
+      return
+    }
+
+    try {
+      await deleteCategory(deletingCategory)
+      
+      // Update local state
+      const updatedCategories = categories.filter(cat => cat !== deletingCategory)
+      setCategories(updatedCategories)
+      
+      // Remove from productsByCategory
+      const updatedProductsByCategory = { ...productsByCategory }
+      delete updatedProductsByCategory[deletingCategory]
+      setProductsByCategory(updatedProductsByCategory)
+      
+      setDeletingCategory('')
+      setShowDeleteCategory(false)
+      toast.success('Xóa danh mục thành công')
+    } catch (error) {
+      console.error('Error deleting category:', error)
+      toast.error('Có lỗi khi xóa danh mục')
+    }
+  }
+
+  const openEditModal = (categoryName: string) => {
+    setEditingCategory({ oldName: categoryName, newName: categoryName })
+    setShowEditCategory(true)
+  }
+
+  const openDeleteModal = (categoryName: string) => {
+    setDeletingCategory(categoryName)
+    setShowDeleteCategory(true)
   }
 
   const handleViewAllProducts = () => {
@@ -160,14 +238,36 @@ export default function Home() {
                   <div key={category} className="bg-gray-50 rounded-lg p-6">
                     <div className="flex items-center justify-between mb-6">
                       <h3 className="text-xl font-semibold text-gray-900">{category}</h3>
-                      <Button
-                        onClick={() => handleViewCategory(category)}
-                        variant="outline"
-                        size="sm"
-                        className="text-primary-600 hover:text-primary-700"
-                      >
-                        Xem tất cả
-                      </Button>
+                      <div className="flex items-center space-x-2">
+                        {user?.role === 'admin' && (
+                          <>
+                            <Button
+                              onClick={() => openEditModal(category)}
+                              variant="outline"
+                              size="sm"
+                              className="text-blue-600 hover:text-blue-700"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              onClick={() => openDeleteModal(category)}
+                              variant="outline"
+                              size="sm"
+                              className="text-red-600 hover:text-red-700"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </>
+                        )}
+                        <Button
+                          onClick={() => handleViewCategory(category)}
+                          variant="outline"
+                          size="sm"
+                          className="text-primary-600 hover:text-primary-700"
+                        >
+                          Xem tất cả
+                        </Button>
+                      </div>
                     </div>
                     
                     <ProductGrid products={products} />
@@ -315,6 +415,71 @@ export default function Home() {
                 onClick={() => {
                   setShowAddCategory(false)
                   setNewCategoryName('')
+                }}
+                variant="outline"
+                className="flex-1"
+              >
+                Hủy
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Category Modal */}
+      {showEditCategory && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <h3 className="text-lg font-semibold mb-4">Sửa danh mục</h3>
+            <input
+              type="text"
+              value={editingCategory.newName}
+              onChange={(e) => setEditingCategory({ ...editingCategory, newName: e.target.value })}
+              placeholder="Nhập tên danh mục mới"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent mb-4"
+            />
+            <div className="flex space-x-3">
+              <Button
+                onClick={handleEditCategory}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Cập nhật
+              </Button>
+              <Button
+                onClick={() => {
+                  setShowEditCategory(false)
+                  setEditingCategory({ oldName: '', newName: '' })
+                }}
+                variant="outline"
+                className="flex-1"
+              >
+                Hủy
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Category Modal */}
+      {showDeleteCategory && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <h3 className="text-lg font-semibold mb-4">Xóa danh mục</h3>
+            <p className="text-gray-600 mb-4">
+              Bạn có chắc chắn muốn xóa danh mục "{deletingCategory}"? 
+              Hành động này không thể hoàn tác.
+            </p>
+            <div className="flex space-x-3">
+              <Button
+                onClick={handleDeleteCategory}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+              >
+                Xóa
+              </Button>
+              <Button
+                onClick={() => {
+                  setShowDeleteCategory(false)
+                  setDeletingCategory('')
                 }}
                 variant="outline"
                 className="flex-1"

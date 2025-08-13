@@ -1,4 +1,4 @@
-import { collection, getDocs, doc, getDoc, query, where, orderBy, limit, addDoc } from 'firebase/firestore'
+import { collection, getDocs, doc, getDoc, query, where, orderBy, limit, addDoc, updateDoc, deleteDoc } from 'firebase/firestore'
 import { db } from './firebase'
 import { Product } from '@/types/product'
 
@@ -53,6 +53,68 @@ export const addCategory = async (categoryName: string): Promise<void> => {
     })
   } catch (error) {
     console.error('Error adding category:', error)
+    throw error
+  }
+}
+
+// Update category
+export const updateCategory = async (oldName: string, newName: string): Promise<void> => {
+  try {
+    // Get category document by name
+    const categoriesSnapshot = await getDocs(
+      query(collection(db, 'categories'), where('name', '==', oldName))
+    )
+    
+    if (categoriesSnapshot.empty) {
+      throw new Error('Category not found')
+    }
+    
+    const categoryDoc = categoriesSnapshot.docs[0]
+    
+    // Update category name
+    await updateDoc(doc(db, 'categories', categoryDoc.id), {
+      name: newName,
+      description: `Danh mục ${newName}`,
+      updatedAt: new Date()
+    })
+    
+    // Update all products in this category
+    const productsSnapshot = await getDocs(
+      query(collection(db, 'products'), where('category', '==', oldName))
+    )
+    
+    const updatePromises = productsSnapshot.docs.map(doc => 
+      updateDoc(doc.ref, { category: newName })
+    )
+    
+    await Promise.all(updatePromises)
+  } catch (error) {
+    console.error('Error updating category:', error)
+    throw error
+  }
+}
+
+// Delete category
+export const deleteCategory = async (categoryName: string): Promise<void> => {
+  try {
+    // Get category document by name
+    const categoriesSnapshot = await getDocs(
+      query(collection(db, 'categories'), where('name', '==', categoryName))
+    )
+    
+    if (categoriesSnapshot.empty) {
+      throw new Error('Category not found')
+    }
+    
+    const categoryDoc = categoriesSnapshot.docs[0]
+    
+    // Delete category document
+    await deleteDoc(doc(db, 'categories', categoryDoc.id))
+    
+    // Note: Products in this category will remain but without a valid category
+    // You might want to handle this differently based on your business logic
+  } catch (error) {
+    console.error('Error deleting category:', error)
     throw error
   }
 }
