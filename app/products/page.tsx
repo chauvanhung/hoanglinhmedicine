@@ -403,6 +403,7 @@ export default function ProductsPage() {
                 </p>
                 
                 <div className="flex items-center space-x-4">
+                  {/* Button tạo test data đã bị ẩn
                   <Button 
                     onClick={async () => {
                       try {
@@ -546,6 +547,7 @@ export default function ProductsPage() {
                     <Plus className="w-4 h-4 mr-2" />
                     Tạo tất cả sản phẩm
                   </Button>
+                  */}
                   
                   <div className="flex items-center space-x-6 text-sm text-gray-500">
                     <div className="flex items-center space-x-1">
