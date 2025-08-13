@@ -20,7 +20,7 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
   const addItem = useCartStore((state) => state.addItem)
 
   const handleAddToCart = async () => {
-    if (product.prescription) {
+    if (product.prescription || product.category === 'Thuốc kê đơn') {
       toast.error('Sản phẩm này cần đơn thuốc. Vui lòng liên hệ dược sĩ.')
       return
     }
@@ -112,7 +112,7 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
               e.stopPropagation()
               handleAddToCart()
             }}
-            disabled={isLoading || product.prescription || product.stock === 0}
+            disabled={isLoading || product.prescription || product.category === 'Thuốc kê đơn' || product.stock === 0}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg"
             size="sm"
           >

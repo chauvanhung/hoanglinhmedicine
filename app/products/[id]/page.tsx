@@ -220,10 +220,14 @@ export default function ProductDetailPage() {
                   <Button 
                     className="flex-1"
                     onClick={() => {
+                      if (product.prescription || product.category === 'Thuốc kê đơn') {
+                        alert('Sản phẩm này cần đơn thuốc. Vui lòng liên hệ dược sĩ.')
+                        return
+                      }
                       addItem(product, quantity)
                       alert(`Đã thêm ${quantity} ${product.name} vào giỏ hàng!`)
                     }}
-                    disabled={product.stock === 0}
+                    disabled={product.stock === 0 || product.prescription || product.category === 'Thuốc kê đơn'}
                   >
                     <ShoppingCart className="w-5 h-5 mr-2" />
                     Thêm vào giỏ hàng
