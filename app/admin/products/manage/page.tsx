@@ -72,6 +72,7 @@ export default function AdminProductManagePage() {
         'Thuốc tim mạch',
         'Thuốc tiêu hóa',
         'Thuốc hô hấp',
+        'Thuốc kê đơn',
         'Vitamin và khoáng chất',
         'Thực phẩm chức năng',
         'Dụng cụ y tế'
