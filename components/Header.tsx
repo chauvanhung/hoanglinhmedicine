@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Search, ShoppingCart, Menu, X, Phone, MapPin, User, LogOut, Settings, Stethoscope, Activity, Package } from 'lucide-react'
+import { Search, ShoppingCart, Menu, X, Phone, MapPin, User, LogOut, Settings, Stethoscope, Activity, Package, FolderOpen } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useCartStore } from '@/store/cart'
 import { useAuthStore } from '@/store/auth'
@@ -178,18 +178,30 @@ export default function Header() {
                       <Activity className="w-4 h-4 mr-3" />
                       Lịch sử tổng hợp
                     </button>
-                    {user?.role === 'admin' && (
-                      <button
-                        onClick={() => {
-                          setShowUserMenu(false)
-                          window.location.href = '/admin/products/manage'
-                        }}
-                        className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        <Package className="w-4 h-4 mr-3" />
-                        Quản lý sản phẩm
-                      </button>
-                    )}
+                           {user?.role === 'admin' && (
+         <>
+           <button
+             onClick={() => {
+               setShowUserMenu(false)
+               window.location.href = '/admin/products/manage'
+             }}
+             className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+           >
+             <Package className="w-4 h-4 mr-3" />
+             Quản lý sản phẩm
+           </button>
+           <button
+             onClick={() => {
+               setShowUserMenu(false)
+               window.location.href = '/admin/categories/manage'
+             }}
+             className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+           >
+             <FolderOpen className="w-4 h-4 mr-3" />
+             Quản lý danh mục
+           </button>
+         </>
+       )}
                     <hr className="my-2" />
                     <button
                       onClick={async () => {
