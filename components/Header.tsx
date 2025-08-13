@@ -233,30 +233,54 @@ export default function Header() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-12">
             <div className="hidden md:flex items-center space-x-8">
-              <Link href="/" className="text-gray-700 hover:text-primary-600 transition-colors font-medium">
+              <button 
+                onClick={() => window.location.href = '/'}
+                className="text-gray-700 hover:text-primary-600 transition-colors font-medium"
+              >
                 Trang chủ
-              </Link>
-              <Link href="/products" className="text-gray-700 hover:text-primary-600 transition-colors font-medium">
+              </button>
+              <button 
+                onClick={() => window.location.href = '/products'}
+                className="text-gray-700 hover:text-primary-600 transition-colors font-medium"
+              >
                 Sản phẩm
-              </Link>
-                      <Link href="/consultation" className="text-gray-700 hover:text-primary-600 transition-colors font-medium">
-          Tư vấn bác sĩ
-        </Link>
-        <Link href="/payment/history" className="text-gray-700 hover:text-primary-600 transition-colors font-medium">
-          Lịch sử thanh toán
-        </Link>
-        <Link href="/notifications" className="text-gray-700 hover:text-primary-600 transition-colors font-medium">
-          Thông báo
-        </Link>
-        <Link href="/categories" className="text-gray-700 hover:text-primary-600 transition-colors font-medium">
-          Danh mục
-        </Link>
-              <Link href="/health-articles" className="text-gray-700 hover:text-primary-600 transition-colors font-medium">
+              </button>
+              <button 
+                onClick={() => window.location.href = '/consultation'}
+                className="text-gray-700 hover:text-primary-600 transition-colors font-medium"
+              >
+                Tư vấn bác sĩ
+              </button>
+              <button 
+                onClick={() => window.location.href = '/payment/history'}
+                className="text-gray-700 hover:text-primary-600 transition-colors font-medium"
+              >
+                Lịch sử thanh toán
+              </button>
+              <button 
+                onClick={() => window.location.href = '/notifications'}
+                className="text-gray-700 hover:text-primary-600 transition-colors font-medium"
+              >
+                Thông báo
+              </button>
+              <button 
+                onClick={() => window.location.href = '/categories'}
+                className="text-gray-700 hover:text-primary-600 transition-colors font-medium"
+              >
+                Danh mục
+              </button>
+              <button 
+                onClick={() => window.location.href = '/health-articles'}
+                className="text-gray-700 hover:text-primary-600 transition-colors font-medium"
+              >
                 Góc sức khỏe
-              </Link>
-              <Link href="/contact" className="text-gray-700 hover:text-primary-600 transition-colors font-medium">
+              </button>
+              <button 
+                onClick={() => window.location.href = '/contact'}
+                className="text-gray-700 hover:text-primary-600 transition-colors font-medium"
+              >
                 Liên hệ
-              </Link>
+              </button>
             </div>
             
             <div className="flex items-center space-x-4">
@@ -272,37 +296,67 @@ export default function Header() {
       {isMenuOpen && (
         <div className="md:hidden bg-white border-t border-gray-200">
           <div className="px-4 py-2 space-y-1">
-            <Link href="/" className="block py-2 text-gray-700 hover:text-primary-600">
+            <button 
+              onClick={() => window.location.href = '/'}
+              className="block py-2 text-gray-700 hover:text-primary-600 w-full text-left"
+            >
               Trang chủ
-            </Link>
-            <Link href="/products" className="block py-2 text-gray-700 hover:text-primary-600">
+            </button>
+            <button 
+              onClick={() => window.location.href = '/products'}
+              className="block py-2 text-gray-700 hover:text-primary-600 w-full text-left"
+            >
               Sản phẩm
-            </Link>
-            <Link href="/categories" className="block py-2 text-gray-700 hover:text-primary-600">
+            </button>
+            <button 
+              onClick={() => window.location.href = '/categories'}
+              className="block py-2 text-gray-700 hover:text-primary-600 w-full text-left"
+            >
               Danh mục
-            </Link>
-            <Link href="/health-articles" className="block py-2 text-gray-700 hover:text-primary-600">
+            </button>
+            <button 
+              onClick={() => window.location.href = '/health-articles'}
+              className="block py-2 text-gray-700 hover:text-primary-600 w-full text-left"
+            >
               Góc sức khỏe
-            </Link>
-            <Link href="/consultation" className="block py-2 text-gray-700 hover:text-primary-600">
+            </button>
+            <button 
+              onClick={() => window.location.href = '/consultation'}
+              className="block py-2 text-gray-700 hover:text-primary-600 w-full text-left"
+            >
               Tư vấn
-            </Link>
-                    <Link href="/payment/history" className="block py-2 text-gray-700 hover:text-primary-600">
-          Lịch sử thanh toán
-        </Link>
-        <Link href="/notifications" className="block py-2 text-gray-700 hover:text-primary-600">
-          Thông báo
-        </Link>
-        <Link href="/contact" className="block py-2 text-gray-700 hover:text-primary-600">
-          Liên hệ
-        </Link>
+            </button>
+            <button 
+              onClick={() => window.location.href = '/payment/history'}
+              className="block py-2 text-gray-700 hover:text-primary-600 w-full text-left"
+            >
+              Lịch sử thanh toán
+            </button>
+            <button 
+              onClick={() => window.location.href = '/notifications'}
+              className="block py-2 text-gray-700 hover:text-primary-600 w-full text-left"
+            >
+              Thông báo
+            </button>
+            <button 
+              onClick={() => window.location.href = '/contact'}
+              className="block py-2 text-gray-700 hover:text-primary-600 w-full text-left"
+            >
+              Liên hệ
+            </button>
             <div className="border-t border-gray-200 pt-2 mt-2">
-              <Link href="/login" className="block py-2 text-gray-700 hover:text-primary-600">
+              <button 
+                onClick={() => window.location.href = '/login'}
+                className="block py-2 text-gray-700 hover:text-primary-600 w-full text-left"
+              >
                 Đăng nhập
-              </Link>
-              <Link href="/register" className="block py-2 text-gray-700 hover:text-primary-600">
+              </button>
+              <button 
+                onClick={() => window.location.href = '/register'}
+                className="block py-2 text-gray-700 hover:text-primary-600 w-full text-left"
+              >
                 Đăng ký
-              </Link>
+              </button>
             </div>
           </div>
         </div>

@@ -216,7 +216,7 @@ export default function ConsultationsPage() {
               <h1 className="text-3xl font-bold text-gray-900 mb-2">Lịch sử tư vấn</h1>
               <p className="text-gray-600">Quản lý và theo dõi lịch tư vấn của bạn</p>
             </div>
-            <Button onClick={() => router.push('/consultation')}>
+            <Button onClick={() => window.location.href = '/consultation'}>
               <Plus className="w-4 h-4 mr-2" />
               Đặt lịch tư vấn mới
             </Button>
