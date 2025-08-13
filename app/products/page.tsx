@@ -490,6 +490,63 @@ export default function ProductsPage() {
                     Tạo test data
                   </Button>
                   
+                  <Button 
+                    onClick={async () => {
+                      try {
+                        // Import all products from lib/products.ts
+                        const { allProducts } = await import('@/lib/products');
+                        
+                        let successCount = 0;
+                        let errorCount = 0;
+                        
+                        for (const product of allProducts) {
+                          try {
+                            // Remove the id field as Firestore will generate it
+                            const { id, ...productData } = product;
+                            
+                            // Add timestamps and ensure all required fields
+                            const productWithTimestamps = {
+                              ...productData,
+                              originalPrice: productData.price + Math.floor(productData.price * 0.2), // Add 20% markup
+                              rating: 4.0 + Math.random() * 1.0, // Random rating between 4.0-5.0
+                              reviews: [
+                                {
+                                  id: "1",
+                                  userId: "user1",
+                                  userName: "Khách hàng",
+                                  rating: 5,
+                                  comment: "Sản phẩm chất lượng tốt",
+                                  date: new Date()
+                                }
+                              ],
+                              images: [productData.image], // Use main image as first image
+                              createdAt: new Date(),
+                              updatedAt: new Date()
+                            };
+                            
+                            await addDoc(collection(db, 'products'), productWithTimestamps);
+                            successCount++;
+                          } catch (error) {
+                            console.error(`Lỗi khi tạo product "${product.name}":`, error);
+                            errorCount++;
+                          }
+                        }
+                        
+                        alert(`Đã tạo ${successCount} sản phẩm thành công!${errorCount > 0 ? ` Lỗi: ${errorCount} sản phẩm` : ''}`);
+                        window.location.reload();
+                      } catch (error) {
+                        console.error('Error creating all products:', error);
+                        alert('Lỗi: ' + (error as Error).message);
+                      }
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Tạo tất cả sản phẩm
+                  </Button>
+                  
                   <div className="flex items-center space-x-6 text-sm text-gray-500">
                     <div className="flex items-center space-x-1">
                       <Shield className="w-4 h-4 text-green-500" />
