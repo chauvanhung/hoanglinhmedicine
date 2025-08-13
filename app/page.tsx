@@ -9,35 +9,40 @@ import AIConsultation from '@/components/AIConsultation'
 import Footer from '@/components/Footer'
 import { Button } from '@/components/ui/Button'
 import { Product } from '@/types/product'
-import { getProductsByCategory, getAllCategories, addCategory } from '@/lib/firebaseData'
+import { getFeaturedProducts, getProductsByCategory, getAllCategories, addCategory } from '@/lib/firebaseData'
 import { useAuthStore } from '@/store/auth'
-import { Plus, Edit, Trash2 } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 export default function Home() {
   const router = useRouter()
   const { user } = useAuthStore()
   const [showAIConsultation, setShowAIConsultation] = useState(false)
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<string[]>([])
   const [productsByCategory, setProductsByCategory] = useState<{ [key: string]: Product[] }>({})
   const [isLoading, setIsLoading] = useState(true)
   const [showAddCategory, setShowAddCategory] = useState(false)
   const [newCategoryName, setNewCategoryName] = useState('')
 
-  // Load categories and products
+  // Load data
   useEffect(() => {
     const loadData = async () => {
       try {
         setIsLoading(true)
         
+        // Load featured products
+        const featured = await getFeaturedProducts(8)
+        setFeaturedProducts(featured)
+        
         // Load categories
         const categoriesData = await getAllCategories()
         setCategories(categoriesData)
         
-        // Load products for each category
+        // Load products for each category (limit 4 per category)
         const productsData: { [key: string]: Product[] } = {}
         for (const category of categoriesData) {
-          const products = await getProductsByCategory(category, 4) // Limit to 4 products per category
+          const products = await getProductsByCategory(category, 4)
           productsData[category] = products
         }
         setProductsByCategory(productsData)
@@ -90,8 +95,32 @@ export default function Home() {
       <main>
         <Hero onConsultationClick={() => setShowAIConsultation(true)} />
         
-        {/* Categories and Products Section */}
+        {/* Featured Products Section */}
         <section className="py-8 sm:py-16 px-4 max-w-7xl mx-auto">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
+              Sản phẩm bán chạy nhất
+            </h2>
+            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto px-4">
+              Chúng tôi cung cấp đầy đủ các loại thuốc chất lượng cao, 
+              được kiểm định nghiêm ngặt và có nguồn gốc rõ ràng.
+            </p>
+          </div>
+          
+          {isLoading ? (
+            <div className="text-center py-12">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Đang tải sản phẩm...</h3>
+            </div>
+          ) : (
+            <ProductGrid products={featuredProducts} />
+          )}
+        </section>
+
+        {/* Categories and Products Section */}
+        <section className="py-8 sm:py-16 px-4 max-w-7xl mx-auto bg-white">
           <div className="flex items-center justify-between mb-8">
             <div>
               <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
@@ -128,7 +157,7 @@ export default function Home() {
                 if (products.length === 0) return null
 
                 return (
-                  <div key={category} className="bg-white rounded-lg shadow-sm p-6">
+                  <div key={category} className="bg-gray-50 rounded-lg p-6">
                     <div className="flex items-center justify-between mb-6">
                       <h3 className="text-xl font-semibold text-gray-900">{category}</h3>
                       <Button
@@ -160,7 +189,7 @@ export default function Home() {
         </section>
 
         {/* Doctor Consultation Section */}
-        <section className="py-8 sm:py-16 bg-white">
+        <section className="py-8 sm:py-16 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4">
             <div className="text-center mb-8 sm:mb-12">
               <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
