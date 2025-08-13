@@ -92,7 +92,9 @@ export default function ProductDetailPage() {
     )
   }
 
-  const averageRating = product.reviews ? product.reviews.reduce((acc: number, review: any) => acc + review.rating, 0) / product.reviews.length : 0
+  const averageRating = product.reviews && product.reviews.length > 0 
+    ? product.reviews.reduce((acc: number, review: any) => acc + (review.rating || 0), 0) / product.reviews.length 
+    : 0
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -433,23 +435,23 @@ export default function ProductDetailPage() {
                            <div className="flex items-center space-x-2">
                              <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
                                <span className="text-primary-600 font-medium text-sm">
-                                 {review.user.charAt(0)}
+                                 {review.user?.charAt(0) || 'U'}
                                </span>
                              </div>
-                             <span className="font-medium text-gray-900">{review.user}</span>
+                             <span className="font-medium text-gray-900">{review.user || 'Khách hàng'}</span>
                            </div>
                            <div className="flex items-center">
                              {[1, 2, 3, 4, 5].map((star) => (
                                <Star
                                  key={star}
                                  className={`w-4 h-4 ${
-                                   star <= review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                                   star <= (review.rating || 0) ? 'text-yellow-400 fill-current' : 'text-gray-300'
                                  }`}
                                />
                              ))}
                            </div>
                          </div>
-                         <p className="text-gray-600">{review.comment}</p>
+                         <p className="text-gray-600">{review.comment || 'Không có nhận xét'}</p>
                        </div>
                      ))}
                    </div>
