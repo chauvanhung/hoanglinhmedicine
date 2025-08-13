@@ -36,7 +36,7 @@ export default function AdminProductManagePage() {
       return
     }
     
-    if (user?.email !== 'admin@hoanglinh.com') {
+    if (user?.role !== 'admin') {
       toast.error('Bạn không có quyền truy cập trang này')
       router.push('/')
       return
@@ -74,7 +74,7 @@ export default function AdminProductManagePage() {
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
