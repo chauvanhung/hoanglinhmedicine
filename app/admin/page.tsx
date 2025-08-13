@@ -1,347 +1,404 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import AdminLayout from '@/components/AdminLayout'
+import { useRouter } from 'next/navigation'
+import { useAuthStore } from '@/store/auth'
+import { Button } from '@/components/ui/Button'
 import { 
+  Grid, 
   Package, 
-  Users, 
   ShoppingCart, 
-  DollarSign, 
+  Users, 
+  MessageCircle, 
+  BarChart3, 
+  Settings, 
+  LogOut, 
+  ArrowRight,
   TrendingUp,
-  TrendingDown,
-  Eye,
-  Plus,
+  Calendar,
+  DollarSign,
+  User,
   Clock,
-  CheckCircle,
-  XCircle
+  AlertTriangle
 } from 'lucide-react'
-import { getAllProducts } from '@/lib/firebaseData'
-import { getUserOrders } from '@/lib/orderService'
-import { Product } from '@/types/product'
-import { Order } from '@/types/order'
+import toast from 'react-hot-toast'
 
 interface DashboardStats {
   totalProducts: number
   totalOrders: number
   totalRevenue: number
   totalUsers: number
-  recentOrders: Order[]
-  lowStockProducts: Product[]
+}
+
+interface RecentOrder {
+  id: string
+  customerName: string
+  amount: number
+  status: string
+  date: string
+}
+
+interface LowStockProduct {
+  id: string
+  name: string
+  stock: number
+  category: string
 }
 
 export default function AdminDashboard() {
+  const router = useRouter()
+  const { user, logout } = useAuthStore()
   const [stats, setStats] = useState<DashboardStats>({
     totalProducts: 0,
     totalOrders: 0,
     totalRevenue: 0,
-    totalUsers: 0,
-    recentOrders: [],
-    lowStockProducts: []
+    totalUsers: 0
   })
+  const [recentOrders, setRecentOrders] = useState<RecentOrder[]>([])
+  const [lowStockProducts, setLowStockProducts] = useState<LowStockProduct[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
+  // Check admin access
   useEffect(() => {
-    const loadDashboardData = async () => {
-      try {
-        setIsLoading(true)
-        
-        // Load products
-        const products = await getAllProducts()
-        const lowStockProducts = products.filter(p => p.stock < 10)
-        
-        // Load orders (mock data for now)
-        const mockOrders: Order[] = [
-          {
-            id: '1',
-            userId: 'user1',
-            items: [],
-            totalAmount: 150000,
-            status: 'pending',
-            paymentStatus: 'pending',
-            paymentMethod: 'cod',
-            shippingAddress: {
-              fullName: 'Nguyễn Văn A',
-              phone: '0123456789',
-              address: '123 Đường ABC',
-              city: 'Hà Nội',
-              district: 'Cầu Giấy',
-              ward: 'Dịch Vọng'
-            },
-            createdAt: new Date(),
-            updatedAt: new Date()
-          },
-          {
-            id: '2',
-            userId: 'user2',
-            items: [],
-            totalAmount: 250000,
-            status: 'confirmed',
-            paymentStatus: 'paid',
-            paymentMethod: 'bank_transfer',
-            shippingAddress: {
-              fullName: 'Trần Thị B',
-              phone: '0987654321',
-              address: '456 Đường XYZ',
-              city: 'TP.HCM',
-              district: 'Quận 1',
-              ward: 'Bến Nghé'
-            },
-            createdAt: new Date(Date.now() - 86400000),
-            updatedAt: new Date(Date.now() - 86400000)
-          }
-        ]
-
-        const totalRevenue = mockOrders.reduce((sum, order) => sum + order.totalAmount, 0)
-
-        setStats({
-          totalProducts: products.length,
-          totalOrders: mockOrders.length,
-          totalRevenue,
-          totalUsers: 25, // Mock data
-          recentOrders: mockOrders.slice(0, 5),
-          lowStockProducts: lowStockProducts.slice(0, 5)
-        })
-      } catch (error) {
-        console.error('Error loading dashboard data:', error)
-      } finally {
-        setIsLoading(false)
-      }
+    if (user?.role !== 'admin') {
+      toast.error('Bạn không có quyền truy cập trang này')
+      router.push('/')
+      return
     }
+  }, [user, router])
 
+  // Load dashboard data
+  useEffect(() => {
     loadDashboardData()
   }, [])
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND'
-    }).format(price)
-  }
-
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('vi-VN', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date)
-  }
-
-  const getStatusBadge = (status: Order['status']) => {
-    switch (status) {
-      case 'pending':
-        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-          <Clock className="w-3 h-3 mr-1" />
-          Chờ xử lý
-        </span>
-      case 'confirmed':
-        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-          <CheckCircle className="w-3 h-3 mr-1" />
-          Đã xác nhận
-        </span>
-      case 'shipped':
-        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-          Đang giao
-        </span>
-      case 'delivered':
-        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-          Đã giao
-        </span>
-      case 'cancelled':
-        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-          <XCircle className="w-3 h-3 mr-1" />
-          Đã hủy
-        </span>
-      default:
-        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-          Không xác định
-        </span>
+  const loadDashboardData = async () => {
+    try {
+      setIsLoading(true)
+      // Simulate loading data - replace with actual API calls
+      setTimeout(() => {
+        setStats({
+          totalProducts: 104,
+          totalOrders: 2,
+          totalRevenue: 400000,
+          totalUsers: 25
+        })
+        setRecentOrders([
+          {
+            id: '1',
+            customerName: 'Nguyễn Văn A',
+            amount: 150000,
+            status: 'Chờ xử lý',
+            date: '13/08/2025 16:48'
+          }
+        ])
+        setLowStockProducts([
+          {
+            id: '1',
+            name: 'Paracetamol 500mg',
+            stock: 5,
+            category: 'Thuốc giảm đau'
+          },
+          {
+            id: '2',
+            name: 'Vitamin C 1000mg',
+            stock: 3,
+            category: 'Vitamin'
+          }
+        ])
+        setIsLoading(false)
+      }, 1000)
+    } catch (error) {
+      console.error('Error loading dashboard data:', error)
+      toast.error('Có lỗi khi tải dữ liệu')
+      setIsLoading(false)
     }
   }
 
-  if (isLoading) {
-    return (
-      <AdminLayout title="Dashboard">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-        </div>
-      </AdminLayout>
-    )
+  const handleLogout = async () => {
+    try {
+      await logout()
+      router.push('/')
+      toast.success('Đăng xuất thành công')
+    } catch (error) {
+      console.error('Error logging out:', error)
+      toast.error('Có lỗi khi đăng xuất')
+    }
+  }
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND'
+    }).format(amount)
+  }
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Chờ xử lý':
+        return 'text-yellow-600 bg-yellow-100'
+      case 'Đã xác nhận':
+        return 'text-blue-600 bg-blue-100'
+      case 'Đã giao':
+        return 'text-green-600 bg-green-100'
+      default:
+        return 'text-gray-600 bg-gray-100'
+    }
+  }
+
+  if (user?.role !== 'admin') {
+    return null
   }
 
   return (
-    <AdminLayout title="Dashboard">
-      <div className="space-y-6">
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-3 rounded-full bg-blue-100 text-blue-600">
-                <Package className="w-6 h-6" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Tổng sản phẩm</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalProducts}</p>
-              </div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Sidebar */}
+      <div className="fixed inset-y-0 left-0 w-64 bg-white shadow-lg">
+        <div className="flex flex-col h-full">
+          {/* Logo */}
+          <div className="flex items-center p-6 border-b border-gray-200">
+            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
+              <span className="text-white font-bold text-lg">H</span>
             </div>
-            <div className="mt-4 flex items-center text-sm">
-              <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
-              <span className="text-green-600">+12%</span>
-              <span className="text-gray-500 ml-1">so với tháng trước</span>
+            <div>
+              <h1 className="text-lg font-bold text-gray-900">Admin Panel</h1>
+              <p className="text-sm text-gray-500">Hoàng Linh Medicine</p>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-3 rounded-full bg-green-100 text-green-600">
-                <ShoppingCart className="w-6 h-6" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Tổng đơn hàng</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalOrders}</p>
-              </div>
+          {/* Navigation */}
+          <nav className="flex-1 p-4">
+            <div className="space-y-2">
+              <button className="w-full flex items-center px-4 py-3 text-blue-600 bg-blue-50 rounded-lg border-l-4 border-blue-600">
+                <Grid className="w-5 h-5 mr-3" />
+                Dashboard
+              </button>
+              <button 
+                onClick={() => router.push('/admin/products/manage')}
+                className="w-full flex items-center px-4 py-3 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              >
+                <Package className="w-5 h-5 mr-3" />
+                Sản phẩm
+              </button>
+              <button 
+                onClick={() => router.push('/admin/categories/manage')}
+                className="w-full flex items-center px-4 py-3 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              >
+                <Package className="w-5 h-5 mr-3" />
+                Danh mục
+              </button>
+              <button className="w-full flex items-center px-4 py-3 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                <ShoppingCart className="w-5 h-5 mr-3" />
+                Đơn hàng
+              </button>
+              <button className="w-full flex items-center px-4 py-3 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                <Users className="w-5 h-5 mr-3" />
+                Người dùng
+              </button>
+              <button className="w-full flex items-center px-4 py-3 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                <MessageCircle className="w-5 h-5 mr-3" />
+                Tư vấn
+              </button>
+              <button className="w-full flex items-center px-4 py-3 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                <BarChart3 className="w-5 h-5 mr-3" />
+                Thống kê
+              </button>
             </div>
-            <div className="mt-4 flex items-center text-sm">
-              <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
-              <span className="text-green-600">+8%</span>
-              <span className="text-gray-500 ml-1">so với tháng trước</span>
-            </div>
-          </div>
+          </nav>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-3 rounded-full bg-yellow-100 text-yellow-600">
-                <DollarSign className="w-6 h-6" />
+          {/* User Section */}
+          <div className="p-4 border-t border-gray-200">
+            <div className="flex items-center mb-4">
+              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center mr-3">
+                <span className="text-white font-bold text-sm">C</span>
               </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Doanh thu</p>
-                <p className="text-2xl font-bold text-gray-900">{formatPrice(stats.totalRevenue)}</p>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-gray-900">CHÂU VĂN HƯNG</p>
+                <p className="text-xs text-gray-500">Admin</p>
               </div>
+              <button onClick={handleLogout} className="text-gray-400 hover:text-gray-600">
+                <LogOut className="w-4 h-4" />
+              </button>
             </div>
-            <div className="mt-4 flex items-center text-sm">
-              <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
-              <span className="text-green-600">+15%</span>
-              <span className="text-gray-500 ml-1">so với tháng trước</span>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-3 rounded-full bg-purple-100 text-purple-600">
-                <Users className="w-6 h-6" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Người dùng</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalUsers}</p>
-              </div>
-            </div>
-            <div className="mt-4 flex items-center text-sm">
-              <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
-              <span className="text-green-600">+5%</span>
-              <span className="text-gray-500 ml-1">so với tháng trước</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Recent Orders & Low Stock */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Recent Orders */}
-          <div className="bg-white rounded-lg shadow">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium text-gray-900">Đơn hàng gần đây</h3>
-                <button className="text-sm text-primary-600 hover:text-primary-700">
-                  Xem tất cả
-                </button>
-              </div>
-            </div>
-            <div className="p-6">
-              <div className="space-y-4">
-                {stats.recentOrders.map((order) => (
-                  <div key={order.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
-                        <ShoppingCart className="w-5 h-5 text-primary-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">
-                          Đơn hàng #{order.id.slice(-6)}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          {order.shippingAddress.fullName} • {formatDate(order.createdAt)}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium text-gray-900">
-                        {formatPrice(order.totalAmount)}
-                      </p>
-                      {getStatusBadge(order.status)}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Low Stock Products */}
-          <div className="bg-white rounded-lg shadow">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium text-gray-900">Sản phẩm sắp hết hàng</h3>
-                <button className="text-sm text-primary-600 hover:text-primary-700">
-                  Xem tất cả
-                </button>
-              </div>
-            </div>
-            <div className="p-6">
-              <div className="space-y-4">
-                {stats.lowStockProducts.map((product) => (
-                  <div key={product.id} className="flex items-center justify-between p-4 bg-red-50 rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                        <Package className="w-5 h-5 text-red-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">{product.name}</p>
-                        <p className="text-xs text-gray-500">Còn lại: {product.stock} sản phẩm</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium text-gray-900">
-                        {formatPrice(product.price)}
-                      </p>
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                        Sắp hết
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Thao tác nhanh</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <button className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition-colors">
-              <Plus className="w-6 h-6 text-gray-400 mr-2" />
-              <span className="text-gray-600">Thêm sản phẩm</span>
-            </button>
-            <button className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition-colors">
-              <Eye className="w-6 h-6 text-gray-400 mr-2" />
-              <span className="text-gray-600">Xem đơn hàng</span>
-            </button>
-            <button className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition-colors">
-              <Users className="w-6 h-6 text-gray-400 mr-2" />
-              <span className="text-gray-600">Quản lý người dùng</span>
+            <button className="w-full flex items-center px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+              <Settings className="w-4 h-4 mr-3" />
+              Cài đặt
             </button>
           </div>
         </div>
       </div>
-    </AdminLayout>
+
+      {/* Main Content */}
+      <div className="ml-64 p-8">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+          <div className="flex items-center text-gray-500">
+            <Calendar className="w-5 h-5 mr-2" />
+            <span>13/8/2025</span>
+          </div>
+        </div>
+
+        {isLoading ? (
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Đang tải dữ liệu...</h3>
+          </div>
+        ) : (
+          <>
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Tổng sản phẩm</p>
+                    <p className="text-2xl font-bold text-gray-900">{stats.totalProducts}</p>
+                  </div>
+                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <Package className="w-6 h-6 text-blue-600" />
+                  </div>
+                </div>
+                <div className="flex items-center mt-4">
+                  <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
+                  <span className="text-sm text-green-600">+12% so với tháng trước</span>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Tổng đơn hàng</p>
+                    <p className="text-2xl font-bold text-gray-900">{stats.totalOrders}</p>
+                  </div>
+                  <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                    <ShoppingCart className="w-6 h-6 text-green-600" />
+                  </div>
+                </div>
+                <div className="flex items-center mt-4">
+                  <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
+                  <span className="text-sm text-green-600">+8% so với tháng trước</span>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Doanh thu</p>
+                    <p className="text-2xl font-bold text-gray-900">{formatCurrency(stats.totalRevenue)}</p>
+                  </div>
+                  <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                    <DollarSign className="w-6 h-6 text-yellow-600" />
+                  </div>
+                </div>
+                <div className="flex items-center mt-4">
+                  <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
+                  <span className="text-sm text-green-600">+15% so với tháng trước</span>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Người dùng</p>
+                    <p className="text-2xl font-bold text-gray-900">{stats.totalUsers}</p>
+                  </div>
+                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <Users className="w-6 h-6 text-purple-600" />
+                  </div>
+                </div>
+                <div className="flex items-center mt-4">
+                  <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
+                  <span className="text-sm text-green-600">+5% so với tháng trước</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Recent Activity */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Recent Orders */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+                <div className="flex items-center justify-between p-6 border-b border-gray-100">
+                  <h3 className="text-lg font-semibold text-gray-900">Đơn hàng gần đây</h3>
+                  <Button variant="outline" size="sm" className="text-blue-600 hover:text-blue-700">
+                    Xem tất cả
+                    <ArrowRight className="w-4 h-4 ml-1" />
+                  </Button>
+                </div>
+                <div className="p-6">
+                  {recentOrders.length > 0 ? (
+                    <div className="space-y-4">
+                      {recentOrders.map((order) => (
+                        <div key={order.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                          <div className="flex items-center">
+                            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                              <ShoppingCart className="w-5 h-5 text-blue-600" />
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-900">Đơn hàng #{order.id}</p>
+                              <p className="text-sm text-gray-500">{order.customerName} • {order.date}</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-medium text-gray-900">{formatCurrency(order.amount)}</p>
+                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                              <Clock className="w-3 h-3 mr-1" />
+                              {order.status}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <p className="text-gray-500">Chưa có đơn hàng nào</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Low Stock Products */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+                <div className="flex items-center justify-between p-6 border-b border-gray-100">
+                  <h3 className="text-lg font-semibold text-gray-900">Sản phẩm sắp hết hàng</h3>
+                  <Button variant="outline" size="sm" className="text-blue-600 hover:text-blue-700">
+                    Xem tất cả
+                    <ArrowRight className="w-4 h-4 ml-1" />
+                  </Button>
+                </div>
+                <div className="p-6">
+                  {lowStockProducts.length > 0 ? (
+                    <div className="space-y-4">
+                      {lowStockProducts.map((product) => (
+                        <div key={product.id} className="flex items-center justify-between p-4 bg-red-50 rounded-lg border border-red-100">
+                          <div className="flex items-center">
+                            <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mr-3">
+                              <AlertTriangle className="w-5 h-5 text-red-600" />
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-900">{product.name}</p>
+                              <p className="text-sm text-gray-500">{product.category}</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-sm text-gray-500">Còn lại</p>
+                            <p className="font-medium text-red-600">{product.stock} sản phẩm</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <p className="text-gray-500">Không có sản phẩm nào sắp hết hàng</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
   )
 } 
