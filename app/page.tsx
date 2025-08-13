@@ -9,146 +9,79 @@ import AIConsultation from '@/components/AIConsultation'
 import Footer from '@/components/Footer'
 import { Button } from '@/components/ui/Button'
 import { Product } from '@/types/product'
-import { getFeaturedProducts } from '@/lib/firebaseData'
-
-// Mảng hình ảnh đa dạng cho sản phẩm
-const productImages = [
-  'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=400&fit=crop', // Thuốc viên
-  'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop', // Vitamin
-  'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=400&fit=crop', // Thuốc dạ dày
-  'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=400&h=400&fit=crop', // Thuốc dị ứng
-  'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=400&fit=crop', // Tim mạch
-  'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop', // Xương khớp
-  'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=400&fit=crop', // Thực phẩm chức năng
-]
-
-// Dữ liệu sản phẩm nổi bật
-const sampleProducts: Product[] = [
-  {
-    id: '1',
-    name: 'Paracetamol 500mg',
-    description: 'Thuốc giảm đau, hạ sốt hiệu quả',
-    price: 15000,
-    image: productImages[0],
-    category: 'Thuốc giảm đau',
-    stock: 100,
-    prescription: false,
-  },
-  {
-    id: '2',
-    name: 'Vitamin C 1000mg',
-    description: 'Tăng cường sức đề kháng, chống oxy hóa',
-    price: 35000,
-    image: productImages[1],
-    category: 'Vitamin',
-    stock: 50,
-    prescription: false,
-  },
-  {
-    id: '3',
-    name: 'Omeprazole 20mg',
-    description: 'Điều trị viêm loét dạ dày, trào ngược axit',
-    price: 45000,
-    image: productImages[2],
-    category: 'Thuốc tiêu hóa',
-    stock: 30,
-    prescription: true,
-  },
-  {
-    id: '4',
-    name: 'Cetirizine 10mg',
-    description: 'Thuốc kháng histamine, điều trị dị ứng',
-    price: 28000,
-    image: productImages[3],
-    category: 'Thuốc dị ứng',
-    stock: 75,
-    prescription: false,
-  },
-  {
-    id: '5',
-    name: 'Ibuprofen 400mg',
-    description: 'Thuốc chống viêm, giảm đau',
-    price: 25000,
-    image: productImages[0],
-    category: 'Thuốc giảm đau',
-    stock: 60,
-    prescription: false,
-  },
-  {
-    id: '6',
-    name: 'Vitamin D3 1000IU',
-    description: 'Bổ sung vitamin D, tăng cường xương',
-    price: 35000,
-    image: productImages[1],
-    category: 'Vitamin',
-    stock: 40,
-    prescription: false,
-  },
-  {
-    id: '7',
-    name: 'Alendronate 70mg',
-    description: 'Điều trị loãng xương',
-    price: 120000,
-    image: productImages[5],
-    category: 'Thuốc xương khớp',
-    stock: 20,
-    prescription: true,
-  },
-  {
-    id: '8',
-    name: 'Omega-3 1000mg',
-    description: 'Bổ sung omega-3, hỗ trợ tim mạch',
-    price: 85000,
-    image: productImages[6],
-    category: 'Thực phẩm chức năng',
-    stock: 50,
-    prescription: false,
-  },
-]
+import { getProductsByCategory, getAllCategories, addCategory } from '@/lib/firebaseData'
+import { useAuthStore } from '@/store/auth'
+import { Plus, Edit, Trash2 } from 'lucide-react'
+import toast from 'react-hot-toast'
 
 export default function Home() {
   const router = useRouter()
+  const { user } = useAuthStore()
   const [showAIConsultation, setShowAIConsultation] = useState(false)
-  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([])
+  const [categories, setCategories] = useState<string[]>([])
+  const [productsByCategory, setProductsByCategory] = useState<{ [key: string]: Product[] }>({})
   const [isLoading, setIsLoading] = useState(true)
+  const [showAddCategory, setShowAddCategory] = useState(false)
+  const [newCategoryName, setNewCategoryName] = useState('')
 
-  // Check for lastPath and redirect to loading page
-  // useEffect(() => {
-  //   const lastPath = localStorage.getItem('navigation-storage')
-  //   if (lastPath) {
-  //     try {
-  //       const parsed = JSON.parse(lastPath)
-  //       const savedPath = parsed.state?.lastPath
-  //       
-  //       if (savedPath && savedPath !== '/') {
-  //         console.log('Redirecting to loading from home, savedPath:', savedPath)
-  //         router.push('/loading')
-  //         return
-  //       }
-  //     } catch (error) {
-  //       console.error('Error parsing navigation storage:', error)
-  //     }
-  //   }
-  // }, [router])
-
-  // Load featured products from Firestore
+  // Load categories and products
   useEffect(() => {
-    const loadFeaturedProducts = async () => {
+    const loadData = async () => {
       try {
         setIsLoading(true)
-        const products = await getFeaturedProducts(8)
-        setFeaturedProducts(products)
+        
+        // Load categories
+        const categoriesData = await getAllCategories()
+        setCategories(categoriesData)
+        
+        // Load products for each category
+        const productsData: { [key: string]: Product[] } = {}
+        for (const category of categoriesData) {
+          const products = await getProductsByCategory(category, 4) // Limit to 4 products per category
+          productsData[category] = products
+        }
+        setProductsByCategory(productsData)
       } catch (error) {
-        console.error('Error loading featured products:', error)
-        // Fallback to sample products if Firestore fails
-        setFeaturedProducts(sampleProducts)
+        console.error('Error loading data:', error)
+        toast.error('Có lỗi khi tải dữ liệu')
       } finally {
         setIsLoading(false)
       }
     }
 
-    loadFeaturedProducts()
+    loadData()
   }, [])
+
+  const handleAddCategory = async () => {
+    if (!newCategoryName.trim()) {
+      toast.error('Vui lòng nhập tên danh mục')
+      return
+    }
+
+    if (categories.includes(newCategoryName.trim())) {
+      toast.error('Danh mục này đã tồn tại')
+      return
+    }
+
+    try {
+      await addCategory(newCategoryName.trim())
+      setCategories([...categories, newCategoryName.trim()])
+      setNewCategoryName('')
+      setShowAddCategory(false)
+      toast.success('Thêm danh mục thành công')
+    } catch (error) {
+      console.error('Error adding category:', error)
+      toast.error('Có lỗi khi thêm danh mục')
+    }
+  }
+
+  const handleViewAllProducts = () => {
+    window.location.href = '/products'
+  }
+
+  const handleViewCategory = (category: string) => {
+    window.location.href = `/products?category=${encodeURIComponent(category)}`
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -157,17 +90,30 @@ export default function Home() {
       <main>
         <Hero onConsultationClick={() => setShowAIConsultation(true)} />
         
+        {/* Categories and Products Section */}
         <section className="py-8 sm:py-16 px-4 max-w-7xl mx-auto">
-          <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
-              Sản phẩm nổi bật
-            </h2>
-            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto px-4">
-              Chúng tôi cung cấp đầy đủ các loại thuốc chất lượng cao, 
-              được kiểm định nghiêm ngặt và có nguồn gốc rõ ràng.
-            </p>
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+                Sản phẩm theo danh mục
+              </h2>
+              <p className="text-gray-600">
+                Khám phá các sản phẩm chất lượng được phân loại theo danh mục
+              </p>
+            </div>
+            
+            {/* Admin: Add Category Button */}
+            {user?.role === 'admin' && (
+              <Button
+                onClick={() => setShowAddCategory(true)}
+                className="bg-green-600 hover:bg-green-700 text-white"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Thêm danh mục
+              </Button>
+            )}
           </div>
-          
+
           {isLoading ? (
             <div className="text-center py-12">
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -176,8 +122,41 @@ export default function Home() {
               <h3 className="text-lg font-medium text-gray-900 mb-2">Đang tải sản phẩm...</h3>
             </div>
           ) : (
-            <ProductGrid products={featuredProducts} />
+            <div className="space-y-12">
+              {categories.map((category) => {
+                const products = productsByCategory[category] || []
+                if (products.length === 0) return null
+
+                return (
+                  <div key={category} className="bg-white rounded-lg shadow-sm p-6">
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-xl font-semibold text-gray-900">{category}</h3>
+                      <Button
+                        onClick={() => handleViewCategory(category)}
+                        variant="outline"
+                        size="sm"
+                        className="text-primary-600 hover:text-primary-700"
+                      >
+                        Xem tất cả
+                      </Button>
+                    </div>
+                    
+                    <ProductGrid products={products} />
+                  </div>
+                )
+              })}
+            </div>
           )}
+
+          {/* View All Products Button */}
+          <div className="text-center mt-12">
+            <Button
+              onClick={handleViewAllProducts}
+              className="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 text-lg"
+            >
+              Xem tất cả sản phẩm
+            </Button>
+          </div>
         </section>
 
         {/* Doctor Consultation Section */}
@@ -227,7 +206,7 @@ export default function Home() {
             
             <div className="text-center">
               <Button 
-                onClick={() => router.push('/consultation')}
+                onClick={() => window.location.href = '/consultation'}
                 className="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 text-lg"
               >
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -283,6 +262,40 @@ export default function Home() {
       </main>
 
       <Footer />
+
+      {/* Add Category Modal */}
+      {showAddCategory && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <h3 className="text-lg font-semibold mb-4">Thêm danh mục mới</h3>
+            <input
+              type="text"
+              value={newCategoryName}
+              onChange={(e) => setNewCategoryName(e.target.value)}
+              placeholder="Nhập tên danh mục"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent mb-4"
+            />
+            <div className="flex space-x-3">
+              <Button
+                onClick={handleAddCategory}
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+              >
+                Thêm
+              </Button>
+              <Button
+                onClick={() => {
+                  setShowAddCategory(false)
+                  setNewCategoryName('')
+                }}
+                variant="outline"
+                className="flex-1"
+              >
+                Hủy
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showAIConsultation && (
         <AIConsultation onClose={() => setShowAIConsultation(false)} />

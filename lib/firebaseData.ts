@@ -1,4 +1,4 @@
-import { collection, getDocs, doc, getDoc, query, where, orderBy, limit } from 'firebase/firestore'
+import { collection, getDocs, doc, getDoc, query, where, orderBy, limit, addDoc } from 'firebase/firestore'
 import { db } from './firebase'
 import { Product } from '@/types/product'
 
@@ -30,6 +30,33 @@ export const getCategories = async (): Promise<Category[]> => {
   }
 }
 
+// Fetch tất cả category names (for backward compatibility)
+export const getAllCategories = async (): Promise<string[]> => {
+  try {
+    const categories = await getCategories()
+    return categories.map(cat => cat.name)
+  } catch (error) {
+    console.error('Error fetching category names:', error)
+    return []
+  }
+}
+
+// Add new category
+export const addCategory = async (categoryName: string): Promise<void> => {
+  try {
+    await addDoc(collection(db, 'categories'), {
+      name: categoryName,
+      icon: '📦',
+      description: `Danh mục ${categoryName}`,
+      count: 0,
+      createdAt: new Date()
+    })
+  } catch (error) {
+    console.error('Error adding category:', error)
+    throw error
+  }
+}
+
 // Fetch tất cả products
 export const getAllProducts = async (): Promise<Product[]> => {
   try {
@@ -51,12 +78,17 @@ export const getAllProducts = async (): Promise<Product[]> => {
 }
 
 // Fetch products theo category
-export const getProductsByCategory = async (categoryName: string): Promise<Product[]> => {
+export const getProductsByCategory = async (categoryName: string, limitCount?: number): Promise<Product[]> => {
   try {
-    const q = query(
+    let q = query(
       collection(db, 'products'),
       where('category', '==', categoryName)
     )
+    
+    if (limitCount) {
+      q = query(q, limit(limitCount))
+    }
+    
     const productsSnapshot = await getDocs(q)
     const products: Product[] = []
     
