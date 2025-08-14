@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Search, ShoppingCart, Menu, X, Phone, MapPin, User, LogOut, Settings, Stethoscope, Activity, Package, FolderOpen } from 'lucide-react'
+import { Search, ShoppingCart, Menu, X, Phone, MapPin, User, LogOut, Settings, Stethoscope, Activity, Package, FolderOpen, FileText } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useCartStore } from '@/store/cart'
 import { useAuthStore } from '@/store/auth'

@@ -19,7 +19,8 @@ import {
   DollarSign,
   User,
   Clock,
-  AlertTriangle
+  AlertTriangle,
+  FileText
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -186,6 +187,13 @@ export default function AdminDashboard() {
               >
                 <Package className="w-5 h-5 mr-3" />
                 Danh mục
+              </button>
+              <button 
+                onClick={() => router.push('/admin/health-articles/manage')}
+                className="w-full flex items-center px-4 py-3 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              >
+                <FileText className="w-5 h-5 mr-3" />
+                Bài viết sức khỏe
               </button>
               <button className="w-full flex items-center px-4 py-3 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
                 <ShoppingCart className="w-5 h-5 mr-3" />
