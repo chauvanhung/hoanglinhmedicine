@@ -245,4 +245,104 @@ export const getProductsByPriceRange = async (minPrice: number, maxPrice: number
     console.error('Error fetching products by price range:', error)
     return []
   }
+}
+
+// Health Articles Types and Functions
+export interface HealthArticle {
+  id: string
+  title: string
+  excerpt: string
+  content: string
+  author: string
+  publishedAt: string
+  readTime: string
+  category: string
+  image: string
+  tags: string[]
+  createdAt?: Date
+  updatedAt?: Date
+}
+
+// Fetch all health articles
+export const getAllHealthArticles = async (): Promise<HealthArticle[]> => {
+  try {
+    const articlesSnapshot = await getDocs(collection(db, 'health-articles'))
+    const articles: HealthArticle[] = []
+    
+    articlesSnapshot.forEach((doc) => {
+      articles.push({
+        id: doc.id,
+        ...doc.data()
+      } as HealthArticle)
+    })
+    
+    return articles.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
+  } catch (error) {
+    console.error('Error fetching health articles:', error)
+    return []
+  }
+}
+
+// Fetch health articles by category
+export const getHealthArticlesByCategory = async (category: string): Promise<HealthArticle[]> => {
+  try {
+    const articlesSnapshot = await getDocs(
+      query(collection(db, 'health-articles'), where('category', '==', category))
+    )
+    const articles: HealthArticle[] = []
+    
+    articlesSnapshot.forEach((doc) => {
+      articles.push({
+        id: doc.id,
+        ...doc.data()
+      } as HealthArticle)
+    })
+    
+    return articles.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
+  } catch (error) {
+    console.error('Error fetching health articles by category:', error)
+    return []
+  }
+}
+
+// Search health articles
+export const searchHealthArticles = async (searchTerm: string): Promise<HealthArticle[]> => {
+  try {
+    const allArticles = await getAllHealthArticles()
+    
+    if (!searchTerm.trim()) return allArticles
+    
+    const searchLower = searchTerm.toLowerCase()
+    
+    return allArticles.filter(article => {
+      const titleMatch = article.title.toLowerCase().includes(searchLower)
+      const excerptMatch = article.excerpt.toLowerCase().includes(searchLower)
+      const contentMatch = article.content.toLowerCase().includes(searchLower)
+      const authorMatch = article.author.toLowerCase().includes(searchLower)
+      const categoryMatch = article.category.toLowerCase().includes(searchLower)
+      const tagsMatch = article.tags.some(tag => tag.toLowerCase().includes(searchLower))
+      
+      return titleMatch || excerptMatch || contentMatch || authorMatch || categoryMatch || tagsMatch
+    })
+  } catch (error) {
+    console.error('Error searching health articles:', error)
+    return []
+  }
+}
+
+// Get health article categories with counts
+export const getHealthArticleCategories = async (): Promise<{ name: string; count: number }[]> => {
+  try {
+    const allArticles = await getAllHealthArticles()
+    const categoryCounts: { [key: string]: number } = {}
+    
+    allArticles.forEach(article => {
+      categoryCounts[article.category] = (categoryCounts[article.category] || 0) + 1
+    })
+    
+    return Object.entries(categoryCounts).map(([name, count]) => ({ name, count }))
+  } catch (error) {
+    console.error('Error getting health article categories:', error)
+    return []
+  }
 } 

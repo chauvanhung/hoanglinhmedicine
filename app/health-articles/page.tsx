@@ -5,129 +5,78 @@ import { Search, Calendar, Clock, User, ArrowRight, Heart, Brain, Shield, Activi
 import { Button } from '@/components/ui/Button'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-
-interface HealthArticle {
-  id: string
-  title: string
-  excerpt: string
-  content: string
-  author: string
-  publishedAt: string
-  readTime: string
-  category: string
-  image: string
-  tags: string[]
-}
-
-const healthArticles: HealthArticle[] = [
-  {
-    id: '1',
-    title: '10 Cách Tăng Cường Hệ Miễn Dịch Tự Nhiên',
-    excerpt: 'Khám phá những phương pháp đơn giản và hiệu quả để tăng cường hệ miễn dịch, bảo vệ sức khỏe của bạn và gia đình.',
-    content: 'Hệ miễn dịch là hàng rào bảo vệ tự nhiên của cơ thể chống lại các tác nhân gây bệnh. Dưới đây là 10 cách hiệu quả để tăng cường hệ miễn dịch...',
-    author: 'BS. Nguyễn Văn An',
-    publishedAt: '2024-01-15',
-    readTime: '5 phút',
-    category: 'Miễn dịch',
-    image: '/images/health/immunity.jpg',
-    tags: ['miễn dịch', 'sức khỏe', 'vitamin']
-  },
-  {
-    id: '2',
-    title: 'Chế Độ Ăn Uống Cho Người Bệnh Tim Mạch',
-    excerpt: 'Hướng dẫn chi tiết về chế độ ăn uống khoa học cho người mắc bệnh tim mạch, giúp kiểm soát bệnh hiệu quả.',
-    content: 'Bệnh tim mạch là một trong những nguyên nhân gây tử vong hàng đầu. Chế độ ăn uống đóng vai trò quan trọng trong việc phòng ngừa và điều trị...',
-    author: 'TS. Trần Thị Bình',
-    publishedAt: '2024-01-10',
-    readTime: '8 phút',
-    category: 'Tim mạch',
-    image: '/images/health/heart.jpg',
-    tags: ['tim mạch', 'dinh dưỡng', 'bệnh lý']
-  },
-  {
-    id: '3',
-    title: 'Tập Thể Dục Buổi Sáng: Lợi Ích Và Cách Thực Hiện',
-    excerpt: 'Khám phá những lợi ích tuyệt vời của việc tập thể dục buổi sáng và hướng dẫn các bài tập phù hợp.',
-    content: 'Tập thể dục buổi sáng không chỉ giúp tăng cường sức khỏe mà còn cải thiện tâm trạng và năng suất làm việc trong ngày...',
-    author: 'ThS. Lê Văn Cường',
-    publishedAt: '2024-01-08',
-    readTime: '6 phút',
-    category: 'Thể dục',
-    image: '/images/health/exercise.jpg',
-    tags: ['thể dục', 'sức khỏe', 'lối sống']
-  },
-  {
-    id: '4',
-    title: 'Cách Phòng Ngừa Bệnh Tiểu Đường Hiệu Quả',
-    excerpt: 'Những biện pháp phòng ngừa bệnh tiểu đường type 2 thông qua lối sống và chế độ ăn uống lành mạnh.',
-    content: 'Bệnh tiểu đường type 2 có thể phòng ngừa được thông qua việc duy trì lối sống lành mạnh và chế độ ăn uống hợp lý...',
-    author: 'BS. Phạm Thị Dung',
-    publishedAt: '2024-01-05',
-    readTime: '7 phút',
-    category: 'Nội tiết',
-    image: '/images/health/diabetes.jpg',
-    tags: ['tiểu đường', 'phòng bệnh', 'dinh dưỡng']
-  },
-  {
-    id: '5',
-    title: 'Chăm Sóc Sức Khỏe Tâm Thần Trong Thời Đại Số',
-    excerpt: 'Hướng dẫn cách chăm sóc sức khỏe tâm thần và giảm stress trong cuộc sống hiện đại.',
-    content: 'Trong thời đại số, áp lực công việc và cuộc sống có thể ảnh hưởng đến sức khỏe tâm thần. Dưới đây là những cách hiệu quả...',
-    author: 'TS. Nguyễn Thị Em',
-    publishedAt: '2024-01-03',
-    readTime: '9 phút',
-    category: 'Tâm thần',
-    image: '/images/health/mental.jpg',
-    tags: ['tâm thần', 'stress', 'sức khỏe']
-  },
-  {
-    id: '6',
-    title: 'Vitamin Và Khoáng Chất: Vai Trò Quan Trọng Với Sức Khỏe',
-    excerpt: 'Tìm hiểu về vai trò của các vitamin và khoáng chất thiết yếu đối với sức khỏe con người.',
-    content: 'Vitamin và khoáng chất là những chất dinh dưỡng thiết yếu mà cơ thể cần để hoạt động bình thường...',
-    author: 'BS. Hoàng Văn Phúc',
-    publishedAt: '2024-01-01',
-    readTime: '10 phút',
-    category: 'Dinh dưỡng',
-    image: '/images/health/vitamins.jpg',
-    tags: ['vitamin', 'khoáng chất', 'dinh dưỡng']
-  }
-]
-
-const categories = [
-  { name: 'Tất cả', icon: Activity, count: healthArticles.length },
-  { name: 'Miễn dịch', icon: Shield, count: 1 },
-  { name: 'Tim mạch', icon: Heart, count: 1 },
-  { name: 'Thể dục', icon: Activity, count: 1 },
-  { name: 'Nội tiết', icon: Brain, count: 1 },
-  { name: 'Tâm thần', icon: Brain, count: 1 },
-  { name: 'Dinh dưỡng', icon: Shield, count: 1 }
-]
+import { getAllHealthArticles, getHealthArticleCategories, searchHealthArticles, getHealthArticlesByCategory, HealthArticle } from '@/lib/firebaseData'
 
 export default function HealthCornerPage() {
+  const [articles, setArticles] = useState<HealthArticle[]>([])
+  const [categories, setCategories] = useState<{ name: string; count: number }[]>([])
   const [selectedCategory, setSelectedCategory] = useState('Tất cả')
   const [searchQuery, setSearchQuery] = useState('')
-  const [filteredArticles, setFilteredArticles] = useState<HealthArticle[]>(healthArticles)
+  const [filteredArticles, setFilteredArticles] = useState<HealthArticle[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSearching, setIsSearching] = useState(false)
 
+  // Load articles and categories on component mount
   useEffect(() => {
-    let filtered = healthArticles
+    loadArticlesAndCategories()
+  }, [])
 
-    // Filter by category
-    if (selectedCategory !== 'Tất cả') {
-      filtered = filtered.filter(article => article.category === selectedCategory)
+  const loadArticlesAndCategories = async () => {
+    try {
+      setIsLoading(true)
+      const [articlesData, categoriesData] = await Promise.all([
+        getAllHealthArticles(),
+        getHealthArticleCategories()
+      ])
+      
+      setArticles(articlesData)
+      setFilteredArticles(articlesData)
+      setCategories(categoriesData)
+    } catch (error) {
+      console.error('Error loading articles and categories:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Handle category selection
+  useEffect(() => {
+    const filterArticles = async () => {
+      if (selectedCategory === 'Tất cả') {
+        if (searchQuery.trim()) {
+          setIsSearching(true)
+          const searchResults = await searchHealthArticles(searchQuery)
+          setFilteredArticles(searchResults)
+          setIsSearching(false)
+        } else {
+          setFilteredArticles(articles)
+        }
+      } else {
+        setIsSearching(true)
+        const categoryResults = await getHealthArticlesByCategory(selectedCategory)
+        
+        if (searchQuery.trim()) {
+          // Filter category results by search query
+          const searchLower = searchQuery.toLowerCase()
+          const filtered = categoryResults.filter(article => {
+            const titleMatch = article.title.toLowerCase().includes(searchLower)
+            const excerptMatch = article.excerpt.toLowerCase().includes(searchLower)
+            const contentMatch = article.content.toLowerCase().includes(searchLower)
+            const authorMatch = article.author.toLowerCase().includes(searchLower)
+            const tagsMatch = article.tags.some(tag => tag.toLowerCase().includes(searchLower))
+            
+            return titleMatch || excerptMatch || contentMatch || authorMatch || tagsMatch
+          })
+          setFilteredArticles(filtered)
+        } else {
+          setFilteredArticles(categoryResults)
+        }
+        setIsSearching(false)
+      }
     }
 
-    // Filter by search query
-    if (searchQuery.trim()) {
-      filtered = filtered.filter(article =>
-        article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        article.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        article.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-      )
-    }
-
-    setFilteredArticles(filtered)
-  }, [selectedCategory, searchQuery])
+    filterArticles()
+  }, [selectedCategory, searchQuery, articles])
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('vi-VN', {
@@ -136,6 +85,27 @@ export default function HealthCornerPage() {
       day: 'numeric'
     })
   }
+
+  const getCategoryIcon = (categoryName: string) => {
+    switch (categoryName) {
+      case 'Miễn dịch':
+        return Shield
+      case 'Tim mạch':
+        return Heart
+      case 'Thể dục':
+        return Activity
+      case 'Nội tiết':
+      case 'Tâm thần':
+        return Brain
+      default:
+        return Activity
+    }
+  }
+
+  const allCategoriesWithCounts = [
+    { name: 'Tất cả', count: articles.length },
+    ...categories
+  ]
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -170,8 +140,8 @@ export default function HealthCornerPage() {
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Danh mục</h2>
           <div className="flex flex-wrap gap-4">
-            {categories.map((category) => {
-              const Icon = category.icon
+            {allCategoriesWithCounts.map((category) => {
+              const Icon = category.name === 'Tất cả' ? Activity : getCategoryIcon(category.name)
               return (
                 <button
                   key={category.name}
@@ -193,93 +163,120 @@ export default function HealthCornerPage() {
           </div>
         </div>
 
+        {/* Loading State */}
+        {isLoading && (
+          <div className="text-center py-16">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Đang tải bài viết...</h3>
+          </div>
+        )}
+
+        {/* Searching State */}
+        {isSearching && !isLoading && (
+          <div className="text-center py-16">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Đang tìm kiếm...</h3>
+          </div>
+        )}
+
         {/* Articles Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredArticles.map((article) => (
-            <article key={article.id} className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow">
-              <div className="aspect-video bg-gray-200 relative">
-                <img
-                  src={article.image}
-                  alt={article.title}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.src = 'https://via.placeholder.com/400x225?text=Health+Article'
-                  }}
-                />
-                <div className="absolute top-4 left-4">
-                  <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                    {article.category}
-                  </span>
-                </div>
-              </div>
-              
-              <div className="p-6">
-                <div className="flex items-center text-sm text-gray-500 mb-3">
-                  <User className="w-4 h-4 mr-1" />
-                  <span>{article.author}</span>
-                  <span className="mx-2">•</span>
-                  <Calendar className="w-4 h-4 mr-1" />
-                  <span>{formatDate(article.publishedAt)}</span>
-                  <span className="mx-2">•</span>
-                  <Clock className="w-4 h-4 mr-1" />
-                  <span>{article.readTime}</span>
+        {!isLoading && !isSearching && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredArticles.map((article) => (
+              <article key={article.id} className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow">
+                <div className="aspect-video bg-gray-200 relative">
+                  <img
+                    src={article.image}
+                    alt={article.title}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = 'https://via.placeholder.com/400x225?text=Health+Article'
+                    }}
+                  />
+                  <div className="absolute top-4 left-4">
+                    <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                      {article.category}
+                    </span>
+                  </div>
                 </div>
                 
-                <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
-                  {article.title}
-                </h3>
-                
-                <p className="text-gray-600 mb-4 line-clamp-3">
-                  {article.excerpt}
-                </p>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex flex-wrap gap-2">
-                    {article.tags.slice(0, 2).map((tag) => (
-                      <span
-                        key={tag}
-                        className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs"
-                      >
-                        #{tag}
-                      </span>
-                    ))}
+                <div className="p-6">
+                  <div className="flex items-center text-sm text-gray-500 mb-3">
+                    <User className="w-4 h-4 mr-1" />
+                    <span>{article.author}</span>
+                    <span className="mx-2">•</span>
+                    <Calendar className="w-4 h-4 mr-1" />
+                    <span>{formatDate(article.publishedAt)}</span>
+                    <span className="mx-2">•</span>
+                    <Clock className="w-4 h-4 mr-1" />
+                    <span>{article.readTime}</span>
                   </div>
                   
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex items-center"
-                  >
-                    Đọc thêm
-                    <ArrowRight className="w-4 h-4 ml-1" />
-                  </Button>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
+                    {article.title}
+                  </h3>
+                  
+                  <p className="text-gray-600 mb-4 line-clamp-3">
+                    {article.excerpt}
+                  </p>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-wrap gap-2">
+                      {article.tags.slice(0, 2).map((tag) => (
+                        <span
+                          key={tag}
+                          className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs"
+                        >
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex items-center"
+                    >
+                      Đọc thêm
+                      <ArrowRight className="w-4 h-4 ml-1" />
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </article>
-          ))}
-        </div>
+              </article>
+            ))}
+          </div>
+        )}
 
         {/* Empty State */}
-        {filteredArticles.length === 0 && (
+        {!isLoading && !isSearching && filteredArticles.length === 0 && (
           <div className="text-center py-16">
             <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Search className="w-12 h-12 text-gray-400" />
             </div>
             <h3 className="text-xl font-medium text-gray-900 mb-2">
-              Không tìm thấy bài viết
+              {articles.length === 0 ? 'Chưa có bài viết nào' : 'Không tìm thấy bài viết'}
             </h3>
             <p className="text-gray-500 mb-6">
-              Thử thay đổi từ khóa tìm kiếm hoặc chọn danh mục khác
+              {articles.length === 0 
+                ? 'Hãy quay lại sau để xem những bài viết sức khỏe mới nhất'
+                : 'Thử thay đổi từ khóa tìm kiếm hoặc chọn danh mục khác'
+              }
             </p>
-            <Button
-              onClick={() => {
-                setSearchQuery('')
-                setSelectedCategory('Tất cả')
-              }}
-              variant="outline"
-            >
-              Xóa bộ lọc
-            </Button>
+            {articles.length > 0 && (
+              <Button
+                onClick={() => {
+                  setSearchQuery('')
+                  setSelectedCategory('Tất cả')
+                }}
+                variant="outline"
+              >
+                Xóa bộ lọc
+              </Button>
+            )}
           </div>
         )}
 
