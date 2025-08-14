@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import { Search, Calendar, Clock, User, ArrowRight, Heart, Brain, Shield, Activity } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 
 interface HealthArticle {
   id: string
@@ -137,6 +139,8 @@ export default function HealthCornerPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Header />
+      
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -323,6 +327,8 @@ export default function HealthCornerPage() {
           </div>
         </div>
       </div>
+      
+      <Footer />
     </div>
   )
 } 
