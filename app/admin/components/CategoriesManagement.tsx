@@ -16,7 +16,8 @@ export default function CategoriesManagement() {
 
   const [formData, setFormData] = useState({
     name: '',
-    description: ''
+    description: '',
+    isPrescription: false
   })
 
   useEffect(() => {
@@ -42,17 +43,18 @@ export default function CategoriesManagement() {
   })
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
+    const { name, value, type } = e.target
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
     }))
   }
 
   const resetForm = () => {
     setFormData({
       name: '',
-      description: ''
+      description: '',
+      isPrescription: false
     })
   }
 
@@ -60,7 +62,7 @@ export default function CategoriesManagement() {
     e.preventDefault()
     
     try {
-      await addCategory(formData.name)
+      await addCategory(formData.name, formData.isPrescription)
       toast.success('Thêm danh mục thành công!')
       setShowAddModal(false)
       resetForm()
@@ -77,7 +79,7 @@ export default function CategoriesManagement() {
     if (!editingCategory) return
 
     try {
-      await updateCategory(editingCategory.name, formData.name)
+      await updateCategory(editingCategory.name, formData.name, formData.isPrescription)
       toast.success('Cập nhật danh mục thành công!')
       setEditingCategory(null)
       resetForm()
@@ -106,7 +108,8 @@ export default function CategoriesManagement() {
     setEditingCategory(category)
     setFormData({
       name: category.name,
-      description: category.description
+      description: category.description || '',
+      isPrescription: category.isPrescription || false
     })
   }
 
@@ -125,7 +128,7 @@ export default function CategoriesManagement() {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Quản lý danh mục</h1>
-        <p className="mt-2 text-gray-600">Thêm, sửa, xóa danh mục sản phẩm</p>
+        <p className="mt-2 text-gray-600">Thêm, sửa và xóa danh mục sản phẩm</p>
       </div>
 
       {/* Search and Add Button */}
@@ -165,6 +168,9 @@ export default function CategoriesManagement() {
                   Số sản phẩm
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Loại
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Thao tác
                 </th>
               </tr>
@@ -175,8 +181,10 @@ export default function CategoriesManagement() {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <span className="text-2xl mr-3">{category.icon}</span>
-                      <div className="text-sm font-medium text-gray-900">
-                        {category.name}
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {category.name}
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -185,8 +193,19 @@ export default function CategoriesManagement() {
                       {category.description}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {category.count}
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">
+                      {category.count} sản phẩm
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      category.isPrescription 
+                        ? 'bg-red-100 text-red-800' 
+                        : 'bg-green-100 text-green-800'
+                    }`}>
+                      {category.isPrescription ? 'Thuốc kê đơn' : 'Thuốc thường'}
+                    </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex space-x-2">
@@ -228,42 +247,56 @@ export default function CategoriesManagement() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <h2 className="text-xl font-semibold mb-4">Thêm danh mục mới</h2>
-            <form onSubmit={handleAddCategory} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Tên danh mục *
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                />
+            <form onSubmit={handleAddCategory}>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Tên danh mục
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    placeholder="Nhập tên danh mục"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Mô tả
+                  </label>
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    placeholder="Nhập mô tả danh mục"
+                  />
+                </div>
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="isPrescription"
+                    checked={formData.isPrescription}
+                    onChange={handleInputChange}
+                    className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                  />
+                  <label className="ml-2 block text-sm text-gray-900">
+                    Đây là danh mục thuốc kê đơn
+                  </label>
+                </div>
               </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Mô tả
-                </label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                />
-              </div>
-              
-              <div className="flex justify-end space-x-3 pt-4">
+              <div className="flex justify-end space-x-3 mt-6">
                 <Button
                   type="button"
+                  variant="outline"
                   onClick={() => {
                     setShowAddModal(false)
                     resetForm()
                   }}
-                  variant="outline"
                 >
                   Hủy
                 </Button>
@@ -281,42 +314,56 @@ export default function CategoriesManagement() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <h2 className="text-xl font-semibold mb-4">Sửa danh mục</h2>
-            <form onSubmit={handleEditCategory} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Tên danh mục *
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                />
+            <form onSubmit={handleEditCategory}>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Tên danh mục
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    placeholder="Nhập tên danh mục"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Mô tả
+                  </label>
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    placeholder="Nhập mô tả danh mục"
+                  />
+                </div>
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="isPrescription"
+                    checked={formData.isPrescription}
+                    onChange={handleInputChange}
+                    className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                  />
+                  <label className="ml-2 block text-sm text-gray-900">
+                    Đây là danh mục thuốc kê đơn
+                  </label>
+                </div>
               </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Mô tả
-                </label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                />
-              </div>
-              
-              <div className="flex justify-end space-x-3 pt-4">
+              <div className="flex justify-end space-x-3 mt-6">
                 <Button
                   type="button"
+                  variant="outline"
                   onClick={() => {
                     setEditingCategory(null)
                     resetForm()
                   }}
-                  variant="outline"
                 >
                   Hủy
                 </Button>
@@ -335,12 +382,13 @@ export default function CategoriesManagement() {
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <h2 className="text-xl font-semibold mb-4">Xác nhận xóa</h2>
             <p className="text-gray-600 mb-6">
-              Bạn có chắc chắn muốn xóa danh mục "{deletingCategory.name}"? Hành động này không thể hoàn tác.
+              Bạn có chắc chắn muốn xóa danh mục "{deletingCategory.name}"? 
+              Hành động này không thể hoàn tác.
             </p>
             <div className="flex justify-end space-x-3">
               <Button
-                onClick={() => setDeletingCategory(null)}
                 variant="outline"
+                onClick={() => setDeletingCategory(null)}
               >
                 Hủy
               </Button>

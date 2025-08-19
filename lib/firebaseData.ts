@@ -8,6 +8,7 @@ export interface Category {
   icon: string
   description: string
   count: number
+  isPrescription?: boolean
 }
 
 // Fetch tất cả categories
@@ -42,13 +43,14 @@ export const getAllCategories = async (): Promise<string[]> => {
 }
 
 // Add new category
-export const addCategory = async (categoryName: string): Promise<void> => {
+export const addCategory = async (categoryName: string, isPrescription: boolean = false): Promise<void> => {
   try {
     await addDoc(collection(db, 'categories'), {
       name: categoryName,
       icon: '📦',
       description: `Danh mục ${categoryName}`,
       count: 0,
+      isPrescription: isPrescription,
       createdAt: new Date()
     })
   } catch (error) {
@@ -58,7 +60,7 @@ export const addCategory = async (categoryName: string): Promise<void> => {
 }
 
 // Update category
-export const updateCategory = async (oldName: string, newName: string): Promise<void> => {
+export const updateCategory = async (oldName: string, newName: string, isPrescription?: boolean): Promise<void> => {
   try {
     // Get category document by name
     const categoriesSnapshot = await getDocs(
@@ -71,12 +73,18 @@ export const updateCategory = async (oldName: string, newName: string): Promise<
     
     const categoryDoc = categoriesSnapshot.docs[0]
     
-    // Update category name
-    await updateDoc(doc(db, 'categories', categoryDoc.id), {
+    // Update category data
+    const updateData: any = {
       name: newName,
       description: `Danh mục ${newName}`,
       updatedAt: new Date()
-    })
+    }
+    
+    if (isPrescription !== undefined) {
+      updateData.isPrescription = isPrescription
+    }
+    
+    await updateDoc(doc(db, 'categories', categoryDoc.id), updateData)
     
     // Update all products in this category
     const productsSnapshot = await getDocs(

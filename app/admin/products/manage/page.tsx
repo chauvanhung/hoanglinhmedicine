@@ -15,7 +15,7 @@ export default function AdminProductManagePage() {
   const router = useRouter()
   const { user, isAuthenticated } = useAuthStore()
   const [products, setProducts] = useState<Product[]>([])
-  const [categories, setCategories] = useState<string[]>([])
+  const [categories, setCategories] = useState<{name: string, isPrescription: boolean}[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [showAddModal, setShowAddModal] = useState(false)
@@ -57,29 +57,32 @@ export default function AdminProductManagePage() {
   const loadCategories = async () => {
     try {
       const categoriesSnapshot = await getDocs(collection(db, 'categories'))
-      const categoriesData: string[] = []
+      const categoriesData: {name: string, isPrescription: boolean}[] = []
       
       categoriesSnapshot.forEach((doc) => {
         const categoryData = doc.data()
         if (categoryData.name) {
-          categoriesData.push(categoryData.name)
+          categoriesData.push({
+            name: categoryData.name,
+            isPrescription: categoryData.isPrescription || false
+          })
         }
       })
       
-      setCategories(categoriesData.sort())
+      setCategories(categoriesData.sort((a, b) => a.name.localeCompare(b.name)))
     } catch (error) {
       console.error('Error loading categories:', error)
       // Fallback to hardcoded categories if database is empty
       setCategories([
-        'Thuốc giảm đau',
-        'Thuốc kháng sinh',
-        'Thuốc tim mạch',
-        'Thuốc tiêu hóa',
-        'Thuốc hô hấp',
-        'Thuốc kê đơn',
-        'Vitamin và khoáng chất',
-        'Thực phẩm chức năng',
-        'Dụng cụ y tế'
+        { name: 'Thuốc giảm đau', isPrescription: false },
+        { name: 'Thuốc kháng sinh', isPrescription: false },
+        { name: 'Thuốc tim mạch', isPrescription: false },
+        { name: 'Thuốc tiêu hóa', isPrescription: false },
+        { name: 'Thuốc hô hấp', isPrescription: false },
+        { name: 'Thuốc kê đơn', isPrescription: false },
+        { name: 'Vitamin và khoáng chất', isPrescription: false },
+        { name: 'Thực phẩm chức năng', isPrescription: false },
+        { name: 'Dụng cụ y tế', isPrescription: false }
       ])
     }
   }
@@ -499,8 +502,8 @@ export default function AdminProductManagePage() {
                   >
                     <option value="">Chọn danh mục</option>
                     {categories.map((category) => (
-                      <option key={category} value={category}>
-                        {category}
+                      <option key={category.name} value={category.name}>
+                        {category.name}
                       </option>
                     ))}
                   </select>
@@ -651,8 +654,8 @@ export default function AdminProductManagePage() {
                   >
                     <option value="">Chọn danh mục</option>
                     {categories.map((category) => (
-                      <option key={category} value={category}>
-                        {category}
+                      <option key={category.name} value={category.name}>
+                        {category.name}
                       </option>
                     ))}
                   </select>
