@@ -17,23 +17,22 @@ import {
   Calendar,
   User,
   Search,
-  Filter,
   SortAsc,
   SortDesc,
   Plus,
   AlertCircle,
   Phone,
-  MapPin
+  MapPin,
+  RefreshCw
 } from 'lucide-react'
-import { collection, addDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
 
 export default function ConsultationsPage() {
-  const { user } = useAuthStore()
+  const { user, isAuthenticated } = useAuthStore()
   const router = useRouter()
   const [consultations, setConsultations] = useState<Consultation[]>([])
   const [filteredConsultations, setFilteredConsultations] = useState<Consultation[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [sortBy, setSortBy] = useState<'date' | 'price'>('date')
@@ -42,24 +41,34 @@ export default function ConsultationsPage() {
   // Load consultations
   useEffect(() => {
     const loadConsultations = async () => {
+      if (!isAuthenticated || !user) {
+        console.log('User not authenticated, redirecting to login')
+        router.push('/login')
+        return
+      }
+
       try {
         setIsLoading(true)
-        console.log('Loading consultations for user:', user?.id)
+        setError(null)
+        console.log('Loading consultations for user:', user.id)
         const consultationsData = await getUserConsultations()
         console.log('Fetched consultations:', consultationsData)
         setConsultations(consultationsData)
         setFilteredConsultations(consultationsData)
       } catch (error) {
         console.error('Error loading consultations:', error)
+        setError('Có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại.')
       } finally {
         setIsLoading(false)
       }
     }
 
-    if (user) {
+    if (isAuthenticated && user) {
       loadConsultations()
+    } else if (!isAuthenticated) {
+      setIsLoading(false)
     }
-  }, [user?.id])
+  }, [user?.id, isAuthenticated, router])
 
   // Filter and sort consultations
   useEffect(() => {
@@ -94,6 +103,24 @@ export default function ConsultationsPage() {
 
     setFilteredConsultations(filtered)
   }, [consultations, searchTerm, statusFilter, sortBy, sortOrder])
+
+  const handleRetry = async () => {
+    if (!isAuthenticated || !user) return
+    
+    try {
+      setIsLoading(true)
+      setError(null)
+      console.log('Retrying to load consultations for user:', user.id)
+      const consultationsData = await getUserConsultations()
+      setConsultations(consultationsData)
+      setFilteredConsultations(consultationsData)
+    } catch (error) {
+      console.error('Error retrying to load consultations:', error)
+      setError('Có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const handleCancelConsultation = async (consultationId: string) => {
     if (confirm('Bạn có chắc chắn muốn hủy lịch tư vấn này?')) {
@@ -198,6 +225,20 @@ export default function ConsultationsPage() {
     }).format(date)
   }
 
+  // Show loading state for authentication
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+          </div>
+          <p className="text-gray-500">Đang kiểm tra đăng nhập...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -209,49 +250,33 @@ export default function ConsultationsPage() {
               <h1 className="text-3xl font-bold text-gray-900 mb-2">Lịch sử tư vấn</h1>
               <p className="text-gray-600">Quản lý và theo dõi lịch tư vấn của bạn</p>
             </div>
-            <Button onClick={() => window.location.href = '/consultation'}>
+            <Button onClick={() => router.push('/consultation')}>
               <Plus className="w-4 h-4 mr-2" />
               Đặt lịch tư vấn mới
             </Button>
-            <Button 
-              onClick={async () => {
-                try {
-                  console.log('Creating test consultation for user:', user?.id)
-                  const testConsultation = {
-                    userId: user?.id || 'test-user',
-                    doctorName: "Bác sĩ Nguyễn Văn An",
-                    doctorSpecialty: "Tim mạch",
-                    doctorImage: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&h=400&fit=crop&crop=face",
-                    date: new Date("2024-01-15"),
-                    time: "09:00",
-                    duration: 30,
-                    status: "completed",
-                    symptoms: "Đau ngực, khó thở khi vận động",
-                    notes: "Bệnh nhân cần theo dõi huyết áp thường xuyên",
-                    price: 500000,
-                    paymentStatus: "paid",
-                    paymentMethod: "bank_transfer",
-                    createdAt: new Date("2024-01-10"),
-                    updatedAt: new Date("2024-01-15")
-                  };
-                  
-                  console.log('Test consultation data:', testConsultation)
-                  const docRef = await addDoc(collection(db, 'consultations'), testConsultation);
-                  console.log('Created consultation with ID:', docRef.id)
-                  alert('Đã tạo test consultation!');
-                  window.location.reload();
-                } catch (error) {
-                  console.error('Error creating test consultation:', error)
-                  alert('Lỗi: ' + (error as Error).message);
-                }
-              }}
-              variant="outline"
-              className="ml-2"
-            >
-              Tạo test data
-            </Button>
           </div>
         </div>
+
+        {/* Error Display */}
+        {error && (
+          <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="flex items-center">
+              <AlertCircle className="w-5 h-5 text-red-400 mr-3" />
+              <div className="flex-1">
+                <p className="text-red-800">{error}</p>
+              </div>
+              <Button
+                onClick={handleRetry}
+                variant="outline"
+                size="sm"
+                className="text-red-600 border-red-300 hover:bg-red-50"
+              >
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Thử lại
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Filters and Search */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">

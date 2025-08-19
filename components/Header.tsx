@@ -64,12 +64,18 @@ export default function Header() {
                 </div>
               ) : (
                 <>
-                  <Link href="/login" className="hover:text-secondary-300 transition-colors">
+                  <button 
+                    onClick={() => window.location.href = '/login'} 
+                    className="hover:text-secondary-300 transition-colors"
+                  >
                     Đăng nhập
-                  </Link>
-                  <Link href="/register" className="hover:text-secondary-300 transition-colors">
+                  </button>
+                  <button 
+                    onClick={() => window.location.href = '/register'} 
+                    className="hover:text-secondary-300 transition-colors"
+                  >
                     Đăng ký
-                  </Link>
+                  </button>
                 </>
               )}
             </div>
@@ -178,36 +184,36 @@ export default function Header() {
                       <Activity className="w-4 h-4 mr-3" />
                       Lịch sử tổng hợp
                     </button>
-                           {user?.role === 'admin' && (
-         <>
-           <button
-             onClick={() => {
-               setShowUserMenu(false)
-               window.location.href = '/admin/products/manage'
-             }}
-             className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-           >
-             <Package className="w-4 h-4 mr-3" />
-             Quản lý sản phẩm
-           </button>
-           <button
-             onClick={() => {
-               setShowUserMenu(false)
-               window.location.href = '/admin/categories/manage'
-             }}
-             className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-           >
-             <FolderOpen className="w-4 h-4 mr-3" />
-             Quản lý danh mục
-           </button>
-         </>
-       )}
+                    {user?.role === 'admin' && (
+                      <>
+                        <button
+                          onClick={() => {
+                            setShowUserMenu(false)
+                            window.location.href = '/admin/products/manage'
+                          }}
+                          className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          <Package className="w-4 h-4 mr-3" />
+                          Quản lý sản phẩm
+                        </button>
+                        <button
+                          onClick={() => {
+                            setShowUserMenu(false)
+                            window.location.href = '/admin/categories/manage'
+                          }}
+                          className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          <FolderOpen className="w-4 h-4 mr-3" />
+                          Quản lý danh mục
+                        </button>
+                      </>
+                    )}
                     <hr className="my-2" />
                     <button
                       onClick={async () => {
                         await logout()
                         setShowUserMenu(false)
-                        router.push('/')
+                        window.location.href = '/'
                       }}
                       className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                     >
@@ -218,9 +224,12 @@ export default function Header() {
                 )}
               </div>
             ) : (
-              <Link href="/login" className="hidden md:block">
+              <button 
+                onClick={() => window.location.href = '/login'} 
+                className="hidden md:block"
+              >
                 <User className="w-6 h-6 text-gray-700 hover:text-primary-600 transition-colors" />
-              </Link>
+              </button>
             )}
 
             {/* Mobile menu button */}

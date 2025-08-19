@@ -40,8 +40,11 @@ export const createConsultation = async (consultationData: CreateConsultationDat
     const { user } = useAuthStore.getState()
     
     if (!user) {
+      console.error('User not authenticated when creating consultation')
       return { success: false, message: 'Bạn cần đăng nhập để đặt lịch tư vấn' }
     }
+
+    console.log('Creating consultation for user:', user.id, 'with data:', consultationData)
 
     const consultation = {
       userId: user.id,
@@ -63,6 +66,8 @@ export const createConsultation = async (consultationData: CreateConsultationDat
 
     const docRef = await addDoc(collection(db, 'consultations'), consultation)
     
+    console.log('Consultation created successfully with ID:', docRef.id)
+    
     return { 
       success: true, 
       consultationId: docRef.id, 
@@ -74,14 +79,56 @@ export const createConsultation = async (consultationData: CreateConsultationDat
   }
 }
 
+// Tạo dữ liệu test cho consultation (chỉ dùng để debug)
+export const createTestConsultation = async (): Promise<{ success: boolean; message: string }> => {
+  try {
+    const { user } = useAuthStore.getState()
+    
+    if (!user) {
+      return { success: false, message: 'Bạn cần đăng nhập' }
+    }
+
+    const testConsultation = {
+      userId: user.id,
+      doctorName: "Bác sĩ Nguyễn Văn An",
+      doctorSpecialty: "Tim mạch",
+      doctorImage: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&h=400&fit=crop&crop=face",
+      date: new Date("2024-01-15"),
+      time: "09:00",
+      duration: 30,
+      status: "completed",
+      symptoms: "Đau ngực, khó thở khi vận động",
+      notes: "Bệnh nhân cần theo dõi huyết áp thường xuyên",
+      price: 500000,
+      paymentStatus: "paid",
+      paymentMethod: "bank_transfer",
+      createdAt: new Date("2024-01-10"),
+      updatedAt: new Date("2024-01-15")
+    }
+
+    const docRef = await addDoc(collection(db, 'consultations'), testConsultation)
+    
+    return { 
+      success: true, 
+      message: 'Đã tạo dữ liệu test thành công!' 
+    }
+  } catch (error) {
+    console.error('Error creating test consultation:', error)
+    return { success: false, message: 'Có lỗi xảy ra khi tạo dữ liệu test' }
+  }
+}
+
 // Lấy tất cả lịch tư vấn của user
 export const getUserConsultations = async (): Promise<Consultation[]> => {
   try {
     const { user } = useAuthStore.getState()
     
     if (!user) {
+      console.warn('User not authenticated when fetching consultations')
       return []
     }
+
+    console.log('Fetching consultations for user:', user.id)
 
     const q = query(
       collection(db, 'consultations'),
@@ -92,17 +139,29 @@ export const getUserConsultations = async (): Promise<Consultation[]> => {
     const consultationsSnapshot = await getDocs(q)
     const consultations: Consultation[] = []
     
+    console.log('Found', consultationsSnapshot.size, 'consultations for user:', user.id)
+    
     consultationsSnapshot.forEach((doc) => {
-      const data = doc.data()
-      consultations.push({
-        id: doc.id,
-        ...data,
-        date: data.date.toDate(),
-        createdAt: data.createdAt.toDate(),
-        updatedAt: data.updatedAt.toDate()
-      } as Consultation)
+      try {
+        const data = doc.data()
+        console.log('Processing consultation document:', doc.id, data)
+        
+        // Handle Firestore Timestamp conversion
+        const consultation: Consultation = {
+          id: doc.id,
+          ...data,
+          date: data.date?.toDate ? data.date.toDate() : new Date(data.date),
+          createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(data.createdAt),
+          updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : new Date(data.updatedAt)
+        } as Consultation
+        
+        consultations.push(consultation)
+      } catch (docError) {
+        console.error('Error processing consultation document:', doc.id, docError)
+      }
     })
     
+    console.log('Successfully processed', consultations.length, 'consultations')
     return consultations
   } catch (error) {
     console.error('Error fetching user consultations:', error)
@@ -116,12 +175,16 @@ export const getConsultationById = async (consultationId: string): Promise<Consu
     const { user } = useAuthStore.getState()
     
     if (!user) {
+      console.warn('User not authenticated when fetching consultation by ID')
       return null
     }
+
+    console.log('Fetching consultation by ID:', consultationId, 'for user:', user.id)
 
     const consultationDoc = await getDoc(doc(db, 'consultations', consultationId))
     
     if (!consultationDoc.exists()) {
+      console.log('Consultation not found:', consultationId)
       return null
     }
 
@@ -129,18 +192,22 @@ export const getConsultationById = async (consultationId: string): Promise<Consu
     
     // Kiểm tra quyền truy cập
     if (data.userId !== user.id) {
+      console.warn('User', user.id, 'tried to access consultation', consultationId, 'belonging to user', data.userId)
       return null
     }
 
-    return {
+    const consultation: Consultation = {
       id: consultationDoc.id,
       ...data,
-      date: data.date.toDate(),
-      createdAt: data.createdAt.toDate(),
-      updatedAt: data.updatedAt.toDate()
+      date: data.date?.toDate ? data.date.toDate() : new Date(data.date),
+      createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(data.createdAt),
+      updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : new Date(data.updatedAt)
     } as Consultation
+
+    console.log('Successfully fetched consultation:', consultation)
+    return consultation
   } catch (error) {
-    console.error('Error fetching consultation:', error)
+    console.error('Error fetching consultation by ID:', error)
     return null
   }
 }
@@ -224,8 +291,11 @@ export const getRecentConsultations = async (limitCount: number = 5): Promise<Co
     const { user } = useAuthStore.getState()
     
     if (!user) {
+      console.warn('User not authenticated when fetching recent consultations')
       return []
     }
+
+    console.log('Fetching recent consultations for user:', user.id, 'limit:', limitCount)
 
     const q = query(
       collection(db, 'consultations'),
@@ -237,17 +307,26 @@ export const getRecentConsultations = async (limitCount: number = 5): Promise<Co
     const consultationsSnapshot = await getDocs(q)
     const consultations: Consultation[] = []
     
+    console.log('Found', consultationsSnapshot.size, 'recent consultations')
+    
     consultationsSnapshot.forEach((doc) => {
-      const data = doc.data()
-      consultations.push({
-        id: doc.id,
-        ...data,
-        date: data.date.toDate(),
-        createdAt: data.createdAt.toDate(),
-        updatedAt: data.updatedAt.toDate()
-      } as Consultation)
+      try {
+        const data = doc.data()
+        const consultation: Consultation = {
+          id: doc.id,
+          ...data,
+          date: data.date?.toDate ? data.date.toDate() : new Date(data.date),
+          createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(data.createdAt),
+          updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : new Date(data.updatedAt)
+        } as Consultation
+        
+        consultations.push(consultation)
+      } catch (docError) {
+        console.error('Error processing recent consultation document:', doc.id, docError)
+      }
     })
     
+    console.log('Successfully processed', consultations.length, 'recent consultations')
     return consultations
   } catch (error) {
     console.error('Error fetching recent consultations:', error)

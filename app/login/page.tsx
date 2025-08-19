@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react'
@@ -19,14 +19,6 @@ export default function LoginPage() {
   
   const { login, isLoading, isAuthenticated } = useAuthStore()
 
-  // Check if user is already logged in
-  useEffect(() => {
-    if (isAuthenticated) {
-      const redirectTo = searchParams?.get('redirect') || '/'
-      router.push(redirectTo)
-    }
-  }, [isAuthenticated, router, searchParams])
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
@@ -39,11 +31,9 @@ export default function LoginPage() {
     const result = await login(email, password)
     
     if (result.success) {
-      // Đợi một chút để Firebase Auth cập nhật state
-      setTimeout(() => {
-        const redirectTo = searchParams?.get('redirect') || '/'
-        router.push(redirectTo)
-      }, 500)
+      const redirectTo = searchParams?.get('redirect') || '/'
+      // Chuyển trang ngay lập tức
+      window.location.href = redirectTo
     } else {
       setError(result.message)
     }
@@ -64,9 +54,12 @@ export default function LoginPage() {
             </h2>
             <p className="mt-2 text-center text-sm text-gray-600">
               Hoặc{' '}
-              <Link href="/register" className="font-medium text-primary-600 hover:text-primary-500">
+              <button 
+                onClick={() => window.location.href = '/register'} 
+                className="font-medium text-primary-600 hover:text-primary-500"
+              >
                 đăng ký tài khoản mới
-              </Link>
+              </button>
             </p>
           </div>
 

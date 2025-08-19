@@ -8,6 +8,7 @@ import { useAuthStore } from '@/store/auth'
 import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import { Product } from '@/types/product'
+import { addProduct, updateProduct, deleteProduct } from '@/lib/firebaseData'
 import toast from 'react-hot-toast'
 
 export default function AdminProductManagePage() {
@@ -194,11 +195,12 @@ export default function AdminProductManagePage() {
             reviews: [],
             images: [base64String],
             image: base64String, // Use base64 as image URL
+            prescription: false,
             createdAt: new Date(),
             updatedAt: new Date()
           }
 
-          await addDoc(collection(db, 'products'), productData)
+          await addProduct(productData)
           toast.success('Thêm sản phẩm thành công!')
           setShowAddModal(false)
           resetForm()
@@ -217,11 +219,12 @@ export default function AdminProductManagePage() {
         rating: 4.5,
         reviews: [],
         images: [imageUrl],
+        prescription: false,
         createdAt: new Date(),
         updatedAt: new Date()
       }
 
-      await addDoc(collection(db, 'products'), productData)
+      await addProduct(productData)
       toast.success('Thêm sản phẩm thành công!')
       setShowAddModal(false)
       resetForm()
@@ -261,7 +264,7 @@ export default function AdminProductManagePage() {
             updatedAt: new Date()
           }
 
-          await updateDoc(doc(db, 'products', editingProduct.id), productData)
+          await updateProduct(editingProduct.id, productData)
           toast.success('Cập nhật sản phẩm thành công!')
           setEditingProduct(null)
           resetForm()
@@ -280,7 +283,7 @@ export default function AdminProductManagePage() {
         updatedAt: new Date()
       }
 
-      await updateDoc(doc(db, 'products', editingProduct.id), productData)
+      await updateProduct(editingProduct.id, productData)
       toast.success('Cập nhật sản phẩm thành công!')
       setEditingProduct(null)
       resetForm()
@@ -295,7 +298,7 @@ export default function AdminProductManagePage() {
     if (!deletingProduct) return
 
     try {
-      await deleteDoc(doc(db, 'products', deletingProduct.id))
+      await deleteProduct(deletingProduct.id)
       toast.success('Xóa sản phẩm thành công!')
       setDeletingProduct(null)
       loadProducts()

@@ -35,12 +35,16 @@ export const useAuthStore = create<AuthStore>()(
           const result = await loginUser(email, password)
           
           if (result.success && result.user) {
-            set({ user: result.user, isAuthenticated: true, isLoading: false })
-            // Force update localStorage
-            localStorage.setItem('auth-storage', JSON.stringify({
-              state: { user: result.user, isAuthenticated: true, isLoading: false },
+            // Cập nhật state ngay lập tức
+            const newState = { user: result.user, isAuthenticated: true, isLoading: false }
+            set(newState)
+            
+            // Đảm bảo localStorage được cập nhật đồng bộ
+            const storageData = {
+              state: newState,
               version: 0
-            }))
+            }
+            localStorage.setItem('auth-storage', JSON.stringify(storageData))
           } else {
             set({ isLoading: false })
           }
@@ -64,7 +68,16 @@ export const useAuthStore = create<AuthStore>()(
           })
           
           if (result.success && result.user) {
-            set({ user: result.user, isAuthenticated: true, isLoading: false })
+            // Cập nhật state ngay lập tức
+            const newState = { user: result.user, isAuthenticated: true, isLoading: false }
+            set(newState)
+            
+            // Đảm bảo localStorage được cập nhật đồng bộ
+            const storageData = {
+              state: newState,
+              version: 0
+            }
+            localStorage.setItem('auth-storage', JSON.stringify(storageData))
           } else {
             set({ isLoading: false })
           }

@@ -22,7 +22,7 @@ export default function RegisterPage() {
   const [error, setError] = useState('')
   const router = useRouter()
   
-  const { register, isLoading } = useAuthStore()
+  const { register, isLoading, isAuthenticated } = useAuthStore()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -59,7 +59,8 @@ export default function RegisterPage() {
     })
     
     if (result.success) {
-      router.push('/')
+      // Chuyển trang ngay lập tức
+      window.location.href = '/'
     } else {
       setError(result.message)
     }
@@ -80,9 +81,12 @@ export default function RegisterPage() {
             </h2>
             <p className="mt-2 text-center text-sm text-gray-600">
               Hoặc{' '}
-              <Link href="/login" className="font-medium text-primary-600 hover:text-primary-500">
+              <button 
+                onClick={() => window.location.href = '/login'} 
+                className="font-medium text-primary-600 hover:text-primary-500"
+              >
                 đăng nhập nếu đã có tài khoản
-              </Link>
+              </button>
             </p>
           </div>
 

@@ -6,7 +6,7 @@ import Header from '@/components/Header'
 import ProductGrid from '@/components/ProductGrid'
 import Footer from '@/components/Footer'
 import { Product } from '@/types/product'
-import { getAllProducts, getCategories, searchProducts, getProductsByCategory, getProductsByPriceRange } from '@/lib/firebaseData'
+import { getAllProducts, getCategories, searchProducts, getProductsByCategory, getProductsByPriceRange, addProduct } from '@/lib/firebaseData'
 import { Category } from '@/lib/firebaseData'
 import { Search, Filter, X, Grid, List, Star, Truck, Shield, ChevronRight, SlidersHorizontal, Check, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
@@ -473,7 +473,7 @@ export default function ProductsPage() {
                         ];
                         
                         for (const product of testProducts) {
-                          await addDoc(collection(db, 'products'), product);
+                          await addProduct(product);
                         }
                         
                         alert('Đã tạo test products!');
@@ -525,7 +525,7 @@ export default function ProductsPage() {
                               updatedAt: new Date()
                             };
                             
-                            await addDoc(collection(db, 'products'), productWithTimestamps);
+                            await addProduct(productWithTimestamps);
                             successCount++;
                           } catch (error) {
                             console.error(`Lỗi khi tạo product "${product.name}":`, error);

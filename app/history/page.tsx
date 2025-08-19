@@ -20,39 +20,107 @@ import {
   Calendar,
   TrendingUp,
   Activity,
-  ArrowRight
+  ArrowRight,
+  AlertCircle,
+  RefreshCw
 } from 'lucide-react'
 
 export default function HistoryPage() {
-  const { user } = useAuthStore()
+  const { user, isAuthenticated } = useAuthStore()
   const router = useRouter()
   const [orders, setOrders] = useState<Order[]>([])
   const [consultations, setConsultations] = useState<Consultation[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<'orders' | 'consultations'>('orders')
 
   // Load data
   useEffect(() => {
     const loadData = async () => {
+      if (!isAuthenticated || !user) {
+        console.log('User not authenticated, redirecting to login')
+        router.push('/login')
+        return
+      }
+
       try {
         setIsLoading(true)
+        setError(null)
+        console.log('Loading history data for user:', user.id)
+        
         const [ordersData, consultationsData] = await Promise.all([
-          getUserOrders(),
-          getUserConsultations()
+          getUserOrders().catch(err => {
+            console.error('Error loading orders:', err)
+            return []
+          }),
+          getUserConsultations().catch(err => {
+            console.error('Error loading consultations:', err)
+            return []
+          })
         ])
+        
+        console.log('Loaded orders:', ordersData.length, 'consultations:', consultationsData.length)
+        
         setOrders(ordersData)
         setConsultations(consultationsData)
       } catch (error) {
         console.error('Error loading history data:', error)
+        setError('Có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại.')
       } finally {
         setIsLoading(false)
       }
     }
 
-    if (user) {
+    // Only load data if user is authenticated
+    if (isAuthenticated && user) {
+      loadData()
+    } else if (!isAuthenticated) {
+      setIsLoading(false)
+    }
+  }, [user?.id, isAuthenticated, router])
+
+  const handleRetry = () => {
+    setError(null)
+    setIsLoading(true)
+    // Trigger reload by updating the dependency
+    const currentUser = user
+    if (currentUser) {
       loadData()
     }
-  }, [user?.id])
+  }
+
+  const loadData = async () => {
+    if (!isAuthenticated || !user) {
+      return
+    }
+
+    try {
+      setIsLoading(true)
+      setError(null)
+      console.log('Retrying to load history data for user:', user.id)
+      
+      const [ordersData, consultationsData] = await Promise.all([
+        getUserOrders().catch(err => {
+          console.error('Error loading orders:', err)
+          return []
+        }),
+        getUserConsultations().catch(err => {
+          console.error('Error loading consultations:', err)
+          return []
+        })
+      ])
+      
+      console.log('Retry loaded orders:', ordersData.length, 'consultations:', consultationsData.length)
+      
+      setOrders(ordersData)
+      setConsultations(consultationsData)
+    } catch (error) {
+      console.error('Error retrying to load history data:', error)
+      setError('Có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -128,8 +196,18 @@ export default function HistoryPage() {
     }).format(date)
   }
 
-  if (!user) {
-    return null
+  // Show loading state
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+          </div>
+          <p className="text-gray-500">Đang kiểm tra đăng nhập...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -141,6 +219,27 @@ export default function HistoryPage() {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Lịch sử hoạt động</h1>
           <p className="text-gray-600">Tổng quan về đơn hàng và lịch tư vấn của bạn</p>
         </div>
+
+        {/* Error Display */}
+        {error && (
+          <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="flex items-center">
+              <AlertCircle className="w-5 h-5 text-red-400 mr-3" />
+              <div className="flex-1">
+                <p className="text-red-800">{error}</p>
+              </div>
+              <Button
+                onClick={handleRetry}
+                variant="outline"
+                size="sm"
+                className="text-red-600 border-red-300 hover:bg-red-50"
+              >
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Thử lại
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">

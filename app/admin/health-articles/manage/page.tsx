@@ -1,39 +1,15 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, Edit, Trash2, Search, Upload, X, ArrowLeft, Calendar, Clock, User } from 'lucide-react'
+import { Plus, Edit, Trash2, Search, ArrowLeft, Eye, Calendar } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useAuthStore } from '@/store/auth'
-import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs } from 'firebase/firestore'
+import { getAllHealthArticles, getHealthArticleById } from '@/lib/firebaseData'
+import { HealthArticle } from '@/lib/firebaseData'
+import { addDoc, updateDoc, deleteDoc, collection, doc } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import toast from 'react-hot-toast'
-
-interface HealthArticle {
-  id: string
-  title: string
-  excerpt: string
-  content: string
-  author: string
-  publishedAt: string
-  readTime: string
-  category: string
-  image: string
-  tags: string[]
-}
-
-const categories = [
-  'Miễn dịch',
-  'Tim mạch',
-  'Thể dục',
-  'Nội tiết',
-  'Tâm thần',
-  'Dinh dưỡng',
-  'Da liễu',
-  'Hô hấp',
-  'Tiêu hóa',
-  'Thần kinh'
-]
 
 export default function AdminHealthArticlesManagePage() {
   const router = useRouter()
@@ -44,9 +20,6 @@ export default function AdminHealthArticlesManagePage() {
   const [showAddModal, setShowAddModal] = useState(false)
   const [editingArticle, setEditingArticle] = useState<HealthArticle | null>(null)
   const [deletingArticle, setDeletingArticle] = useState<HealthArticle | null>(null)
-  const [selectedImage, setSelectedImage] = useState<File | null>(null)
-  const [imagePreview, setImagePreview] = useState<string>('')
-  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [formData, setFormData] = useState({
     title: '',
@@ -54,7 +27,6 @@ export default function AdminHealthArticlesManagePage() {
     content: '',
     author: '',
     category: '',
-    readTime: '',
     image: '',
     tags: ''
   })
@@ -81,17 +53,8 @@ export default function AdminHealthArticlesManagePage() {
   const loadArticles = async () => {
     try {
       setIsLoading(true)
-      const articlesSnapshot = await getDocs(collection(db, 'health-articles'))
-      const articlesData: HealthArticle[] = []
-      
-      articlesSnapshot.forEach((doc) => {
-        articlesData.push({
-          id: doc.id,
-          ...doc.data()
-        } as HealthArticle)
-      })
-      
-      setArticles(articlesData.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()))
+      const articlesData = await getAllHealthArticles()
+      setArticles(articlesData)
     } catch (error) {
       console.error('Error loading articles:', error)
       toast.error('Lỗi khi tải danh sách bài viết')
@@ -106,46 +69,12 @@ export default function AdminHealthArticlesManagePage() {
     article.category.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
       [name]: value
     }))
-  }
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        toast.error('Vui lòng chọn file hình ảnh')
-        return
-      }
-      
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error('File quá lớn. Vui lòng chọn file nhỏ hơn 5MB')
-        return
-      }
-
-      setSelectedImage(file)
-      
-      // Create preview
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        setImagePreview(e.target?.result as string)
-      }
-      reader.readAsDataURL(file)
-    }
-  }
-
-  const removeImage = () => {
-    setSelectedImage(null)
-    setImagePreview('')
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ''
-    }
   }
 
   const resetForm = () => {
@@ -155,59 +84,29 @@ export default function AdminHealthArticlesManagePage() {
       content: '',
       author: '',
       category: '',
-      readTime: '',
       image: '',
       tags: ''
     })
-    setSelectedImage(null)
-    setImagePreview('')
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ''
-    }
   }
 
   const handleAddArticle = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    // Validate that either image file or URL is provided
-    if (!selectedImage && !formData.image.trim()) {
-      toast.error('Vui lòng chọn hình ảnh hoặc nhập URL hình ảnh')
-      return
-    }
-    
     try {
-      let imageUrl = formData.image // Use URL if provided
+      const tagsArray = formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
       
-      // If file is selected, convert to base64 for now (in production, upload to cloud storage)
-      if (selectedImage) {
-        const reader = new FileReader()
-        reader.onload = async (e) => {
-          const base64String = e.target?.result as string
-          
-          const articleData = {
-            ...formData,
-            image: base64String, // Use base64 as image URL
-            tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
-            publishedAt: new Date().toISOString(),
-            createdAt: new Date(),
-            updatedAt: new Date()
-          }
-
-          await addDoc(collection(db, 'health-articles'), articleData)
-          toast.success('Thêm bài viết thành công!')
-          setShowAddModal(false)
-          resetForm()
-          loadArticles()
-        }
-        reader.readAsDataURL(selectedImage)
-        return
-      }
-
-      // If no file selected, use URL
       const articleData = {
-        ...formData,
-        tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+        title: formData.title,
+        excerpt: formData.excerpt,
+        content: formData.content,
+        author: formData.author,
+        category: formData.category,
+        image: formData.image,
+        tags: tagsArray,
         publishedAt: new Date().toISOString(),
+        readTime: '5 phút',
+        likes: 0,
+        views: 0,
         createdAt: new Date(),
         updatedAt: new Date()
       }
@@ -228,42 +127,17 @@ export default function AdminHealthArticlesManagePage() {
     
     if (!editingArticle) return
 
-    // Validate that either image file or URL is provided
-    if (!selectedImage && !formData.image.trim()) {
-      toast.error('Vui lòng chọn hình ảnh hoặc nhập URL hình ảnh')
-      return
-    }
-
     try {
-      let imageUrl = formData.image // Use URL if provided
+      const tagsArray = formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
       
-      // If file is selected, convert to base64
-      if (selectedImage) {
-        const reader = new FileReader()
-        reader.onload = async (e) => {
-          const base64String = e.target?.result as string
-          
-          const articleData = {
-            ...formData,
-            image: base64String,
-            tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
-            updatedAt: new Date()
-          }
-
-          await updateDoc(doc(db, 'health-articles', editingArticle.id), articleData)
-          toast.success('Cập nhật bài viết thành công!')
-          setEditingArticle(null)
-          resetForm()
-          loadArticles()
-        }
-        reader.readAsDataURL(selectedImage)
-        return
-      }
-
-      // If no file selected, use URL
       const articleData = {
-        ...formData,
-        tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+        title: formData.title,
+        excerpt: formData.excerpt,
+        content: formData.content,
+        author: formData.author,
+        category: formData.category,
+        image: formData.image,
+        tags: tagsArray,
         updatedAt: new Date()
       }
 
@@ -300,25 +174,15 @@ export default function AdminHealthArticlesManagePage() {
       content: article.content,
       author: article.author,
       category: article.category,
-      readTime: article.readTime,
       image: article.image,
       tags: article.tags.join(', ')
     })
-    setSelectedImage(null)
-    setImagePreview('')
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ''
-    }
   }
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('vi-VN', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
+  const formatDate = (date: any) => {
+    if (!date) return ''
+    const d = date.toDate ? date.toDate() : new Date(date)
+    return d.toLocaleDateString('vi-VN')
   }
 
   if (isLoading) {
@@ -341,7 +205,7 @@ export default function AdminHealthArticlesManagePage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Quản lý bài viết sức khỏe</h1>
-              <p className="mt-2 text-gray-600">Thêm, sửa, xóa bài viết trong góc sức khỏe</p>
+              <p className="mt-2 text-gray-600">Thêm, sửa, xóa bài viết sức khỏe</p>
             </div>
             <Button
               onClick={() => router.push('/admin')}
@@ -391,6 +255,9 @@ export default function AdminHealthArticlesManagePage() {
                     Danh mục
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Thống kê
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Ngày đăng
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -401,15 +268,12 @@ export default function AdminHealthArticlesManagePage() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredArticles.map((article) => (
                   <tr key={article.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4">
                       <div className="flex items-center">
                         <img
                           src={article.image}
                           alt={article.title}
                           className="w-12 h-12 rounded-lg object-cover mr-3"
-                          onError={(e) => {
-                            e.currentTarget.src = 'https://via.placeholder.com/48x48?text=Article'
-                          }}
                         />
                         <div>
                           <div className="text-sm font-medium text-gray-900 max-w-xs truncate">
@@ -424,13 +288,23 @@ export default function AdminHealthArticlesManagePage() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {article.author}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                         {article.category}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatDate(article.publishedAt)}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <div className="flex items-center space-x-2">
+                        <span className="flex items-center">
+                          <Eye className="w-4 h-4 mr-1" />
+                          {article.views || 0}
+                        </span>
+                        <span>•</span>
+                        <span>❤️ {article.likes || 0}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {formatDate(article.createdAt)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">
@@ -475,7 +349,7 @@ export default function AdminHealthArticlesManagePage() {
               <form onSubmit={handleAddArticle} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Tiêu đề bài viết *
+                    Tiêu đề *
                   </label>
                   <input
                     type="text"
@@ -510,8 +384,9 @@ export default function AdminHealthArticlesManagePage() {
                     value={formData.content}
                     onChange={handleInputChange}
                     required
-                    rows={6}
+                    rows={8}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    placeholder="Nhập nội dung HTML..."
                   />
                 </div>
                 
@@ -542,90 +417,42 @@ export default function AdminHealthArticlesManagePage() {
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     >
                       <option value="">Chọn danh mục</option>
-                      {categories.map((category) => (
-                        <option key={category} value={category}>
-                          {category}
-                        </option>
-                      ))}
+                      <option value="Sức khỏe tổng quát">Sức khỏe tổng quát</option>
+                      <option value="Dinh dưỡng">Dinh dưỡng</option>
+                      <option value="Tập luyện">Tập luyện</option>
+                      <option value="Tâm lý">Tâm lý</option>
+                      <option value="Bệnh thường gặp">Bệnh thường gặp</option>
                     </select>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Thời gian đọc *
-                    </label>
-                    <input
-                      type="text"
-                      name="readTime"
-                      value={formData.readTime}
-                      onChange={handleInputChange}
-                      placeholder="VD: 5 phút"
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Tags
-                    </label>
-                    <input
-                      type="text"
-                      name="tags"
-                      value={formData.tags}
-                      onChange={handleInputChange}
-                      placeholder="VD: sức khỏe, vitamin, miễn dịch"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    />
                   </div>
                 </div>
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Hình ảnh bài viết *
+                    Hình ảnh *
                   </label>
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="url"
-                      name="image"
-                      value={formData.image}
-                      onChange={handleInputChange}
-                      placeholder="Hoặc nhập URL hình ảnh"
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    />
-                    {imagePreview && (
-                      <div className="relative">
-                        <img src={imagePreview} alt="Preview" className="w-12 h-12 rounded-lg object-cover" />
-                        <button
-                          type="button"
-                          onClick={removeImage}
-                          className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                          title="Xóa hình ảnh"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
-                    )}
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={handleImageChange}
-                      accept="image/*"
-                      className="hidden"
-                    />
-                    <Button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      variant="outline"
-                      size="sm"
-                      className="flex-shrink-0"
-                    >
-                      <Upload className="w-4 h-4 mr-1" />
-                      Chọn hình
-                    </Button>
-                  </div>
+                  <input
+                    type="url"
+                    name="image"
+                    value={formData.image}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    placeholder="URL hình ảnh"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Tags
+                  </label>
+                  <input
+                    type="text"
+                    name="tags"
+                    value={formData.tags}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    placeholder="Tag1, Tag2, Tag3 (phân cách bằng dấu phẩy)"
+                  />
                 </div>
                 
                 <div className="flex justify-end space-x-3 pt-4">
@@ -656,7 +483,7 @@ export default function AdminHealthArticlesManagePage() {
               <form onSubmit={handleEditArticle} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Tiêu đề bài viết *
+                    Tiêu đề *
                   </label>
                   <input
                     type="text"
@@ -691,8 +518,9 @@ export default function AdminHealthArticlesManagePage() {
                     value={formData.content}
                     onChange={handleInputChange}
                     required
-                    rows={6}
+                    rows={8}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    placeholder="Nhập nội dung HTML..."
                   />
                 </div>
                 
@@ -723,90 +551,42 @@ export default function AdminHealthArticlesManagePage() {
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     >
                       <option value="">Chọn danh mục</option>
-                      {categories.map((category) => (
-                        <option key={category} value={category}>
-                          {category}
-                        </option>
-                      ))}
+                      <option value="Sức khỏe tổng quát">Sức khỏe tổng quát</option>
+                      <option value="Dinh dưỡng">Dinh dưỡng</option>
+                      <option value="Tập luyện">Tập luyện</option>
+                      <option value="Tâm lý">Tâm lý</option>
+                      <option value="Bệnh thường gặp">Bệnh thường gặp</option>
                     </select>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Thời gian đọc *
-                    </label>
-                    <input
-                      type="text"
-                      name="readTime"
-                      value={formData.readTime}
-                      onChange={handleInputChange}
-                      placeholder="VD: 5 phút"
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Tags
-                    </label>
-                    <input
-                      type="text"
-                      name="tags"
-                      value={formData.tags}
-                      onChange={handleInputChange}
-                      placeholder="VD: sức khỏe, vitamin, miễn dịch"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    />
                   </div>
                 </div>
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Hình ảnh bài viết *
+                    Hình ảnh *
                   </label>
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="url"
-                      name="image"
-                      value={formData.image}
-                      onChange={handleInputChange}
-                      placeholder="Hoặc nhập URL hình ảnh"
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    />
-                    {imagePreview && (
-                      <div className="relative">
-                        <img src={imagePreview} alt="Preview" className="w-12 h-12 rounded-lg object-cover" />
-                        <button
-                          type="button"
-                          onClick={removeImage}
-                          className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                          title="Xóa hình ảnh"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
-                    )}
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={handleImageChange}
-                      accept="image/*"
-                      className="hidden"
-                    />
-                    <Button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      variant="outline"
-                      size="sm"
-                      className="flex-shrink-0"
-                    >
-                      <Upload className="w-4 h-4 mr-1" />
-                      Chọn hình
-                    </Button>
-                  </div>
+                  <input
+                    type="url"
+                    name="image"
+                    value={formData.image}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    placeholder="URL hình ảnh"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Tags
+                  </label>
+                  <input
+                    type="text"
+                    name="tags"
+                    value={formData.tags}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    placeholder="Tag1, Tag2, Tag3 (phân cách bằng dấu phẩy)"
+                  />
                 </div>
                 
                 <div className="flex justify-end space-x-3 pt-4">

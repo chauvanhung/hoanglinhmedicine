@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Search, Calendar, Clock, User, ArrowRight, Heart, Brain, Shield, Activity } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import Header from '@/components/Header'
@@ -8,6 +9,7 @@ import Footer from '@/components/Footer'
 import { getAllHealthArticles, getHealthArticleCategories, searchHealthArticles, getHealthArticlesByCategory, HealthArticle } from '@/lib/firebaseData'
 
 export default function HealthCornerPage() {
+  const router = useRouter()
   const [articles, setArticles] = useState<HealthArticle[]>([])
   const [categories, setCategories] = useState<{ name: string; count: number }[]>([])
   const [selectedCategory, setSelectedCategory] = useState('Tất cả')
@@ -237,6 +239,7 @@ export default function HealthCornerPage() {
                     </div>
                     
                     <Button
+                      onClick={() => router.push(`/health-articles/${article.id}`)}
                       variant="outline"
                       size="sm"
                       className="flex items-center"
