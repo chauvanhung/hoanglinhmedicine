@@ -31,7 +31,8 @@ export default function AdminProductManagePage() {
     price: '',
     category: '',
     image: '',
-    stock: ''
+    stock: '',
+    prescription: false
   })
 
   // Check admin access
@@ -114,10 +115,10 @@ export default function AdminProductManagePage() {
   )
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
+    const { name, value, type } = e.target
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
     }))
   }
 
@@ -162,7 +163,8 @@ export default function AdminProductManagePage() {
       price: '',
       category: '',
       image: '',
-      stock: ''
+      stock: '',
+      prescription: false
     })
     setSelectedImage(null)
     setImagePreview('')
@@ -198,7 +200,7 @@ export default function AdminProductManagePage() {
             reviews: [],
             images: [base64String],
             image: base64String, // Use base64 as image URL
-            prescription: false,
+            prescription: formData.prescription,
             createdAt: new Date(),
             updatedAt: new Date()
           }
@@ -222,7 +224,7 @@ export default function AdminProductManagePage() {
         rating: 4.5,
         reviews: [],
         images: [imageUrl],
-        prescription: false,
+        prescription: formData.prescription,
         createdAt: new Date(),
         updatedAt: new Date()
       }
@@ -319,7 +321,8 @@ export default function AdminProductManagePage() {
       price: product.price.toString(),
       category: product.category,
       image: product.image,
-      stock: product.stock.toString()
+      stock: product.stock.toString(),
+      prescription: product.prescription || false
     })
     setSelectedImage(null) // Clear selected image when opening edit modal
     setImagePreview('')
@@ -601,6 +604,19 @@ export default function AdminProductManagePage() {
                   </div>
                 </div>
                 
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="prescription"
+                    checked={formData.prescription}
+                    onChange={handleInputChange}
+                    className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                  />
+                  <label className="ml-2 block text-sm text-gray-900">
+                    Đây là thuốc kê đơn
+                  </label>
+                </div>
+                
                 <div className="flex justify-end space-x-3 pt-4">
                   <Button
                     type="button"
@@ -751,6 +767,19 @@ export default function AdminProductManagePage() {
                       Chọn hình
                     </Button>
                   </div>
+                </div>
+                
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="prescription"
+                    checked={formData.prescription}
+                    onChange={handleInputChange}
+                    className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                  />
+                  <label className="ml-2 block text-sm text-gray-900">
+                    Đây là thuốc kê đơn
+                  </label>
                 </div>
                 
                 <div className="flex justify-end space-x-3 pt-4">
