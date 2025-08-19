@@ -477,6 +477,22 @@ export default function AdminProductManagePage() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
               <h2 className="text-xl font-semibold mb-4">Thêm sản phẩm mới</h2>
+              
+              <div className="mb-4 p-4 bg-red-500 text-white rounded-lg">
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="prescription"
+                    checked={formData.prescription}
+                    onChange={handleInputChange}
+                    className="h-6 w-6"
+                  />
+                  <label className="ml-3 text-lg font-bold">
+                    🚨 Đây là thuốc kê đơn
+                  </label>
+                </div>
+              </div>
+              
               <form onSubmit={handleAddProduct} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -604,19 +620,6 @@ export default function AdminProductManagePage() {
                   </div>
                 </div>
                 
-                <div className="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
-                  <input
-                    type="checkbox"
-                    name="prescription"
-                    checked={formData.prescription}
-                    onChange={handleInputChange}
-                    className="h-5 w-5 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
-                  />
-                  <label className="text-sm font-medium text-gray-900">
-                    Đây là thuốc kê đơn
-                  </label>
-                </div>
-                
                 <div className="flex justify-end space-x-3 pt-4">
                   <Button
                     type="button"
@@ -642,6 +645,22 @@ export default function AdminProductManagePage() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
               <h2 className="text-xl font-semibold mb-4">Sửa sản phẩm</h2>
+              
+              <div className="mb-4 p-4 bg-red-500 text-white rounded-lg">
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="prescription"
+                    checked={formData.prescription}
+                    onChange={handleInputChange}
+                    className="h-6 w-6"
+                  />
+                  <label className="ml-3 text-lg font-bold">
+                    🚨 Đây là thuốc kê đơn
+                  </label>
+                </div>
+              </div>
+              
               <form onSubmit={handleEditProduct} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -767,19 +786,6 @@ export default function AdminProductManagePage() {
                       Chọn hình
                     </Button>
                   </div>
-                </div>
-                
-                <div className="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
-                  <input
-                    type="checkbox"
-                    name="prescription"
-                    checked={formData.prescription}
-                    onChange={handleInputChange}
-                    className="h-5 w-5 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
-                  />
-                  <label className="text-sm font-medium text-gray-900">
-                    Đây là thuốc kê đơn
-                  </label>
                 </div>
                 
                 <div className="flex justify-end space-x-3 pt-4">
