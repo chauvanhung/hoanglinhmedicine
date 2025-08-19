@@ -604,15 +604,15 @@ export default function AdminProductManagePage() {
                   </div>
                 </div>
                 
-                <div className="flex items-center">
+                <div className="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
                   <input
                     type="checkbox"
                     name="prescription"
                     checked={formData.prescription}
                     onChange={handleInputChange}
-                    className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                    className="h-5 w-5 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
                   />
-                  <label className="ml-2 block text-sm text-gray-900">
+                  <label className="text-sm font-medium text-gray-900">
                     Đây là thuốc kê đơn
                   </label>
                 </div>
@@ -769,15 +769,15 @@ export default function AdminProductManagePage() {
                   </div>
                 </div>
                 
-                <div className="flex items-center">
+                <div className="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
                   <input
                     type="checkbox"
                     name="prescription"
                     checked={formData.prescription}
                     onChange={handleInputChange}
-                    className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                    className="h-5 w-5 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
                   />
-                  <label className="ml-2 block text-sm text-gray-900">
+                  <label className="text-sm font-medium text-gray-900">
                     Đây là thuốc kê đơn
                   </label>
                 </div>
