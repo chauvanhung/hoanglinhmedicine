@@ -1,244 +1,152 @@
-# Hoàng Linh Medicine - Ứng dụng bán thuốc & Tư vấn AI
+# HealthCare Pro - Ứng dụng chăm sóc sức khỏe số
 
-Ứng dụng web hiện đại cho việc bán thuốc trực tuyến với tính năng tư vấn AI thông minh.
+## Mô tả
+HealthCare Pro là một trang web hiện đại được thiết kế dành cho người béo phì, cung cấp các tính năng toàn diện để hỗ trợ hành trình giảm cân và cải thiện sức khỏe.
 
-## 🚀 Tính năng chính
+## Tính năng chính
 
-### 🛍️ Quản lý sản phẩm
-- **Danh mục thuốc đa dạng**: Thuốc giảm đau, vitamin, thuốc tiêu hóa, thuốc dị ứng
-- **Tìm kiếm thông minh**: Tìm kiếm thuốc theo tên, danh mục
-- **Chi tiết sản phẩm**: Thông tin đầy đủ về thuốc, liều lượng, tác dụng phụ
-- **Quản lý đơn thuốc**: Phân biệt thuốc cần đơn và không cần đơn
+### 1. 🧮 Tính chỉ số BMI
+- Máy tính BMI chính xác
+- Phân loại trạng thái sức khỏe
+- Biểu đồ trực quan với màu sắc phân biệt
+- Kết quả chi tiết và dễ hiểu
 
-### 🤖 Tư vấn AI
-- **Chatbot thông minh**: Tư vấn sức khỏe 24/7
-- **Tư vấn thuốc**: Hướng dẫn sử dụng, tương tác thuốc
-- **Chẩn đoán sơ bộ**: Phân tích triệu chứng và đưa ra lời khuyên
-- **Đa ngôn ngữ**: Hỗ trợ tiếng Việt
+### 2. 🍽️ Thực đơn dinh dưỡng
+- Chia theo bữa ăn: sáng, trưa, tối, phụ
+- Thông tin calo chi tiết
+- Hình ảnh minh họa đẹp mắt
+- Giao diện tab dễ sử dụng
 
-### 🛒 Giỏ hàng & Thanh toán
-- **Quản lý giỏ hàng**: Thêm, sửa, xóa sản phẩm
-- **Tính toán tự động**: Tổng tiền, phí vận chuyển
-- **Thanh toán an toàn**: Tích hợp Stripe
-- **Theo dõi đơn hàng**: Trạng thái real-time
+### 3. 💪 Hướng dẫn tập luyện
+- **Cardio**: Đi bộ, chạy bộ, đạp xe
+- **Strength Training**: Nâng tạ, bodyweight exercises
+- **Flexibility**: Yoga, stretching
+- Thông tin thời gian và calo tiêu hao
 
-### 👤 Quản lý người dùng
-- **Đăng ký/Đăng nhập**: Hệ thống xác thực an toàn
-- **Hồ sơ cá nhân**: Thông tin, địa chỉ giao hàng
-- **Lịch sử đơn hàng**: Theo dõi các đơn hàng đã mua
-- **Đánh giá sản phẩm**: Chia sẻ trải nghiệm
+### 4. 👨‍⚕️ Tư vấn chuyên gia
+- **Tư vấn AI**: Phản hồi ngay lập tức
+- **Gặp bác sĩ trực tiếp**: Đặt lịch > 2 tháng
+- Thông tin chi tiết về dịch vụ
 
-## 🛠️ Công nghệ sử dụng
+### 5. 🗺️ Lộ trình và thành tích
+- Timeline 4 giai đoạn rõ ràng
+- Mục tiêu cụ thể cho từng giai đoạn
+- Hệ thống thành tích với icon đẹp mắt
 
-### Frontend
-- **Next.js 14**: Framework React hiện đại
-- **TypeScript**: Type safety
-- **Tailwind CSS**: Styling utility-first
-- **Framer Motion**: Animation mượt mà
-- **Zustand**: State management
-- **React Hook Form**: Form handling
-- **Zod**: Schema validation
+### 6. 🔗 Tích hợp thiết bị
+- **Apple Watch**: HealthKit API, Google Fit API
+- **Ứng dụng đếm calo**: Nutrition API
+- Đồng bộ dữ liệu sức khỏe
 
-### Backend & Database
-- **Next.js API Routes**: Backend API
-- **Prisma**: ORM cho database
-- **PostgreSQL**: Database chính
-- **NextAuth.js**: Authentication
+## Công nghệ sử dụng
 
-### AI & External Services
-- **OpenAI API**: Tư vấn AI
-- **Stripe**: Thanh toán
-- **Vercel**: Deployment
+- **HTML5**: Cấu trúc semantic
+- **CSS3**: 
+  - Flexbox và Grid layout
+  - CSS Variables
+  - Animations và Transitions
+  - Responsive design
+  - Modern gradients và shadows
+- **JavaScript ES6+**:
+  - DOM manipulation
+  - Event handling
+  - Smooth scrolling
+  - Form validation
+  - Intersection Observer API
+  - Custom animations
 
-## 📦 Cài đặt
-
-### Yêu cầu hệ thống
-- Node.js 18+ 
-- npm hoặc yarn
-- PostgreSQL database
-
-### Bước 1: Clone repository
-```bash
-git clone https://github.com/chauvanhung/hoanglinhmedicine.git
-cd hoanglinhmedicine
-```
-
-### Bước 2: Cài đặt dependencies
-```bash
-npm install
-# hoặc
-yarn install
-```
-
-### Bước 3: Cấu hình environment
-Tạo file `.env.local`:
-```env
-# Database
-DATABASE_URL="postgresql://username:password@localhost:5432/hoanglinh_medicine"
-
-# NextAuth
-NEXTAUTH_SECRET="your-secret-key"
-NEXTAUTH_URL="http://localhost:3000"
-
-# OpenAI
-OPENAI_API_KEY="your-openai-api-key"
-
-# Stripe
-STRIPE_SECRET_KEY="your-stripe-secret-key"
-STRIPE_PUBLISHABLE_KEY="your-stripe-publishable-key"
-```
-
-### Bước 4: Setup database
-```bash
-# Tạo database schema
-npx prisma generate
-npx prisma db push
-
-# Seed dữ liệu mẫu (tùy chọn)
-npx prisma db seed
-```
-
-### Bước 5: Chạy ứng dụng
-```bash
-npm run dev
-# hoặc
-yarn dev
-```
-
-Truy cập: http://localhost:3000
-
-## 🏗️ Cấu trúc dự án
+## Cấu trúc file
 
 ```
 hoanglinhmedicine/
-├── app/                    # Next.js App Router
-│   ├── globals.css        # Global styles
-│   ├── layout.tsx         # Root layout
-│   └── page.tsx           # Homepage
-├── components/            # React components
-│   ├── ui/               # UI components
-│   ├── Header.tsx        # Navigation header
-│   ├── Hero.tsx          # Hero section
-│   ├── ProductGrid.tsx   # Product display
-│   ├── ProductCard.tsx   # Product card
-│   ├── AIConsultation.tsx # AI chat
-│   └── Footer.tsx        # Footer
-├── lib/                  # Utility functions
-├── store/                # Zustand stores
-├── types/                # TypeScript types
-├── prisma/               # Database schema
-└── public/               # Static assets
+├── index.html          # Trang chính
+├── styles.css          # Stylesheet
+├── script.js           # JavaScript functionality
+└── README.md           # Hướng dẫn sử dụng
 ```
 
-## 🎨 UI/UX Features
+## Cách sử dụng
 
-### Design System
-- **Color Palette**: Primary blue, secondary purple
-- **Typography**: Inter font family
-- **Components**: Consistent button, card, input styles
-- **Responsive**: Mobile-first design
+### 1. Mở trang web
+- Mở file `index.html` trong trình duyệt web
+- Hoặc sử dụng live server để chạy local
 
-### User Experience
-- **Loading States**: Skeleton loading, spinners
-- **Error Handling**: Toast notifications, error boundaries
-- **Accessibility**: ARIA labels, keyboard navigation
-- **Performance**: Image optimization, code splitting
+### 2. Tính BMI
+- Cuộn xuống phần "Tính chỉ số BMI"
+- Nhập chiều cao (cm) và cân nặng (kg)
+- Nhấn "Tính BMI" để xem kết quả
 
-## 🤖 AI Consultation Features
+### 3. Xem thực đơn
+- Chuyển đến phần "Thực đơn dinh dưỡng"
+- Chọn tab bữa ăn mong muốn
+- Xem thông tin chi tiết và calo
 
-### Capabilities
-- **Health Advice**: Tư vấn sức khỏe cơ bản
-- **Medicine Information**: Thông tin thuốc, liều lượng
-- **Symptom Analysis**: Phân tích triệu chứng
-- **Lifestyle Tips**: Lời khuyên về lối sống
+### 4. Khám phá bài tập
+- Cuộn xuống phần "Hướng dẫn tập luyện"
+- Chọn loại bài tập phù hợp
+- Xem thời gian và calo tiêu hao
 
-### Safety Measures
-- **Medical Disclaimer**: Cảnh báo không thay thế bác sĩ
-- **Emergency Alerts**: Hướng dẫn khi cần cấp cứu
-- **Prescription Warnings**: Cảnh báo thuốc kê đơn
+### 5. Tư vấn
+- Chọn loại tư vấn phù hợp
+- Nhấn nút để bắt đầu dịch vụ
 
-## 🔒 Bảo mật
+## Tính năng responsive
 
-### Authentication
-- **JWT Tokens**: Secure session management
-- **Password Hashing**: bcrypt encryption
-- **CSRF Protection**: Cross-site request forgery prevention
+- **Desktop**: Giao diện đầy đủ với layout 2 cột
+- **Tablet**: Tự động điều chỉnh layout
+- **Mobile**: 
+  - Menu hamburger
+  - Layout 1 cột
+  - Touch-friendly buttons
+  - Optimized spacing
 
-### Data Protection
-- **Input Validation**: Zod schema validation
-- **SQL Injection Prevention**: Prisma ORM
-- **XSS Protection**: Content Security Policy
+## Hiệu ứng và animations
 
-## 🚀 Deployment
+- **Loading screen**: Animation khởi động
+- **Scroll animations**: Elements fade in khi scroll
+- **Hover effects**: Interactive feedback
+- **Smooth scrolling**: Navigation mượt mà
+- **Progress bar**: Hiển thị tiến độ scroll
+- **Floating Action Button**: Nút scroll to top
 
-### Vercel (Recommended)
-```bash
-# Install Vercel CLI
-npm i -g vercel
+## Tùy chỉnh
 
-# Deploy
-vercel
+### Thay đổi màu sắc
+Chỉnh sửa CSS variables trong `styles.css`:
+```css
+:root {
+    --primary-color: #667eea;
+    --secondary-color: #764ba2;
+    --accent-color: #ff6b6b;
+}
 ```
 
-### Environment Variables
-Đảm bảo cấu hình đầy đủ environment variables trên Vercel:
-- DATABASE_URL
-- NEXTAUTH_SECRET
-- OPENAI_API_KEY
-- STRIPE_SECRET_KEY
+### Thêm tính năng mới
+- Thêm section mới trong `index.html`
+- Style tương ứng trong `styles.css`
+- Logic JavaScript trong `script.js`
 
-## 📱 Mobile Responsive
+## Hỗ trợ trình duyệt
 
-Ứng dụng được thiết kế responsive cho:
-- **Desktop**: 1024px+
-- **Tablet**: 768px - 1023px  
-- **Mobile**: 320px - 767px
+- ✅ Chrome (khuyến nghị)
+- ✅ Firefox
+- ✅ Safari
+- ✅ Edge
+- ⚠️ IE11+ (một số tính năng có thể không hoạt động)
 
-## 🔧 Development
+## Tác giả
 
-### Scripts
-```bash
-npm run dev          # Development server
-npm run build        # Production build
-npm run start        # Production server
-npm run lint         # ESLint check
-npm run type-check   # TypeScript check
-```
+Trang web được tạo dựa trên ý tưởng từ hình ảnh về ứng dụng chăm sóc sức khỏe số dành cho người béo phì.
 
-### Code Style
-- **ESLint**: Code linting
-- **Prettier**: Code formatting
-- **TypeScript**: Type checking
+## Giấy phép
 
-## 🤝 Contributing
-
-1. Fork repository
-2. Tạo feature branch: `git checkout -b feature/new-feature`
-3. Commit changes: `git commit -am 'Add new feature'`
-4. Push branch: `git push origin feature/new-feature`
-5. Tạo Pull Request
-
-## 📄 License
-
-MIT License - xem file [LICENSE](LICENSE) để biết thêm chi tiết.
-
-## 📞 Liên hệ
-
-- **Email**: info@hoanglinh.com
-- **Phone**: 1900-1234
-- **Website**: https://hoanglinh-medicine.com
-
-## 🙏 Acknowledgments
-
-- Next.js team cho framework tuyệt vời
-- OpenAI cho AI capabilities
-- Tailwind CSS cho styling system
-- Cộng đồng open source
+Dự án này được tạo ra cho mục đích giáo dục và demo. Bạn có thể tự do sử dụng và chỉnh sửa theo nhu cầu.
 
 ---
 
-**Lưu ý**: Đây là dự án demo. Để sử dụng trong production, vui lòng:
-1. Cấu hình đầy đủ security measures
-2. Tích hợp với hệ thống thanh toán thực
-3. Tuân thủ quy định về bán thuốc online
-4. Có giấy phép kinh doanh dược phẩm
+**Lưu ý**: Đây là một trang web demo. Để sử dụng trong thực tế, bạn cần:
+- Thay thế placeholder images bằng hình ảnh thực
+- Tích hợp backend và database
+- Thêm authentication và user management
+- Implement các API thực tế
+- Thêm validation và security measures

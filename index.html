@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthCare Pro - Ứng dụng chăm sóc sức khỏe số</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-brand">
+                <i class="fas fa-heartbeat"></i>
+                <span>HealthCare Pro</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home">Trang chủ</a></li>
+                <li><a href="#bmi">BMI</a></li>
+                <li><a href="#menu">Thực đơn</a></li>
+                <li><a href="#exercise">Tập luyện</a></li>
+                <li><a href="#consultation">Tư vấn</a></li>
+                <li><a href="#roadmap">Lộ trình</a></li>
+            </ul>
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Ứng dụng chăm sóc sức khỏe số dành cho người béo phì</h1>
+            <p>Hỗ trợ toàn diện trong hành trình giảm cân và cải thiện sức khỏe</p>
+            <div class="hero-features">
+                <div class="feature-item">
+                    <i class="fas fa-calculator"></i>
+                    <span>Tính BMI</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-utensils"></i>
+                    <span>Thực đơn dinh dưỡng</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-dumbbell"></i>
+                    <span>Hướng dẫn tập luyện</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-user-md"></i>
+                    <span>Tư vấn chuyên gia</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-image">
+            <div class="phone-mockup">
+                <div class="screen">
+                    <div class="app-icon">FTT</div>
+                    <div class="app-grid">
+                        <div class="grid-item">A</div>
+                        <div class="grid-item">B</div>
+                        <div class="grid-item">C</div>
+                        <div class="grid-item">D</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BMI Calculator Section -->
+    <section id="bmi" class="bmi-section">
+        <div class="container">
+            <h2><i class="fas fa-calculator"></i> Tính chỉ số BMI</h2>
+            <div class="bmi-calculator">
+                <div class="input-group">
+                    <label for="height">Chiều cao (cm)</label>
+                    <input type="number" id="height" placeholder="Nhập chiều cao của bạn">
+                </div>
+                <div class="input-group">
+                    <label for="weight">Cân nặng (kg)</label>
+                    <input type="number" id="weight" placeholder="Nhập cân nặng của bạn">
+                </div>
+                <button id="calculateBMI" class="btn-primary">
+                    <i class="fas fa-calculator"></i> Tính BMI
+                </button>
+                <div id="bmiResult" class="bmi-result hidden">
+                    <h3>Kết quả BMI của bạn</h3>
+                    <div class="bmi-value" id="bmiValue">0</div>
+                    <div class="bmi-category" id="bmiCategory">Bình thường</div>
+                    <div class="bmi-chart">
+                        <div class="chart-bar underweight">
+                            <span>Thiếu cân</span>
+                            <small>&lt; 18.5</small>
+                        </div>
+                        <div class="chart-bar normal">
+                            <span>Bình thường</span>
+                            <small>18.5 - 24.9</small>
+                        </div>
+                        <div class="chart-bar overweight">
+                            <span>Thừa cân</span>
+                            <small>25 - 29.9</small>
+                        </div>
+                        <div class="chart-bar obese">
+                            <span>Béo phì</span>
+                            <small>&gt; 30</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Menu Section -->
+    <section id="menu" class="menu-section">
+        <div class="container">
+            <h2><i class="fas fa-utensils"></i> Thực đơn dinh dưỡng</h2>
+            <div class="menu-tabs">
+                <button class="tab-btn active" data-tab="breakfast">Bữa sáng</button>
+                <button class="tab-btn" data-tab="lunch">Bữa trưa</button>
+                <button class="tab-btn" data-tab="dinner">Bữa tối</button>
+                <button class="tab-btn" data-tab="snacks">Bữa phụ</button>
+            </div>
+            <div class="menu-content">
+                <div class="tab-content active" id="breakfast">
+                    <div class="menu-grid">
+                        <div class="menu-item">
+                            <img src="https://via.placeholder.com/200x150/4CAF50/white?text=Bữa+sáng+1" alt="Bữa sáng">
+                            <h4>Bữa sáng giàu protein</h4>
+                            <p>Trứng luộc, bánh mì đen, sữa chua Hy Lạp</p>
+                            <span class="calories">350 cal</span>
+                        </div>
+                        <div class="menu-item">
+                            <img src="https://via.placeholder.com/200x150/8BC34A/white?text=Bữa+sáng+2" alt="Bữa sáng">
+                            <h4>Bữa sáng xanh</h4>
+                            <p>Sinh tố rau xanh, hạt chia, chuối</p>
+                            <span class="calories">280 cal</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-content" id="lunch">
+                    <div class="menu-grid">
+                        <div class="menu-item">
+                            <img src="https://via.placeholder.com/200x150/FF9800/white?text=Bữa+trưa+1" alt="Bữa trưa">
+                            <h4>Salad gà nướng</h4>
+                            <p>Rau xanh, ức gà nướng, dầu oliu</p>
+                            <span class="calories">420 cal</span>
+                        </div>
+                        <div class="menu-item">
+                            <img src="https://via.placeholder.com/200x150/795548/white?text=Bữa+trưa+2" alt="Bữa trưa">
+                            <h4>Cơm gạo lứt</h4>
+                            <p>Cá hồi, rau củ hấp, nước mắm</p>
+                            <span class="calories">380 cal</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-content" id="dinner">
+                    <div class="menu-grid">
+                        <div class="menu-item">
+                            <img src="https://via.placeholder.com/200x150/9C27B0/white?text=Bữa+tối+1" alt="Bữa tối">
+                            <h4>Súp rau củ</h4>
+                            <p>Bí đỏ, cà rốt, hành tây, nước dùng gà</p>
+                            <span class="calories">250 cal</span>
+                        </div>
+                        <div class="menu-item">
+                            <img src="https://via.placeholder.com/200x150/607D8B/white?text=Bữa+tối+2" alt="Bữa tối">
+                            <h4>Gà luộc rau</h4>
+                            <p>Ức gà luộc, rau cải, nước mắm</p>
+                            <span class="calories">300 cal</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-content" id="snacks">
+                    <div class="menu-grid">
+                        <div class="menu-item">
+                            <img src="https://via.placeholder.com/200x150/4CAF50/white?text=Bữa+phụ+1" alt="Bữa phụ">
+                            <h4>Hạt hạnh nhân</h4>
+                            <p>10 hạt hạnh nhân, giàu protein</p>
+                            <span class="calories">160 cal</span>
+                        </div>
+                        <div class="menu-item">
+                            <img src="https://via.placeholder.com/200x150/8BC34A/white?text=Bữa+phụ+2" alt="Bữa phụ">
+                            <h4>Táo xanh</h4>
+                            <p>1 quả táo, giàu chất xơ</p>
+                            <span class="calories">80 cal</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Exercise Section -->
+    <section id="exercise" class="exercise-section">
+        <div class="container">
+            <h2><i class="fas fa-dumbbell"></i> Hướng dẫn tập luyện</h2>
+            <div class="exercise-categories">
+                <div class="exercise-category">
+                    <div class="category-icon">
+                        <i class="fas fa-walking"></i>
+                    </div>
+                    <h3>Cardio</h3>
+                    <p>Đi bộ, chạy bộ, đạp xe</p>
+                    <div class="exercise-list">
+                        <div class="exercise-item">
+                            <span class="exercise-name">Đi bộ nhanh</span>
+                            <span class="exercise-duration">30 phút</span>
+                            <span class="exercise-calories">150 cal</span>
+                        </div>
+                        <div class="exercise-item">
+                            <span class="exercise-name">Chạy bộ</span>
+                            <span class="exercise-duration">20 phút</span>
+                            <span class="exercise-calories">200 cal</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="exercise-category">
+                    <div class="category-icon">
+                        <i class="fas fa-dumbbell"></i>
+                    </div>
+                    <h3>Strength Training</h3>
+                    <p>Nâng tạ, bodyweight exercises</p>
+                    <div class="exercise-list">
+                        <div class="exercise-item">
+                            <span class="exercise-name">Squat</span>
+                            <span class="exercise-duration">3x15</span>
+                            <span class="exercise-calories">80 cal</span>
+                        </div>
+                        <div class="exercise-item">
+                            <span class="exercise-name">Push-up</span>
+                            <span class="exercise-duration">3x10</span>
+                            <span class="exercise-calories">60 cal</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="exercise-category">
+                    <div class="category-icon">
+                        <i class="fas fa-yoga"></i>
+                    </div>
+                    <h3>Flexibility</h3>
+                    <p>Yoga, stretching</p>
+                    <div class="exercise-list">
+                        <div class="exercise-item">
+                            <span class="exercise-name">Yoga cơ bản</span>
+                            <span class="exercise-duration">20 phút</span>
+                            <span class="exercise-calories">100 cal</span>
+                        </div>
+                        <div class="exercise-item">
+                            <span class="exercise-name">Stretching</span>
+                            <span class="exercise-duration">15 phút</span>
+                            <span class="exercise-calories">50 cal</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Consultation Section -->
+    <section id="consultation" class="consultation-section">
+        <div class="container">
+            <h2><i class="fas fa-user-md"></i> Tư vấn chuyên gia</h2>
+            <div class="consultation-options">
+                <div class="consultation-card ai-consultation">
+                    <div class="card-header">
+                        <i class="fas fa-robot"></i>
+                        <h3>Tư vấn AI</h3>
+                    </div>
+                    <div class="card-content">
+                        <p>Nhận tư vấn 24/7 từ AI thông minh</p>
+                        <ul>
+                            <li>Phân tích chế độ ăn</li>
+                            <li>Đề xuất bài tập</li>
+                            <li>Theo dõi tiến độ</li>
+                        </ul>
+                        <div class="consultation-time">
+                            <i class="fas fa-clock"></i>
+                            <span>Phản hồi ngay lập tức</span>
+                        </div>
+                        <button class="btn-secondary">Bắt đầu tư vấn AI</button>
+                    </div>
+                </div>
+                <div class="consultation-card doctor-consultation">
+                    <div class="card-header">
+                        <i class="fas fa-user-md"></i>
+                        <h3>Gặp bác sĩ trực tiếp</h3>
+                    </div>
+                    <div class="card-content">
+                        <p>Tư vấn trực tiếp với chuyên gia dinh dưỡng</p>
+                        <ul>
+                            <li>Khám sức khỏe tổng quát</li>
+                            <li>Lập kế hoạch giảm cân</li>
+                            <li>Theo dõi định kỳ</li>
+                        </ul>
+                        <div class="consultation-time">
+                            <i class="fas fa-calendar"></i>
+                            <span>Đặt lịch > 2 tháng</span>
+                        </div>
+                        <button class="btn-secondary">Đặt lịch khám</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Roadmap Section -->
+    <section id="roadmap" class="roadmap-section">
+        <div class="container">
+            <h2><i class="fas fa-route"></i> Lộ trình và thành tích</h2>
+            <div class="roadmap-container">
+                <div class="roadmap-timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker">1</div>
+                        <div class="timeline-content">
+                            <h4>Tuần 1-2</h4>
+                            <p>Thiết lập thói quen ăn uống và tập luyện cơ bản</p>
+                            <div class="achievement">
+                                <i class="fas fa-trophy"></i>
+                                <span>Hoàn thành 7 ngày đầu tiên</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker">2</div>
+                        <div class="timeline-content">
+                            <h4>Tuần 3-4</h4>
+                            <p>Tăng cường độ tập luyện và điều chỉnh chế độ ăn</p>
+                            <div class="achievement">
+                                <i class="fas fa-medal"></i>
+                                <span>Giảm 2-3kg</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker">3</div>
+                        <div class="timeline-content">
+                            <h4>Tháng 2-3</h4>
+                            <p>Duy trì và cải thiện kết quả</p>
+                            <div class="achievement">
+                                <i class="fas fa-star"></i>
+                                <span>Đạt mục tiêu BMI</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker">4</div>
+                        <div class="timeline-content">
+                            <h4>Tháng 4-6</h4>
+                            <p>Duy trì lâu dài và tối ưu hóa</p>
+                            <div class="achievement">
+                                <i class="fas fa-crown"></i>
+                                <span>Thành công bền vững</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Integration Section -->
+    <section class="integration-section">
+        <div class="container">
+            <h2><i class="fas fa-link"></i> Tích hợp thiết bị</h2>
+            <div class="integration-devices">
+                <div class="device-card">
+                    <div class="device-icon">
+                        <i class="fab fa-apple"></i>
+                    </div>
+                    <h3>Apple Watch</h3>
+                    <p>Theo dõi nhịp tim, calo, hoạt động</p>
+                    <div class="api-integrations">
+                        <div class="api-item">
+                            <i class="fas fa-heart"></i>
+                            <span>HealthKit API</span>
+                        </div>
+                        <div class="api-item">
+                            <i class="fas fa-running"></i>
+                            <span>Google Fit API</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="device-card">
+                    <div class="device-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Ứng dụng đếm calo</h3>
+                    <p>Đồng bộ dữ liệu dinh dưỡng</p>
+                    <div class="api-integrations">
+                        <div class="api-item">
+                            <i class="fas fa-utensils"></i>
+                            <span>Nutrition API</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>HealthCare Pro</h3>
+                    <p>Ứng dụng chăm sóc sức khỏe số hàng đầu cho người béo phì</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Tính năng</h4>
+                    <ul>
+                        <li><a href="#bmi">Tính BMI</a></li>
+                        <li><a href="#menu">Thực đơn</a></li>
+                        <li><a href="#exercise">Tập luyện</a></li>
+                        <li><a href="#consultation">Tư vấn</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Liên hệ</h4>
+                    <p>Email: info@healthcarepro.vn</p>
+                    <p>Điện thoại: 1900-xxxx</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 HealthCare Pro. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
