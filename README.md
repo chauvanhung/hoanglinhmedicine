@@ -62,14 +62,17 @@ hoanglinhmedicine/
 ├── index.html          # Trang chính
 ├── styles.css          # Stylesheet
 ├── script.js           # JavaScript functionality
+├── package.json        # Node.js dependencies
+├── render.yaml         # Render deployment config
+├── Dockerfile          # Docker containerization
 └── README.md           # Hướng dẫn sử dụng
 ```
 
 ## Cách sử dụng
 
-### 1. Mở trang web
+### 1. Mở trang web local
 - Mở file `index.html` trong trình duyệt web
-- Hoặc sử dụng live server để chạy local
+- Hoặc chạy `npm run dev` để sử dụng local server
 
 ### 2. Tính BMI
 - Cuộn xuống phần "Tính chỉ số BMI"
@@ -89,6 +92,40 @@ hoanglinhmedicine/
 ### 5. Tư vấn
 - Chọn loại tư vấn phù hợp
 - Nhấn nút để bắt đầu dịch vụ
+
+## 🚀 Deploy lên Render
+
+### Bước 1: Chuẩn bị
+```bash
+# Clone repository
+git clone <your-repo-url>
+cd hoanglinhmedicine
+
+# Cài đặt dependencies
+npm install
+```
+
+### Bước 2: Push lên GitHub
+```bash
+git add .
+git commit -m "Initial commit"
+git push origin main
+```
+
+### Bước 3: Deploy trên Render
+1. Đăng nhập vào [Render.com](https://render.com)
+2. Click "New +" → "Web Service"
+3. Connect với GitHub repository
+4. Cấu hình:
+   - **Name**: healthcare-pro
+   - **Environment**: Node
+   - **Build Command**: `npm install`
+   - **Start Command**: `npm start`
+5. Click "Create Web Service"
+
+### Bước 4: Kiểm tra
+- Render sẽ tự động build và deploy
+- URL sẽ có dạng: `https://healthcare-pro.onrender.com`
 
 ## Tính năng responsive
 
@@ -133,6 +170,19 @@ Chỉnh sửa CSS variables trong `styles.css`:
 - ✅ Safari
 - ✅ Edge
 - ⚠️ IE11+ (một số tính năng có thể không hoạt động)
+
+## Troubleshooting
+
+### Lỗi Render ENOENT
+Nếu gặp lỗi `Could not read package.json`:
+1. Đảm bảo file `package.json` tồn tại
+2. Kiểm tra cấu hình trong `render.yaml`
+3. Restart service trên Render
+
+### Lỗi PORT
+Nếu gặp lỗi về PORT:
+- Render sẽ tự động set biến môi trường `$PORT`
+- Không cần hardcode port trong code
 
 ## Tác giả
 
