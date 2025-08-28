@@ -1,26 +1,18 @@
 {
   "name": "hoanglinh-obesity-care",
   "version": "1.0.0",
-  "description": "Ứng dụng chăm sóc béo phì với AI coaching, tư vấn bác sĩ và theo dõi sức khỏe",
+  "description": "Obesity Care Application - Full Stack",
   "private": true,
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "test": "turbo run test",
-    "clean": "turbo run clean",
-    "db:migrate": "cd apps/api && pnpm db:migrate",
-    "db:seed": "cd apps/api && pnpm db:seed",
-    "db:studio": "cd apps/api && pnpm db:studio"
+    "dev": "echo 'Use individual app commands: cd apps/web && npm run dev'",
+    "build": "echo 'Use individual app commands: cd apps/web && npm run build'",
+    "start": "echo 'Use individual app commands: cd apps/web && npm start'"
   },
   "devDependencies": {
-    "turbo": "^1.10.16",
-    "@types/node": "^20.8.0",
     "typescript": "^5.2.2"
   },
-  "packageManager": "pnpm@8.6.0",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ]
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
 }
