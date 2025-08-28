@@ -6,22 +6,18 @@ WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
-COPY pnpm-lock.yaml ./
-
-# Install pnpm
-RUN npm install -g pnpm
 
 # Install dependencies
-RUN pnpm install
+RUN npm ci --only=production
 
 # Copy the rest of the application code
 COPY . .
 
 # Build the application
-RUN pnpm run build
+RUN npm run build
 
 # Expose the port the app runs on
 EXPOSE 3001
 
 # Start the application
-CMD ["pnpm", "run", "start:prod"]
+CMD ["npm", "run", "start:prod"]
