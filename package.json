@@ -4,9 +4,12 @@
   "description": "Obesity Care Application - Full Stack",
   "private": true,
   "scripts": {
-    "dev": "echo 'Use individual app commands: cd apps/web && npm run dev'",
-    "build": "echo 'Use individual app commands: cd apps/web && npm run build'",
-    "start": "echo 'Use individual app commands: cd apps/web && npm start'"
+    "dev": "cd apps/web && npm run dev",
+    "build": "cd apps/web && npm run build",
+    "start": "cd apps/web && npm start",
+    "build:api": "cd apps/api && npm run build",
+    "start:api": "cd apps/api && npm run start:prod",
+    "install:all": "npm install && cd apps/web && npm install && cd ../api && npm install"
   },
   "devDependencies": {
     "typescript": "^5.2.2"
