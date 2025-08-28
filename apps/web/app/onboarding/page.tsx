@@ -131,7 +131,7 @@ export default function OnboardingPage() {
             </div>
 
             <div className="form-actions">
-              <button type="button" className="btn btn-primary" onClick="nextStep()">
+              <button type="button" className="btn btn-primary" onClick={() => {}}>
                 Tiếp theo →
               </button>
             </div>
@@ -210,10 +210,10 @@ export default function OnboardingPage() {
             </div>
 
             <div className="form-actions">
-              <button type="button" className="btn btn-outline" onClick="prevStep()">
+              <button type="button" className="btn btn-outline" onClick={() => {}}>
                 ← Quay lại
               </button>
-              <button type="button" className="btn btn-primary" onClick="nextStep()">
+              <button type="button" className="btn btn-primary" onClick={() => {}}>
                 Tiếp theo →
               </button>
             </div>
@@ -301,10 +301,10 @@ export default function OnboardingPage() {
             </div>
 
             <div className="form-actions">
-              <button type="button" className="btn btn-outline" onClick="prevStep()">
+              <button type="button" className="btn btn-outline" onClick={() => {}}>
                 ← Quay lại
               </button>
-              <button type="button" className="btn btn-primary" onClick="nextStep()">
+              <button type="button" className="btn btn-primary" onClick={() => {}}>
                 Tiếp theo →
               </button>
             </div>
@@ -391,10 +391,10 @@ export default function OnboardingPage() {
           </div>
 
           <div className="plan-actions">
-            <button type="button" className="btn btn-outline" onClick="prevStep()">
+            <button type="button" className="btn btn-outline" onClick={() => {}}>
               ← Quay lại
             </button>
-            <button type="button" className="btn btn-primary btn-large" onClick="completeOnboarding()">
+            <button type="button" className="btn btn-primary btn-large" onClick={() => {}}>
               ✅ Hoàn thành & Tạo tài khoản
             </button>
           </div>
