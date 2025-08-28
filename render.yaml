@@ -1,12 +1,47 @@
 services:
+  # Web Frontend
   - type: web
-    name: healthcare-pro
+    name: hoanglinh-web
     env: node
     plan: free
-    buildCommand: npm install
-    startCommand: npm start
+    buildCommand: cd apps/web && npm install && npm run build
+    startCommand: cd apps/web && npm start
     envVars:
       - key: NODE_ENV
         value: production
+      - key: NEXT_PUBLIC_API_URL
+        value: https://hoanglinh-api.onrender.com
     healthCheckPath: /
     autoDeploy: true
+
+  # API Backend
+  - type: web
+    name: hoanglinh-api
+    env: node
+    plan: free
+    buildCommand: cd apps/api && npm install && npm run build
+    startCommand: cd apps/api && npm run start:prod
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: REDIS_URL
+        sync: false
+    healthCheckPath: /api/health
+    autoDeploy: true
+
+databases:
+  # PostgreSQL Database
+  - name: hoanglinh-db
+    databaseName: hoanglinh_obesity
+    user: hoanglinh_user
+    plan: free
+
+  # Redis Cache
+  - name: hoanglinh-redis
+    plan: free

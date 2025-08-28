@@ -1,0 +1,341 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  role         UserRole @default(USER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  profile        Profile?
+  measurements   Measurement[]
+  goals          Goal[]
+  plans          Plan[]
+  deviceLinks    DeviceLink[]
+  chatSessions   ChatSession[]
+  consultations  Consultation[]
+  subscriptions  Subscription[]
+  paymentLogs    PaymentLog[]
+  mealLogs       MealLog[]
+  auditLogs      AuditLog[] @relation("ActorAuditLogs")
+
+  @@map("users")
+}
+
+model Profile {
+  id            String       @id @default(cuid())
+  userId        String       @unique
+  gender        Gender
+  birthYear     Int
+  heightCm      Float
+  waistCm       Float
+  activityLevel ActivityLevel
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("profiles")
+}
+
+model Measurement {
+  id        String           @id @default(cuid())
+  userId    String
+  type      MeasurementType
+  value     Float
+  unit      String
+  at        DateTime
+  createdAt DateTime         @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("measurements")
+  @@index([userId, type, at])
+}
+
+model Goal {
+  id              String     @id @default(cuid())
+  userId          String
+  targetWeightKg  Float
+  targetLossKg    Float
+  startAt         DateTime
+  endAt           DateTime
+  status          GoalStatus @default(ACTIVE)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("goals")
+}
+
+model Plan {
+  id          String      @id @default(cuid())
+  userId      String
+  type        PlanType
+  title       String
+  description String
+  weekIndex   Int
+  createdBy   PlanCreator
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Relations
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks     PlanTask[]
+
+  @@map("plans")
+}
+
+model PlanTask {
+  id        String   @id @default(cuid())
+  planId    String
+  date      DateTime
+  name      String
+  kcal      Float?
+  minutes   Int?
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  plan Plan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@map("plan_tasks")
+  @@index([planId, date])
+}
+
+model DeviceLink {
+  id         String         @id @default(cuid())
+  userId     String
+  platform   DevicePlatform
+  status     String
+  lastSyncAt DateTime?
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("device_links")
+  @@unique([userId, platform])
+}
+
+model ChatSession {
+  id        String    @id @default(cuid())
+  userId    String
+  kind      ChatKind
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Relations
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages Message[]
+
+  @@map("chat_sessions")
+}
+
+model Message {
+  id        String        @id @default(cuid())
+  sessionId String
+  sender    MessageSender
+  text      String
+  meta      Json?
+  at        DateTime
+  createdAt DateTime      @default(now())
+
+  // Relations
+  session ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+  @@index([sessionId, at])
+}
+
+model Consultation {
+  id          String              @id @default(cuid())
+  userId      String
+  doctorId    String
+  startAt     DateTime
+  endAt       DateTime
+  status      ConsultationStatus  @default(SCHEDULED)
+  meetingUrl  String?
+  notes       String?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("consultations")
+  @@index([userId, startAt])
+}
+
+model Subscription {
+  id                 String             @id @default(cuid())
+  userId             String
+  plan               String
+  status             SubscriptionStatus @default(ACTIVE)
+  currentPeriodEnd   DateTime
+  provider           PaymentProvider
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
+
+model PaymentLog {
+  id        String          @id @default(cuid())
+  userId    String
+  provider  PaymentProvider
+  raw       Json
+  createdAt DateTime        @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("payment_logs")
+}
+
+model Food {
+  id          String   @id @default(cuid())
+  name        String
+  kcalPer100g Float
+  macrosJson  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("foods")
+}
+
+model MealLog {
+  id         String   @id @default(cuid())
+  userId     String
+  itemsJson  String
+  totalKcal  Float
+  at         DateTime
+  createdAt  DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("meal_logs")
+  @@index([userId, at])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String
+  action    String
+  entity    String
+  entityId  String
+  diff      Json?
+  at        DateTime @default(now())
+
+  // Relations
+  actor User @relation("ActorAuditLogs", fields: [actorId], references: [id])
+
+  @@map("audit_logs")
+  @@index([actorId, entity, entityId])
+}
+
+// Enums
+enum UserRole {
+  USER
+  COACH
+  DOCTOR
+  ADMIN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum ActivityLevel {
+  SEDENTARY
+  LIGHTLY_ACTIVE
+  MODERATELY_ACTIVE
+  VERY_ACTIVE
+  EXTREMELY_ACTIVE
+}
+
+enum MeasurementType {
+  WEIGHT
+  BODY_FAT
+  WAIST
+  STEPS
+  CALORIES_IN
+  CALORIES_OUT
+  HEART_RATE
+}
+
+enum PlanType {
+  NUTRITION
+  WORKOUT
+  HABIT
+}
+
+enum PlanCreator {
+  AI
+  COACH
+}
+
+enum GoalStatus {
+  ACTIVE
+  COMPLETED
+  PAUSED
+  CANCELLED
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  PAST_DUE
+  UNPAID
+}
+
+enum PaymentProvider {
+  STRIPE
+  MOCK
+}
+
+enum DevicePlatform {
+  HEALTHKIT
+  GOOGLEFIT
+}
+
+enum ChatKind {
+  AI
+  DOCTOR
+}
+
+enum MessageSender {
+  USER
+  AI
+  DOCTOR
+}
+
+enum ConsultationStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+}

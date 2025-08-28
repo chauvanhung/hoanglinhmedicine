@@ -1,202 +1,221 @@
-# HealthCare Pro - Ứng dụng chăm sóc sức khỏe số
+# Hoang Linh - Ứng dụng Chăm sóc Béo phì
 
-## Mô tả
-HealthCare Pro là một trang web hiện đại được thiết kế dành cho người béo phì, cung cấp các tính năng toàn diện để hỗ trợ hành trình giảm cân và cải thiện sức khỏe.
+Ứng dụng toàn diện giúp người dùng giảm cân an toàn và hiệu quả với AI coaching, tư vấn bác sĩ và theo dõi sức khỏe thông minh.
 
-## Tính năng chính
+## 🚀 Tính năng chính
 
-### 1. 🧮 Tính chỉ số BMI
-- Máy tính BMI chính xác
-- Phân loại trạng thái sức khỏe
-- Biểu đồ trực quan với màu sắc phân biệt
-- Kết quả chi tiết và dễ hiểu
+- **Tính toán BMI** và phân loại theo tiêu chuẩn WHO
+- **AI Coach thông minh** tạo kế hoạch dinh dưỡng và tập luyện cá nhân hóa
+- **Theo dõi sức khỏe** với đồng bộ Apple Health/Google Fit
+- **Tư vấn bác sĩ** trực tiếp và online
+- **Hệ thống thanh toán** tích hợp Stripe
+- **Kiến trúc module** dễ thay đổi database, payment gateway, AI model
 
-### 2. 🍽️ Thực đơn dinh dưỡng
-- Chia theo bữa ăn: sáng, trưa, tối, phụ
-- Thông tin calo chi tiết
-- Hình ảnh minh họa đẹp mắt
-- Giao diện tab dễ sử dụng
-
-### 3. 💪 Hướng dẫn tập luyện
-- **Cardio**: Đi bộ, chạy bộ, đạp xe
-- **Strength Training**: Nâng tạ, bodyweight exercises
-- **Flexibility**: Yoga, stretching
-- Thông tin thời gian và calo tiêu hao
-
-### 4. 👨‍⚕️ Tư vấn chuyên gia
-- **Tư vấn AI**: Phản hồi ngay lập tức
-- **Gặp bác sĩ trực tiếp**: Đặt lịch > 2 tháng
-- Thông tin chi tiết về dịch vụ
-
-### 5. 🗺️ Lộ trình và thành tích
-- Timeline 4 giai đoạn rõ ràng
-- Mục tiêu cụ thể cho từng giai đoạn
-- Hệ thống thành tích với icon đẹp mắt
-
-### 6. 🔗 Tích hợp thiết bị
-- **Apple Watch**: HealthKit API, Google Fit API
-- **Ứng dụng đếm calo**: Nutrition API
-- Đồng bộ dữ liệu sức khỏe
-
-## Công nghệ sử dụng
-
-- **HTML5**: Cấu trúc semantic
-- **CSS3**: 
-  - Flexbox và Grid layout
-  - CSS Variables
-  - Animations và Transitions
-  - Responsive design
-  - Modern gradients và shadows
-- **JavaScript ES6+**:
-  - DOM manipulation
-  - Event handling
-  - Smooth scrolling
-  - Form validation
-  - Intersection Observer API
-  - Custom animations
-
-## Cấu trúc file
+## 🏗️ Kiến trúc hệ thống
 
 ```
-hoanglinhmedicine/
-├── index.html          # Trang chính
-├── styles.css          # Stylesheet
-├── script.js           # JavaScript functionality
-├── package.json        # Node.js dependencies
-├── render.yaml         # Render deployment config
-├── Dockerfile          # Docker containerization
-└── README.md           # Hướng dẫn sử dụng
+hoanglinh-obesity-care/
+├── apps/
+│   ├── api/                 # NestJS API (Backend)
+│   └── web/                 # Next.js 14 (Frontend)
+├── packages/
+│   └── shared/              # Shared types & utilities
+├── docker-compose.yml       # Docker services
+└── package.json             # Monorepo root
 ```
 
-## Cách sử dụng
+### Backend (NestJS)
+- **Hexagonal Architecture** với Clean Architecture
+- **Prisma ORM** với PostgreSQL
+- **JWT Authentication** và Role-based access control
+- **AI Integration** với OpenAI (có thể thay thế)
+- **Payment Processing** với Stripe (có thể thay thế)
+- **Health Device Sync** cho Apple HealthKit & Google Fit
 
-### 1. Mở trang web local
-- Mở file `index.html` trong trình duyệt web
-- Hoặc chạy `npm run dev` để sử dụng local server
+### Frontend (Next.js 14)
+- **App Router** với TypeScript
+- **Tailwind CSS** + shadcn/ui components
+- **Responsive Design** cho mobile & desktop
+- **PWA Support** cho mobile app experience
 
-### 2. Tính BMI
-- Cuộn xuống phần "Tính chỉ số BMI"
-- Nhập chiều cao (cm) và cân nặng (kg)
-- Nhấn "Tính BMI" để xem kết quả
+## 🛠️ Yêu cầu hệ thống
 
-### 3. Xem thực đơn
-- Chuyển đến phần "Thực đơn dinh dưỡng"
-- Chọn tab bữa ăn mong muốn
-- Xem thông tin chi tiết và calo
+- Node.js 18+ 
+- pnpm 8+
+- Docker & Docker Compose
+- PostgreSQL 15+
+- Redis 7+
 
-### 4. Khám phá bài tập
-- Cuộn xuống phần "Hướng dẫn tập luyện"
-- Chọn loại bài tập phù hợp
-- Xem thời gian và calo tiêu hao
+## 📦 Cài đặt
 
-### 5. Tư vấn
-- Chọn loại tư vấn phù hợp
-- Nhấn nút để bắt đầu dịch vụ
-
-## 🚀 Deploy lên Render
-
-### Bước 1: Chuẩn bị
+### 1. Clone repository
 ```bash
-# Clone repository
-git clone <your-repo-url>
-cd hoanglinhmedicine
-
-# Cài đặt dependencies
-npm install
+git clone <repository-url>
+cd hoanglinh-obesity-care
 ```
 
-### Bước 2: Push lên GitHub
+### 2. Cài đặt dependencies
 ```bash
-git add .
-git commit -m "Initial commit"
-git push origin main
+pnpm install
 ```
 
-### Bước 3: Deploy trên Render
-1. Đăng nhập vào [Render.com](https://render.com)
-2. Click "New +" → "Web Service"
-3. Connect với GitHub repository
-4. Cấu hình:
-   - **Name**: healthcare-pro
-   - **Environment**: Node
-   - **Build Command**: `npm install`
-   - **Start Command**: `npm start`
-5. Click "Create Web Service"
+### 3. Cấu hình environment
+```bash
+cp env.example .env
+# Chỉnh sửa .env với thông tin của bạn
+```
 
-### Bước 4: Kiểm tra
-- Render sẽ tự động build và deploy
-- URL sẽ có dạng: `https://healthcare-pro.onrender.com`
+### 4. Khởi động services
+```bash
+# Khởi động tất cả services
+pnpm dev
 
-## Tính năng responsive
+# Hoặc khởi động từng service
+docker-compose up -d postgres redis
+pnpm --filter @hoanglinh/api dev
+pnpm --filter @hoanglinh/web dev
+```
 
-- **Desktop**: Giao diện đầy đủ với layout 2 cột
-- **Tablet**: Tự động điều chỉnh layout
-- **Mobile**: 
-  - Menu hamburger
-  - Layout 1 cột
-  - Touch-friendly buttons
-  - Optimized spacing
+### 5. Thiết lập database
+```bash
+# Tạo migration
+pnpm db:migrate
 
-## Hiệu ứng và animations
+# Seed dữ liệu mẫu
+pnpm db:seed
 
-- **Loading screen**: Animation khởi động
-- **Scroll animations**: Elements fade in khi scroll
-- **Hover effects**: Interactive feedback
-- **Smooth scrolling**: Navigation mượt mà
-- **Progress bar**: Hiển thị tiến độ scroll
-- **Floating Action Button**: Nút scroll to top
+# Mở Prisma Studio (tùy chọn)
+pnpm db:studio
+```
 
-## Tùy chỉnh
+## 🌐 Truy cập ứng dụng
 
-### Thay đổi màu sắc
-Chỉnh sửa CSS variables trong `styles.css`:
-```css
-:root {
-    --primary-color: #667eea;
-    --secondary-color: #764ba2;
-    --accent-color: #ff6b6b;
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:3001
+- **API Documentation**: http://localhost:3001/api/docs
+- **Database**: localhost:5432 (postgres/obesity_care)
+- **Redis**: localhost:6379
+
+## 🔐 Tài khoản mẫu
+
+Sau khi seed database, bạn có thể đăng nhập với:
+
+- **User**: user@example.com / user123
+- **Admin**: admin@hoanglinh.com / admin123
+
+## 📱 Luồng người dùng chính
+
+1. **Onboarding** → Nhập chiều cao & cân nặng
+2. **BMI Calculation** → Xem kết quả và khuyến nghị
+3. **Goal Setting** → Đặt mục tiêu giảm 5-7kg
+4. **AI Plan Generation** → Tạo kế hoạch tuần đầu tiên
+5. **Daily Check-in** → Theo dõi nhiệm vụ và tiến độ
+6. **AI Chat** → Tư vấn dinh dưỡng và tập luyện
+7. **Doctor Consultation** → Đặt lịch bác sĩ (Pro plan)
+8. **Progress Tracking** → Xem biểu đồ tiến độ
+
+## 🔌 Adapter Pattern
+
+Hệ thống sử dụng adapter pattern để dễ dàng thay đổi:
+
+### LLM Provider
+```typescript
+// Dễ dàng thay đổi từ OpenAI sang model khác
+interface LLMProvider {
+  generatePlan(context: AIPlanContext): Promise<AIPlanResponse>
+  chat(messages: Message[]): Promise<string>
 }
 ```
 
-### Thêm tính năng mới
-- Thêm section mới trong `index.html`
-- Style tương ứng trong `styles.css`
-- Logic JavaScript trong `script.js`
+### Payment Provider
+```typescript
+// Hỗ trợ Stripe, có thể thay thế bằng Momo, ZaloPay
+interface PaymentProvider {
+  createCheckoutSession(data: CheckoutData): Promise<CheckoutResult>
+  handleWebhook(payload: any): Promise<void>
+}
+```
 
-## Hỗ trợ trình duyệt
+### Database
+- **Prisma** với PostgreSQL (mặc định)
+- Dễ dàng chuyển sang MySQL, SQLite
+- Migration và seeding tự động
 
-- ✅ Chrome (khuyến nghị)
-- ✅ Firefox
-- ✅ Safari
-- ✅ Edge
-- ⚠️ IE11+ (một số tính năng có thể không hoạt động)
+## 🧪 Testing
 
-## Troubleshooting
+```bash
+# Unit tests
+pnpm test
 
-### Lỗi Render ENOENT
-Nếu gặp lỗi `Could not read package.json`:
-1. Đảm bảo file `package.json` tồn tại
-2. Kiểm tra cấu hình trong `render.yaml`
-3. Restart service trên Render
+# E2E tests
+pnpm test:e2e
 
-### Lỗi PORT
-Nếu gặp lỗi về PORT:
-- Render sẽ tự động set biến môi trường `$PORT`
-- Không cần hardcode port trong code
+# Test coverage
+pnpm test:cov
+```
 
-## Tác giả
+## 🚀 Production Deployment
 
-Trang web được tạo dựa trên ý tưởng từ hình ảnh về ứng dụng chăm sóc sức khỏe số dành cho người béo phì.
+### 1. Build ứng dụng
+```bash
+pnpm build
+```
 
-## Giấy phép
+### 2. Docker production
+```bash
+docker-compose -f docker-compose.prod.yml up -d
+```
 
-Dự án này được tạo ra cho mục đích giáo dục và demo. Bạn có thể tự do sử dụng và chỉnh sửa theo nhu cầu.
+### 3. Environment variables
+Đảm bảo cấu hình đúng:
+- `NODE_ENV=production`
+- `DATABASE_URL` (production database)
+- `JWT_SECRET` (strong secret)
+- `STRIPE_KEYS` (production keys)
+
+## 📊 Monitoring & Logging
+
+- **Health checks** cho tất cả services
+- **Audit logs** cho admin actions
+- **Error tracking** với structured logging
+- **Performance monitoring** với BullMQ metrics
+
+## 🔒 Bảo mật
+
+- **JWT tokens** với short expiration
+- **Password hashing** với bcrypt
+- **Rate limiting** cho API endpoints
+- **CORS** configuration
+- **Helmet** security headers
+- **Input validation** với class-validator
+
+## 🤝 Contributing
+
+1. Fork repository
+2. Tạo feature branch
+3. Commit changes
+4. Push to branch
+5. Tạo Pull Request
+
+## 📄 License
+
+© 2024 Hoang Linh Medicine. All rights reserved.
+
+## 🆘 Hỗ trợ
+
+- **Documentation**: [API Docs](http://localhost:3001/api/docs)
+- **Issues**: Tạo issue trên GitHub
+- **Email**: support@hoanglinh.com
+
+## 🎯 Roadmap
+
+- [ ] Mobile app (React Native/Expo)
+- [ ] Advanced AI features
+- [ ] Social features & challenges
+- [ ] Integration với fitness trackers
+- [ ] Multi-language support
+- [ ] Advanced analytics dashboard
 
 ---
 
-**Lưu ý**: Đây là một trang web demo. Để sử dụng trong thực tế, bạn cần:
-- Thay thế placeholder images bằng hình ảnh thực
-- Tích hợp backend và database
-- Thêm authentication và user management
-- Implement các API thực tế
-- Thêm validation và security measures
+**Lưu ý**: Đây là ứng dụng demo. Để sử dụng production, hãy cấu hình đúng environment variables và security settings.
