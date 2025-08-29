@@ -216,6 +216,7 @@ export default function OnboardingPage() {
       
       // Lưu thông tin user và plan vào localStorage
       localStorage.setItem('firebase_user', JSON.stringify(user));
+      localStorage.setItem('firebase_auth_status', 'logged_in');
       localStorage.setItem('weightLossPlan', JSON.stringify({
         ...userData,
         weightLoss: calculateWeightLoss(),

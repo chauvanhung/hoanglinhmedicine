@@ -10,33 +10,34 @@
     "clean": "rm -rf .next"
   },
   "dependencies": {
-    "next": "14.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "next-auth": "^4.24.0",
-    "@next-auth/prisma-adapter": "^1.0.7",
-    "tailwindcss": "^3.3.0",
-    "autoprefixer": "^10.4.16",
-    "postcss": "^8.4.31",
-    "@tailwindcss/forms": "^0.5.7",
     "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^2.0.18",
-    "clsx": "^2.0.0",
-    "recharts": "^2.8.0",
-    "react-hook-form": "^7.47.0",
     "@hookform/resolvers": "^3.3.2",
-    "zod": "^3.22.4",
+    "@next-auth/prisma-adapter": "^1.0.7",
+    "@tailwindcss/forms": "^0.5.7",
+    "autoprefixer": "^10.4.16",
+    "clsx": "^2.0.0",
     "date-fns": "^2.30.0",
-    "lucide-react": "^0.292.0",
+    "firebase": "^12.2.1",
     "framer-motion": "^10.16.4",
-    "react-hot-toast": "^2.4.1"
+    "lucide-react": "^0.292.0",
+    "next": "14.0.0",
+    "next-auth": "^4.24.0",
+    "postcss": "^8.4.31",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.47.0",
+    "react-hot-toast": "^2.4.1",
+    "recharts": "^2.8.0",
+    "tailwindcss": "^3.3.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/node": "^20.8.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
-    "typescript": "^5.2.2",
     "eslint": "^8.52.0",
-    "eslint-config-next": "14.0.0"
+    "eslint-config-next": "14.0.0",
+    "typescript": "^5.2.2"
   }
 }

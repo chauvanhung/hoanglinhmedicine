@@ -13,8 +13,8 @@ export default function HomePage() {
             <ul className="nav-menu">
               <li><a href="#features" className="nav-link">Tính năng</a></li>
               <li><a href="#success" className="nav-link">Thành công</a></li>
-              <li><a href="#pricing" className="nav-link">Gói cước</a></li>
-              <li><a href="#contact" className="nav-link">Liên hệ</a></li>
+              <li><a href="/pricing" className="nav-link">Gói cước</a></li>
+              <li><a href="/contact" className="nav-link">Liên hệ</a></li>
             </ul>
             
                                 <div className="nav-buttons">

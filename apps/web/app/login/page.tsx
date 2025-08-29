@@ -21,24 +21,16 @@ export default function LoginPage() {
     setError('')
 
     try {
-      // Import Firebase service
       const { initializeFirebase, signInUser } = await import('../../lib/firebase.js')
-      
-      // Initialize Firebase
       await initializeFirebase()
-
-      // Đăng nhập với Firebase
       const { user } = await signInUser(email, password)
       
-      // Lưu thông tin user vào localStorage
+      // Set authentication status
       localStorage.setItem('firebase_user', JSON.stringify(user))
+      localStorage.setItem('firebase_auth_status', 'logged_in')
       
-      // Hiển thị thông báo thành công
       alert('🎉 Đăng nhập thành công! Bạn sẽ được chuyển đến dashboard.')
-      
-      // Chuyển đến dashboard
       router.push('/dashboard')
-      
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Đăng nhập thất bại, vui lòng thử lại')
     } finally {

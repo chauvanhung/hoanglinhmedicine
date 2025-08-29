@@ -1,13 +1,13 @@
 // Firebase configuration
 // Bạn cần thay thế các giá trị này bằng thông tin từ Firebase Console
 export const firebaseConfig = {
-  apiKey: "your-api-key",
-  authDomain: "your-project.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "your-messaging-sender-id",
-  appId: "your-app-id",
-  measurementId: "your-measurement-id"
+  apiKey: "AIzaSyDug_NyDb_oVP_Pl5yXSFcy72dq7PjCYhY",
+  authDomain: "hoanglinh-obesity-care.firebaseapp.com",
+  projectId: "hoanglinh-obesity-care",
+  storageBucket: "hoanglinh-obesity-care.firebasestorage.app",
+  messagingSenderId: "860032582221",
+  appId: "1:860032582221:web:e3c5923cbe504725d91204",
+  measurementId: "G-T9Z1DMXE8P"
 };
 
 // Các collection names cho Firestore
