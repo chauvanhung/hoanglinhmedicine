@@ -165,52 +165,67 @@ export default function OnboardingPage() {
     setError('')
 
     try {
-      // Chuẩn bị dữ liệu để gửi API
-      const registrationData = {
-        email: userData.email,
-        password: userData.password,
+      // Import Firebase service
+      const { initializeFirebase, createUser, addDocument } = await import('../../lib/firebase.js');
+      const { COLLECTIONS } = await import('../../firebase.config.js');
+      
+      // Initialize Firebase
+      await initializeFirebase();
+
+      // Tạo user với Firebase Auth
+      const { user } = await createUser(userData.email, userData.password);
+      
+      // Tạo user profile
+      const profileData = {
         name: userData.fullName,
         age: parseInt(userData.age),
         gender: userData.gender,
         height: parseFloat(userData.height),
         currentWeight: parseFloat(userData.currentWeight),
         activityLevel: userData.activityLevel,
-        targetWeight: parseFloat(userData.targetWeight),
-        timeframe: parseInt(userData.timeframe),
-        weeklyGoal: parseFloat(userData.weeklyGoal),
         exercises: userData.exercises,
         diets: userData.diets,
         cookingTime: parseInt(userData.cookingTime),
         budget: userData.budget
-      }
-
-      // Gọi API đăng ký
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(registrationData),
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || 'Đăng ký thất bại')
-      }
-
-      const result = await response.json()
+      };
       
-      // Lưu thông tin user vào localStorage
-      localStorage.setItem('user', JSON.stringify(result.user))
+      await addDocument(COLLECTIONS.PROFILES, { userId: user.uid, ...profileData });
+      
+      // Tạo user goal
+      const goalData = {
+        targetWeight: parseFloat(userData.targetWeight),
+        targetLossKg: calculateWeightLoss(),
+        timeframe: parseInt(userData.timeframe),
+        weeklyGoal: parseFloat(userData.weeklyGoal),
+        startAt: new Date().toISOString(),
+        endAt: new Date(Date.now() + parseInt(userData.timeframe) * 30 * 24 * 60 * 60 * 1000).toISOString(),
+        status: 'ACTIVE'
+      };
+      
+      await addDocument(COLLECTIONS.GOALS, { userId: user.uid, ...goalData });
+      
+      // Tạo initial measurement
+      const measurementData = {
+        type: 'WEIGHT',
+        value: parseFloat(userData.currentWeight),
+        unit: 'kg',
+        at: new Date().toISOString()
+      };
+      
+      await addDocument(COLLECTIONS.MEASUREMENTS, { userId: user.uid, ...measurementData });
+      
+      // Lưu thông tin user và plan vào localStorage
+      localStorage.setItem('firebase_user', JSON.stringify(user));
       localStorage.setItem('weightLossPlan', JSON.stringify({
         ...userData,
         weightLoss: calculateWeightLoss(),
         dailyCalories: calculateCalories(),
-        createdAt: new Date().toISOString()
-      }))
+        createdAt: new Date().toISOString(),
+        userId: user.uid
+      }));
 
       // Hiển thị thông báo thành công
-      alert('🎉 Tạo tài khoản thành công! Bạn sẽ được chuyển đến dashboard.')
+      alert('🎉 Tạo tài khoản Firebase thành công! Bạn sẽ được chuyển đến dashboard.')
       
       // Chuyển đến dashboard
       window.location.href = '/dashboard'
