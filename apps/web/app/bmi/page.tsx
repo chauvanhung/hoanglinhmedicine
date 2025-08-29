@@ -1,4 +1,78 @@
+'use client'
+
+import { useState } from 'react'
+
 export default function BMIPage() {
+  const [height, setHeight] = useState('')
+  const [weight, setWeight] = useState('')
+  const [bmi, setBmi] = useState<number | null>(null)
+  const [category, setCategory] = useState('')
+  const [categoryDescription, setCategoryDescription] = useState('')
+  const [categoryIcon, setCategoryIcon] = useState('📊')
+  const [calorieRecommendation, setCalorieRecommendation] = useState('')
+  const [waterRecommendation, setWaterRecommendation] = useState('')
+  const [exerciseRecommendation, setExerciseRecommendation] = useState('')
+
+  const calculateBMI = () => {
+    if (!height || !weight) return
+    
+    const heightM = parseFloat(height) / 100
+    const weightKg = parseFloat(weight)
+    const bmiValue = weightKg / (heightM * heightM)
+    
+    setBmi(Math.round(bmiValue * 10) / 10)
+    
+    // Phân loại BMI
+    if (bmiValue < 18.5) {
+      setCategory('Thiếu cân')
+      setCategoryDescription('Bạn cần tăng cân để đạt mức BMI khỏe mạnh')
+      setCategoryIcon('📉')
+      setCalorieRecommendation(`${Math.round(weightKg * 35)} kcal/ngày`)
+      setWaterRecommendation(`${Math.round(weightKg * 0.04)} lít/ngày`)
+      setExerciseRecommendation('30 phút/ngày (nhẹ nhàng)')
+    } else if (bmiValue < 25) {
+      setCategory('Bình thường')
+      setCategoryDescription('Chúc mừng! Bạn đang ở mức BMI lý tưởng')
+      setCategoryIcon('✅')
+      setCalorieRecommendation(`${Math.round(weightKg * 30)} kcal/ngày`)
+      setWaterRecommendation(`${Math.round(weightKg * 0.035)} lít/ngày`)
+      setExerciseRecommendation('45 phút/ngày (vừa phải)')
+    } else if (bmiValue < 30) {
+      setCategory('Thừa cân')
+      setCategoryDescription('Bạn cần giảm cân để đạt mức BMI khỏe mạnh')
+      setCategoryIcon('⚠️')
+      setCalorieRecommendation(`${Math.round(weightKg * 25)} kcal/ngày`)
+      setWaterRecommendation(`${Math.round(weightKg * 0.035)} lít/ngày`)
+      setExerciseRecommendation('60 phút/ngày (cường độ cao)')
+    } else if (bmiValue < 35) {
+      setCategory('Béo phì độ I')
+      setCategoryDescription('Bạn cần giảm cân để cải thiện sức khỏe')
+      setCategoryIcon('🚨')
+      setCalorieRecommendation(`${Math.round(weightKg * 20)} kcal/ngày`)
+      setWaterRecommendation(`${Math.round(weightKg * 0.04)} lít/ngày`)
+      setExerciseRecommendation('45 phút/ngày (vừa phải)')
+    } else if (bmiValue < 40) {
+      setCategory('Béo phì độ II')
+      setCategoryDescription('Bạn cần giảm cân dưới sự giám sát y tế')
+      setCategoryIcon('🚨')
+      setCalorieRecommendation(`${Math.round(weightKg * 18)} kcal/ngày`)
+      setWaterRecommendation(`${Math.round(weightKg * 0.04)} lít/ngày`)
+      setExerciseRecommendation('30 phút/ngày (nhẹ nhàng)')
+    } else {
+      setCategory('Béo phì độ III')
+      setCategoryDescription('Bạn cần can thiệp y tế để giảm cân')
+      setCategoryIcon('🚨')
+      setCalorieRecommendation(`${Math.round(weightKg * 15)} kcal/ngày`)
+      setWaterRecommendation(`${Math.round(weightKg * 0.04)} lít/ngày`)
+      setExerciseRecommendation('20 phút/ngày (rất nhẹ)')
+    }
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    calculateBMI()
+  }
+
   return (
     <div className="bmi-page">
       {/* Header */}
@@ -20,7 +94,7 @@ export default function BMIPage() {
               <p>Nhập thông tin để nhận kết quả chính xác</p>
             </div>
 
-            <form className="bmi-form">
+            <form className="bmi-form" onSubmit={handleSubmit}>
               <div className="form-group">
                 <label htmlFor="height">Chiều cao (cm)</label>
                 <input 
@@ -30,6 +104,8 @@ export default function BMIPage() {
                   placeholder="Ví dụ: 170"
                   min="100"
                   max="250"
+                  value={height}
+                  onChange={(e) => setHeight(e.target.value)}
                   required
                 />
               </div>
@@ -43,6 +119,8 @@ export default function BMIPage() {
                   placeholder="Ví dụ: 65"
                   min="30"
                   max="300"
+                  value={weight}
+                  onChange={(e) => setWeight(e.target.value)}
                   required
                 />
               </div>
@@ -54,55 +132,57 @@ export default function BMIPage() {
           </div>
 
           {/* BMI Result Display */}
-          <div className="result-card" id="bmi-result" style={{display: 'none'}}>
-            <div className="result-header">
-              <h3>Kết quả BMI của bạn</h3>
-              <div className="bmi-score">
-                <span className="score-number" id="bmi-number">0</span>
-                <span className="score-label">BMI</span>
-              </div>
-            </div>
-
-            <div className="bmi-category">
-              <div className="category-icon" id="category-icon">📊</div>
-              <div className="category-info">
-                <h4 id="category-title">Phân loại</h4>
-                <p id="category-description">Mô tả chi tiết</p>
-              </div>
-            </div>
-
-            <div className="bmi-recommendations">
-              <h4>Khuyến nghị dinh dưỡng</h4>
-              <div className="recommendation-item">
-                <div className="rec-icon">🍽️</div>
-                <div className="rec-content">
-                  <h5>Lượng calo khuyến nghị</h5>
-                  <p id="calorie-recommendation">0 kcal/ngày</p>
-                </div>
-              </div>
-              
-              <div className="recommendation-item">
-                <div className="rec-icon">💧</div>
-                <div className="rec-content">
-                  <h5>Lượng nước cần uống</h5>
-                  <p id="water-recommendation">0 lít/ngày</p>
+          {bmi && (
+            <div className="result-card" id="bmi-result">
+              <div className="result-header">
+                <h3>Kết quả BMI của bạn</h3>
+                <div className="bmi-score">
+                  <span className="score-number" id="bmi-number">{bmi}</span>
+                  <span className="score-label">BMI</span>
                 </div>
               </div>
 
-              <div className="recommendation-item">
-                <div className="rec-icon">🏃‍♀️</div>
-                <div className="rec-content">
-                  <h5>Hoạt động thể chất</h5>
-                  <p id="exercise-recommendation">0 phút/ngày</p>
+              <div className="bmi-category">
+                <div className="category-icon" id="category-icon">{categoryIcon}</div>
+                <div className="category-info">
+                  <h4 id="category-title">{category}</h4>
+                  <p id="category-description">{categoryDescription}</p>
                 </div>
               </div>
-            </div>
 
-            <div className="action-buttons">
-              <a href="/onboarding" className="btn btn-primary">🎯 Tạo kế hoạch giảm cân</a>
-              <a href="/" className="btn btn-outline">🏠 Về trang chủ</a>
+              <div className="bmi-recommendations">
+                <h4>Khuyến nghị dinh dưỡng</h4>
+                <div className="recommendation-item">
+                  <div className="rec-icon">🍽️</div>
+                  <div className="rec-content">
+                    <h5>Lượng calo khuyến nghị</h5>
+                    <p id="calorie-recommendation">{calorieRecommendation}</p>
+                  </div>
+                </div>
+                
+                <div className="recommendation-item">
+                  <div className="rec-icon">💧</div>
+                  <div className="rec-content">
+                    <h5>Lượng nước cần uống</h5>
+                    <p id="water-recommendation">{waterRecommendation}</p>
+                  </div>
+                </div>
+
+                <div className="recommendation-item">
+                  <div className="rec-icon">🏃‍♀️</div>
+                  <div className="rec-content">
+                    <h5>Hoạt động thể chất</h5>
+                    <p id="exercise-recommendation">{exerciseRecommendation}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="action-buttons">
+                <a href="/onboarding" className="btn btn-primary">🎯 Tạo kế hoạch giảm cân</a>
+                <a href="/" className="btn btn-outline">🏠 Về trang chủ</a>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </section>
 
