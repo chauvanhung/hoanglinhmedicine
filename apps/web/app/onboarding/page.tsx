@@ -17,10 +17,14 @@ interface UserData {
   diets: string[]
   cookingTime: string
   budget: string
+  password: string
+  confirmPassword: string
 }
 
 export default function OnboardingPage() {
   const [currentStep, setCurrentStep] = useState(1)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
   const [userData, setUserData] = useState<UserData>({
     fullName: '',
     email: '',
@@ -35,11 +39,13 @@ export default function OnboardingPage() {
     exercises: [],
     diets: [],
     cookingTime: '',
-    budget: ''
+    budget: '',
+    password: '',
+    confirmPassword: ''
   })
 
   const nextStep = () => {
-    if (currentStep < 4) {
+    if (currentStep < 5) {
       setCurrentStep(currentStep + 1)
       updateProgressSteps()
     }
@@ -136,23 +142,84 @@ export default function OnboardingPage() {
     return Math.round(tdee - dailyDeficit)
   }
 
-  const completeOnboarding = () => {
-    // Tạo kế hoạch giảm cân
-    const weightLoss = calculateWeightLoss()
-    const calories = calculateCalories()
-    
-    // Lưu vào localStorage hoặc gửi API
-    const plan = {
-      ...userData,
-      weightLoss,
-      dailyCalories: calories,
-      createdAt: new Date().toISOString()
+  const validateForm = () => {
+    if (!userData.password || userData.password.length < 6) {
+      setError('Mật khẩu phải có ít nhất 6 ký tự')
+      return false
     }
-    
-    localStorage.setItem('weightLossPlan', JSON.stringify(plan))
-    
-    // Chuyển đến dashboard
-    window.location.href = '/dashboard'
+    if (userData.password !== userData.confirmPassword) {
+      setError('Mật khẩu xác nhận không khớp')
+      return false
+    }
+    if (!userData.email || !userData.fullName) {
+      setError('Vui lòng điền đầy đủ thông tin bắt buộc')
+      return false
+    }
+    return true
+  }
+
+  const completeOnboarding = async () => {
+    if (!validateForm()) return
+
+    setIsLoading(true)
+    setError('')
+
+    try {
+      // Chuẩn bị dữ liệu để gửi API
+      const registrationData = {
+        email: userData.email,
+        password: userData.password,
+        name: userData.fullName,
+        age: parseInt(userData.age),
+        gender: userData.gender,
+        height: parseFloat(userData.height),
+        currentWeight: parseFloat(userData.currentWeight),
+        activityLevel: userData.activityLevel,
+        targetWeight: parseFloat(userData.targetWeight),
+        timeframe: parseInt(userData.timeframe),
+        weeklyGoal: parseFloat(userData.weeklyGoal),
+        exercises: userData.exercises,
+        diets: userData.diets,
+        cookingTime: parseInt(userData.cookingTime),
+        budget: userData.budget
+      }
+
+      // Gọi API đăng ký
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(registrationData),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || 'Đăng ký thất bại')
+      }
+
+      const result = await response.json()
+      
+      // Lưu thông tin user vào localStorage
+      localStorage.setItem('user', JSON.stringify(result.user))
+      localStorage.setItem('weightLossPlan', JSON.stringify({
+        ...userData,
+        weightLoss: calculateWeightLoss(),
+        dailyCalories: calculateCalories(),
+        createdAt: new Date().toISOString()
+      }))
+
+      // Hiển thị thông báo thành công
+      alert('🎉 Tạo tài khoản thành công! Bạn sẽ được chuyển đến dashboard.')
+      
+      // Chuyển đến dashboard
+      window.location.href = '/dashboard'
+      
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Có lỗi xảy ra, vui lòng thử lại')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -185,8 +252,22 @@ export default function OnboardingPage() {
             <div className="step-number">4</div>
             <div className="step-label">Kế hoạch cá nhân</div>
           </div>
+          <div className={`step ${currentStep >= 5 ? 'active' : ''}`}>
+            <div className="step-number">5</div>
+            <div className="step-label">Tạo tài khoản</div>
+          </div>
         </div>
       </section>
+
+      {/* Error Display */}
+      {error && (
+        <div className="error-message">
+          <div className="error-container">
+            <span className="error-icon">⚠️</span>
+            <span className="error-text">{error}</span>
+          </div>
+        </div>
+      )}
 
       {/* Step 1: Basic Information */}
       {currentStep === 1 && (
@@ -200,7 +281,7 @@ export default function OnboardingPage() {
             <form className="onboarding-form" onSubmit={(e) => { e.preventDefault(); nextStep(); }}>
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="fullName">Họ và tên</label>
+                  <label htmlFor="fullName">Họ và tên *</label>
                   <input 
                     type="text" 
                     id="fullName" 
@@ -213,7 +294,7 @@ export default function OnboardingPage() {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="email">Email</label>
+                  <label htmlFor="email">Email *</label>
                   <input 
                     type="email" 
                     id="email" 
@@ -228,7 +309,7 @@ export default function OnboardingPage() {
 
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="age">Tuổi</label>
+                  <label htmlFor="age">Tuổi *</label>
                   <input 
                     type="number" 
                     id="age" 
@@ -243,7 +324,7 @@ export default function OnboardingPage() {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="gender">Giới tính</label>
+                  <label htmlFor="gender">Giới tính *</label>
                   <select 
                     id="gender" 
                     name="gender" 
@@ -261,7 +342,7 @@ export default function OnboardingPage() {
 
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="height">Chiều cao (cm)</label>
+                  <label htmlFor="height">Chiều cao (cm) *</label>
                   <input 
                     type="number" 
                     id="height" 
@@ -276,7 +357,7 @@ export default function OnboardingPage() {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="currentWeight">Cân nặng hiện tại (kg)</label>
+                  <label htmlFor="currentWeight">Cân nặng hiện tại (kg) *</label>
                   <input 
                     type="number" 
                     id="currentWeight" 
@@ -292,7 +373,7 @@ export default function OnboardingPage() {
               </div>
 
               <div className="form-group">
-                <label htmlFor="activityLevel">Mức độ hoạt động</label>
+                <label htmlFor="activityLevel">Mức độ hoạt động *</label>
                 <select 
                   id="activityLevel" 
                   name="activityLevel" 
@@ -330,7 +411,7 @@ export default function OnboardingPage() {
 
             <form className="onboarding-form" onSubmit={(e) => { e.preventDefault(); nextStep(); }}>
               <div className="form-group">
-                <label htmlFor="targetWeight">Cân nặng mục tiêu (kg)</label>
+                <label htmlFor="targetWeight">Cân nặng mục tiêu (kg) *</label>
                 <input 
                   type="number" 
                   id="targetWeight" 
@@ -351,7 +432,7 @@ export default function OnboardingPage() {
               </div>
 
               <div className="form-group">
-                <label htmlFor="timeframe">Thời gian đạt mục tiêu</label>
+                <label htmlFor="timeframe">Thời gian đạt mục tiêu *</label>
                 <select 
                   id="timeframe" 
                   name="timeframe" 
@@ -369,7 +450,7 @@ export default function OnboardingPage() {
               </div>
 
               <div className="form-group">
-                <label htmlFor="weeklyGoal">Mục tiêu giảm cân mỗi tuần</label>
+                <label htmlFor="weeklyGoal">Mục tiêu giảm cân mỗi tuần *</label>
                 <select 
                   id="weeklyGoal" 
                   name="weeklyGoal" 
@@ -665,10 +746,89 @@ export default function OnboardingPage() {
               <button type="button" className="btn btn-outline" onClick={prevStep}>
                 ← Quay lại
               </button>
-              <button type="button" className="btn btn-primary btn-large" onClick={completeOnboarding}>
-                ✅ Hoàn thành & Tạo tài khoản
+              <button type="button" className="btn btn-primary btn-large" onClick={nextStep}>
+                🔐 Tạo tài khoản →
               </button>
             </div>
+          </div>
+        </section>
+      )}
+
+      {/* Step 5: Create Account */}
+      {currentStep === 5 && (
+        <section className="onboarding-step active" id="step-5">
+          <div className="step-container">
+            <div className="step-header">
+              <h2>🔐 Tạo tài khoản</h2>
+              <p>Đặt mật khẩu để hoàn tất việc tạo tài khoản</p>
+            </div>
+
+            <form className="onboarding-form" onSubmit={(e) => { e.preventDefault(); completeOnboarding(); }}>
+              <div className="form-group">
+                <label htmlFor="password">Mật khẩu *</label>
+                <input 
+                  type="password" 
+                  id="password" 
+                  name="password" 
+                  placeholder="Tối thiểu 6 ký tự"
+                  minLength={6}
+                  value={userData.password}
+                  onChange={(e) => handleInputChange('password', e.target.value)}
+                  required
+                />
+                <div className="form-help">
+                  Mật khẩu phải có ít nhất 6 ký tự
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="confirmPassword">Xác nhận mật khẩu *</label>
+                <input 
+                  type="password" 
+                  id="confirmPassword" 
+                  name="confirmPassword" 
+                  placeholder="Nhập lại mật khẩu"
+                  value={userData.confirmPassword}
+                  onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="account-summary">
+                <h4>📋 Tóm tắt thông tin tài khoản</h4>
+                <div className="summary-grid">
+                  <div className="summary-item">
+                    <span className="summary-label">Họ tên:</span>
+                    <span className="summary-value">{userData.fullName}</span>
+                  </div>
+                  <div className="summary-item">
+                    <span className="summary-label">Email:</span>
+                    <span className="summary-value">{userData.email}</span>
+                  </div>
+                  <div className="summary-item">
+                    <span className="summary-label">Tuổi:</span>
+                    <span className="summary-value">{userData.age} tuổi</span>
+                  </div>
+                  <div className="summary-item">
+                    <span className="summary-label">Mục tiêu:</span>
+                    <span className="summary-value">Giảm {calculateWeightLoss().toFixed(1)} kg</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="form-actions">
+                <button type="button" className="btn btn-outline" onClick={prevStep}>
+                  ← Quay lại
+                </button>
+                <button 
+                  type="submit" 
+                  className="btn btn-primary btn-large" 
+                  disabled={isLoading}
+                >
+                  {isLoading ? '⏳ Đang tạo tài khoản...' : '✅ Hoàn thành & Tạo tài khoản'}
+                </button>
+              </div>
+            </form>
           </div>
         </section>
       )}
