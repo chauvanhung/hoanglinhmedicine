@@ -77,7 +77,7 @@ export default function DashboardPage() {
       setIsLoading(true)
       
       // Import Firebase service
-      const { getCurrentUser, getUserProfile, getUserGoals, getUserMeasurements } = await import('../../lib/firebase.js')
+      const { getCurrentUser, getUserProfile, getUserGoals, getUserMeasurements } = await import('../../lib/firebase')
       
       // Get current user
       const currentUser = getCurrentUser()

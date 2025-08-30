@@ -60,7 +60,7 @@ export default function PricingPage() {
         'Tư vấn tâm lý và động lực'
       ],
       popular: false,
-      color: 'purple'
+      color: 'gold'
     }
   ]
 
@@ -75,29 +75,7 @@ export default function PricingPage() {
 
   return (
     <div className="pricing-page">
-      {/* Header Navigation */}
-      <header className="pricing-header-nav">
-        <nav className="nav">
-          <div className="nav-container">
-            <div className="nav-logo">
-              <div className="logo-icon">🏥</div>
-              <span className="logo-text">HoangLinh</span>
-            </div>
-            
-            <ul className="nav-menu">
-              <li><a href="/" className="nav-link">Trang chủ</a></li>
-              <li><a href="/dashboard" className="nav-link">Dashboard</a></li>
-              <li><a href="/bmi" className="nav-link">Tính BMI</a></li>
-              <li><a href="/contact" className="nav-link">Liên hệ</a></li>
-            </ul>
-            
-            <div className="nav-buttons">
-              <a href="/onboarding" className="btn btn-primary">🚀 Bắt đầu</a>
-              <a href="/login" className="btn btn-outline">🔐 Đăng nhập</a>
-            </div>
-          </div>
-        </nav>
-      </header>
+
 
       {/* Page Header */}
       <section className="pricing-header">

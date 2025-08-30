@@ -1,31 +1,6 @@
 export default function HomePage() {
   return (
     <div className="homepage">
-      {/* Header Navigation */}
-      <header className="header">
-        <nav className="nav">
-          <div className="nav-container">
-            <div className="nav-logo">
-              <div className="logo-icon">🏥</div>
-              <span className="logo-text">HoangLinh</span>
-            </div>
-            
-            <ul className="nav-menu">
-              <li><a href="#features" className="nav-link">Tính năng</a></li>
-              <li><a href="#success" className="nav-link">Thành công</a></li>
-              <li><a href="/pricing" className="nav-link">Gói cước</a></li>
-              <li><a href="/contact" className="nav-link">Liên hệ</a></li>
-            </ul>
-            
-                                <div className="nav-buttons">
-                      <a href="/bmi" className="btn btn-outline">📊 Tính BMI</a>
-                      <a href="/onboarding" className="btn btn-primary">🚀 Bắt đầu</a>
-                      <a href="/dashboard" className="btn btn-outline">🏠 Dashboard</a>
-                    </div>
-          </div>
-        </nav>
-      </header>
-
       {/* Hero Section */}
       <section className="hero">
         <div className="hero-container">
@@ -44,11 +19,11 @@ export default function HomePage() {
               Đạt được mục tiêu giảm 5-7kg một cách an toàn và bền vững chỉ trong 3 tháng.
             </p>
             
-                                <div className="hero-buttons">
-                      <a href="/onboarding" className="btn btn-primary btn-large">🚀 Bắt đầu hành trình</a>
-                      <a href="/bmi" className="btn btn-secondary btn-large">📊 Tính BMI miễn phí</a>
-                      <a href="/dashboard" className="btn btn-outline btn-large">🏠 Vào Dashboard</a>
-                    </div>
+            <div className="hero-buttons">
+              <a href="/onboarding" className="btn btn-primary btn-large">🚀 Bắt đầu hành trình</a>
+              <a href="/bmi" className="btn btn-secondary btn-large">📊 Tính BMI miễn phí</a>
+              <a href="/dashboard" className="btn btn-outline btn-large">🏠 Vào Dashboard</a>
+            </div>
             
             <div className="hero-trust">
               <div className="trust-item">
@@ -98,28 +73,57 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="stats">
+      {/* Success Statistics Section */}
+      <section className="success-stats">
         <div className="stats-container">
-          <div className="stat-card">
-            <div className="stat-icon">👥</div>
-            <div className="stat-number">20,000+</div>
-            <div className="stat-label">Người dùng thành công</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-icon">🎯</div>
-            <div className="stat-number">98%</div>
-            <div className="stat-label">Tỷ lệ thành công</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-icon">⚖️</div>
-            <div className="stat-number">-8kg</div>
-            <div className="stat-label">Giảm cân trung bình</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-icon">🕒</div>
-            <div className="stat-number">24/7</div>
-            <div className="stat-label">Hỗ trợ khách hàng</div>
+          <div className="stats-grid">
+            <div className="stat-card">
+              <div className="stat-icon">
+                <div className="icon-bg">
+                  <span className="icon-symbol">👥</span>
+                </div>
+              </div>
+              <div className="stat-content">
+                <div className="stat-number">20,000+</div>
+                <div className="stat-label">Người dùng thành công</div>
+              </div>
+            </div>
+            
+            <div className="stat-card">
+              <div className="stat-icon">
+                <div className="icon-bg">
+                  <span className="icon-symbol">🎯</span>
+                </div>
+              </div>
+              <div className="stat-content">
+                <div className="stat-number">98%</div>
+                <div className="stat-label">Tỷ lệ thành công</div>
+              </div>
+            </div>
+            
+            <div className="stat-card">
+              <div className="stat-icon">
+                <div className="icon-bg">
+                  <span className="icon-symbol">⚖️</span>
+                </div>
+              </div>
+              <div className="stat-content">
+                <div className="stat-number">-8kg</div>
+                <div className="stat-label">Giảm cân trung bình</div>
+              </div>
+            </div>
+            
+            <div className="stat-card">
+              <div className="stat-icon">
+                <div className="icon-bg">
+                  <span className="icon-symbol">🕒</span>
+                </div>
+              </div>
+              <div className="stat-content">
+                <div className="stat-number">24/7</div>
+                <div className="stat-label">Hỗ trợ khách hàng</div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -128,85 +132,66 @@ export default function HomePage() {
       <section id="features" className="features">
         <div className="features-container">
           <div className="section-header">
-            <h2 className="section-title">Tính năng nổi bật</h2>
-            <p className="section-description">
-              Giải pháp toàn diện cho hành trình giảm cân khoa học và hiệu quả
-            </p>
+            <h2>Tính năng nổi bật</h2>
+            <p>Những công cụ mạnh mẽ giúp bạn đạt được mục tiêu giảm cân</p>
           </div>
           
           <div className="features-grid">
             <div className="feature-card">
               <div className="feature-icon">🤖</div>
-              <h3>AI Coaching thông minh</h3>
-              <p>Tư vấn dinh dưỡng và tập luyện cá nhân hóa dựa trên dữ liệu sức khỏe thực tế</p>
+              <h3>AI Coaching</h3>
+              <p>Trợ lý AI thông minh tư vấn dinh dưỡng và tập luyện cá nhân hóa</p>
             </div>
             
             <div className="feature-card">
               <div className="feature-icon">👨‍⚕️</div>
-              <h3>Tư vấn Bác sĩ chuyên môn</h3>
-              <p>Kết nối trực tiếp với bác sĩ chuyên khoa dinh dưỡng và nội tiết</p>
-            </div>
-            
-            <div className="feature-card">
-              <div className="feature-icon">📊</div>
-              <h3>Theo dõi tiến độ chi tiết</h3>
-              <p>Biểu đồ trực quan theo dõi cân nặng, calo và hoạt động hàng ngày</p>
+              <h3>Tư vấn bác sĩ</h3>
+              <p>Đội ngũ bác sĩ chuyên khoa dinh dưỡng và giảm cân</p>
             </div>
             
             <div className="feature-card">
               <div className="feature-icon">📱</div>
-              <h3>Đồng bộ thiết bị sức khỏe</h3>
-              <p>Kết nối Apple Health, Google Fit để theo dõi sức khỏe toàn diện</p>
+              <h3>Theo dõi sức khỏe</h3>
+              <p>Đồng bộ với Apple Health và Google Fit để theo dõi toàn diện</p>
             </div>
             
             <div className="feature-card">
-              <div className="feature-icon">🍽️</div>
-              <h3>Kế hoạch dinh dưỡng cá nhân</h3>
-              <p>Thực đơn cá nhân hóa theo mục tiêu, sở thích và tình trạng sức khỏe</p>
-            </div>
-            
-            <div className="feature-card">
-              <div className="feature-icon">💪</div>
-              <h3>Chương trình tập luyện tùy chỉnh</h3>
-              <p>Bài tập phù hợp với thể trạng, mục tiêu và thời gian của bạn</p>
+              <div className="feature-icon">🎯</div>
+              <h3>Mục tiêu thông minh</h3>
+              <p>Đặt mục tiêu thực tế và theo dõi tiến độ chi tiết</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Success Stories */}
+      {/* Success Stories Section */}
       <section id="success" className="success">
         <div className="success-container">
           <div className="section-header">
-            <h2 className="section-title">Câu chuyện thành công</h2>
-            <p className="section-description">
-              Hàng nghìn người đã thay đổi cuộc sống với HoangLinh
-            </p>
+            <h2>Câu chuyện thành công</h2>
+            <p>Những người đã thay đổi cuộc sống nhờ Hoang Linh Medicine</p>
           </div>
           
           <div className="success-grid">
             <div className="success-card">
-              <div className="success-avatar">👩‍💼</div>
+              <div className="success-avatar">👩‍🦰</div>
               <h3>Nguyễn Thị Mai</h3>
-              <div className="success-info">32 tuổi • 3 tháng</div>
-              <div className="success-result">-8kg</div>
-              <p className="success-story">"Từ 75kg xuống 67kg, tôi cảm thấy tự tin và khỏe mạnh hơn bao giờ hết!"</p>
+              <p className="success-result">Giảm 15kg trong 6 tháng</p>
+              <p className="success-story">"Tôi đã thử nhiều cách giảm cân nhưng không thành công. Nhờ Hoang Linh Medicine, tôi đã tìm được phương pháp phù hợp và có kết quả bền vững."</p>
             </div>
             
             <div className="success-card">
-              <div className="success-avatar">👨‍💻</div>
+              <div className="success-avatar">👨‍🦱</div>
               <h3>Trần Văn Nam</h3>
-              <div className="success-info">28 tuổi • 2 tháng</div>
-              <div className="success-result">-6kg</div>
-              <p className="success-story">"AI coaching giúp tôi hiểu rõ về dinh dưỡng và có thói quen tập luyện tốt."</p>
+              <p className="success-result">Giảm 12kg trong 4 tháng</p>
+              <p className="success-story">"AI coaching thực sự thông minh và hiệu quả. Tôi không còn phải lo lắng về việc ăn gì và tập luyện như thế nào."</p>
             </div>
             
             <div className="success-card">
-              <div className="success-avatar">👩‍⚕️</div>
+              <div className="success-avatar">👩‍🦳</div>
               <h3>Lê Thị Hoa</h3>
-              <div className="success-info">35 tuổi • 4 tháng</div>
-              <div className="success-result">-10kg</div>
-              <p className="success-story">"Kết hợp với bác sĩ tư vấn, tôi đã đạt được mục tiêu giảm cân một cách an toàn."</p>
+              <p className="success-result">Giảm 8kg trong 3 tháng</p>
+              <p className="success-story">"Dịch vụ tư vấn bác sĩ rất chuyên nghiệp. Tôi cảm thấy an tâm và có động lực để tiếp tục hành trình giảm cân."</p>
             </div>
           </div>
         </div>
@@ -215,69 +200,14 @@ export default function HomePage() {
       {/* CTA Section */}
       <section className="cta">
         <div className="cta-container">
-          <h2>Sẵn sàng thay đổi cuộc sống? 🚀</h2>
-          <p>
-            Tham gia cùng hàng nghìn người đã thành công trong hành trình giảm cân. 
-            Bắt đầu ngay hôm nay để nhận kế hoạch miễn phí!
-          </p>
+          <h2>Sẵn sàng bắt đầu hành trình giảm cân?</h2>
+          <p>Tham gia cùng hơn 20,000+ người đã thành công</p>
           <div className="cta-buttons">
-            <a href="/onboarding" className="btn btn-white btn-large">🎯 Bắt đầu hành trình</a>
-            <a href="/bmi" className="btn btn-outline-white btn-large">📊 Tính BMI ngay</a>
+            <a href="/onboarding" className="btn btn-primary btn-large">🚀 Bắt đầu ngay</a>
+            <a href="/pricing" className="btn btn-outline btn-large">💳 Xem gói cước</a>
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="footer">
-        <div className="footer-container">
-          <div className="footer-section">
-            <div className="footer-logo">
-              <div className="logo-icon">🏥</div>
-              <span>HoangLinh</span>
-            </div>
-            <p>
-              Giải pháp chăm sóc sức khỏe thông minh hàng đầu Việt Nam, 
-              giúp mọi người đạt được mục tiêu sức khỏe một cách khoa học và hiệu quả.
-            </p>
-          </div>
-          
-          <div className="footer-section">
-            <h4>Tính năng</h4>
-            <ul>
-              <li><a href="#">AI Coaching</a></li>
-              <li><a href="#">Tư vấn Bác sĩ</a></li>
-              <li><a href="#">Theo dõi tiến độ</a></li>
-              <li><a href="#">Đồng bộ thiết bị</a></li>
-              <li><a href="#">Kế hoạch dinh dưỡng</a></li>
-            </ul>
-          </div>
-          
-          <div className="footer-section">
-            <h4>Hỗ trợ</h4>
-            <ul>
-              <li><a href="#">Hướng dẫn sử dụng</a></li>
-              <li><a href="#">FAQ</a></li>
-              <li><a href="#">Liên hệ</a></li>
-              <li><a href="#">Bảo mật</a></li>
-              <li><a href="#">Điều khoản sử dụng</a></li>
-            </ul>
-          </div>
-          
-          <div className="footer-section">
-            <h4>Liên hệ</h4>
-            <ul>
-              <li>📧 info@hoanglinh.com</li>
-              <li>📞 1900-xxxx</li>
-              <li>🏢 Hà Nội, Việt Nam</li>
-              <li>🕒 Hỗ trợ 24/7</li>
-            </ul>
-          </div>
-        </div>
-        
-        <div className="footer-bottom">
-          <p>© 2024 Hoang Linh Medicine. Tất cả quyền được bảo lưu.</p>
-        </div>
-      </footer>
     </div>
   )
 }

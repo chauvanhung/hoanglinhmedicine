@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 interface UserData {
   fullName: string
@@ -25,6 +26,7 @@ export default function OnboardingPage() {
   const [currentStep, setCurrentStep] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const router = useRouter()
   const [userData, setUserData] = useState<UserData>({
     fullName: '',
     email: '',
@@ -43,6 +45,28 @@ export default function OnboardingPage() {
     password: '',
     confirmPassword: ''
   })
+
+  // Check if user is already logged in
+  useEffect(() => {
+    const checkExistingLogin = () => {
+      const storedUser = localStorage.getItem('firebase_user');
+      const authStatus = localStorage.getItem('firebase_auth_status');
+      
+      if (storedUser && authStatus === 'logged_in') {
+        try {
+          const user = JSON.parse(storedUser);
+          // User is already logged in, redirect to dashboard
+          router.push('/dashboard');
+        } catch (error) {
+          console.error('Error parsing stored user:', error);
+          localStorage.removeItem('firebase_user');
+          localStorage.removeItem('firebase_auth_status');
+        }
+      }
+    };
+
+    checkExistingLogin();
+  }, [router]);
 
   const nextStep = () => {
     if (currentStep < 5) {
@@ -166,8 +190,8 @@ export default function OnboardingPage() {
 
     try {
       // Import Firebase service
-      const { initializeFirebase, createUser, addDocument } = await import('../../lib/firebase.js');
-      const { COLLECTIONS } = await import('../../firebase.config.js');
+      const { initializeFirebase, createUser, addDocument } = await import('../../lib/firebase');
+              const { COLLECTIONS } = await import('../../firebase.config');
       
       // Initialize Firebase
       await initializeFirebase();
