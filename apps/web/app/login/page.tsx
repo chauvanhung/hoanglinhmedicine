@@ -1,78 +1,36 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../lib/firebase';
+import firebaseService from '../../lib/firebase';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
 
-  useEffect(() => {
-    // Kiểm tra nếu đã đăng nhập thì chuyển đến dashboard
-    const checkExistingLogin = () => {
-      const storedUser = localStorage.getItem('firebase_user');
-      const authStatus = localStorage.getItem('firebase_auth_status');
-      
-      if (storedUser && authStatus === 'logged_in') {
-        try {
-          const userData = JSON.parse(storedUser);
-          if (userData && userData.email) {
-            console.log('Đã đăng nhập, chuyển đến dashboard');
-            router.push('/dashboard');
-          }
-        } catch (error) {
-          console.error('Lỗi khi kiểm tra user data:', error);
-          localStorage.removeItem('firebase_user');
-          localStorage.removeItem('firebase_auth_status');
-        }
-      }
-    };
-
-    checkExistingLogin();
-  }, [router]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setIsLoading(true);
     setError('');
 
     try {
-      // Đăng nhập với Firebase
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+      const result = await firebaseService.signInWithEmailAndPassword(email, password);
       
-      // Lưu thông tin user vào localStorage
-      localStorage.setItem('firebase_user', JSON.stringify(user));
-      localStorage.setItem('firebase_auth_status', 'logged_in');
-      
-      console.log('Đăng nhập thành công:', user.email);
-      
-      // Chuyển đến dashboard
-      router.push('/dashboard');
-    } catch (error: any) {
-      console.error('Lỗi đăng nhập:', error);
-      
-      let errorMessage = 'Đăng nhập thất bại';
-      if (error.code === 'auth/user-not-found') {
-        errorMessage = 'Tài khoản không tồn tại';
-      } else if (error.code === 'auth/wrong-password') {
-        errorMessage = 'Mật khẩu không đúng';
-      } else if (error.code === 'auth/invalid-email') {
-        errorMessage = 'Email không hợp lệ';
-      } else if (error.code === 'auth/too-many-requests') {
-        errorMessage = 'Quá nhiều lần thử đăng nhập. Vui lòng thử lại sau';
-      } else if (error.code === 'auth/api-key-not-valid') {
-        errorMessage = 'Lỗi cấu hình Firebase. Vui lòng liên hệ admin';
+      if (result.user) {
+        // Store user data in localStorage
+        localStorage.setItem('firebase_user', JSON.stringify(result.user));
+        localStorage.setItem('firebase_auth_status', 'logged_in');
+        
+        // Redirect to dashboard
+        router.push('/dashboard');
       }
-      
-      setError(errorMessage);
+    } catch (error: any) {
+      setError(error.message);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -137,9 +95,9 @@ export default function LoginPage() {
               <button 
                 type="submit" 
                 className="login-btn"
-                disabled={loading}
+                disabled={isLoading}
               >
-                {loading ? '⏳ Đang đăng nhập...' : '🔐 Đăng nhập'}
+                {isLoading ? '⏳ Đang đăng nhập...' : '🔐 Đăng nhập'}
               </button>
             </form>
 

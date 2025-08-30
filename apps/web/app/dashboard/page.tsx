@@ -90,8 +90,8 @@ export default function DashboardPage() {
       
       // Load user profile
       const userProfile = await getUserProfile(currentUser.uid)
-      if (userProfile) {
-        setProfile(userProfile)
+      if (userProfile && typeof userProfile === 'object' && 'name' in userProfile) {
+        setProfile(userProfile as unknown as Profile)
       }
       
       // Load user goals

@@ -190,14 +190,10 @@ export default function OnboardingPage() {
 
     try {
       // Import Firebase service
-      const { initializeFirebase, createUser, addDocument } = await import('../../lib/firebase');
-              const { COLLECTIONS } = await import('../../firebase.config');
+      const { createUserWithEmailAndPassword, createUserProfile, createGoal, createMeasurement } = await import('../../lib/firebase');
       
-      // Initialize Firebase
-      await initializeFirebase();
-
       // Tạo user với Firebase Auth
-      const { user } = await createUser(userData.email, userData.password);
+      const { user } = await createUserWithEmailAndPassword(userData.email, userData.password);
       
       // Tạo user profile
       const profileData = {
@@ -213,7 +209,7 @@ export default function OnboardingPage() {
         budget: userData.budget
       };
       
-      await addDocument(COLLECTIONS.PROFILES, { userId: user.uid, ...profileData });
+      await createUserProfile(user.uid, profileData);
       
       // Tạo user goal
       const goalData = {
@@ -226,7 +222,7 @@ export default function OnboardingPage() {
         status: 'ACTIVE'
       };
       
-      await addDocument(COLLECTIONS.GOALS, { userId: user.uid, ...goalData });
+      await createGoal(user.uid, goalData);
       
       // Tạo initial measurement
       const measurementData = {
@@ -236,7 +232,7 @@ export default function OnboardingPage() {
         at: new Date().toISOString()
       };
       
-      await addDocument(COLLECTIONS.MEASUREMENTS, { userId: user.uid, ...measurementData });
+      await createMeasurement(user.uid, measurementData);
       
       // Lưu thông tin user và plan vào localStorage
       localStorage.setItem('firebase_user', JSON.stringify(user));
