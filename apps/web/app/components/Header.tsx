@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { signOut } from 'firebase/auth';
-import { auth } from '../../lib/firebase';
 
 export default function Header() {
   const [user, setUser] = useState<any>(null);
@@ -45,6 +43,10 @@ export default function Header() {
 
   const handleLogout = async () => {
     try {
+      // Dynamic import Firebase
+      const { signOut } = await import('firebase/auth');
+      const { auth } = await import('../../lib/firebase');
+      
       // Đăng xuất khỏi Firebase Authentication
       await signOut(auth);
       
