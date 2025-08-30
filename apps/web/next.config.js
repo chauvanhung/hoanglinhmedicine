@@ -1,16 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
-  experimental: {
-    outputFileTracingRoot: undefined,
-  },
+  // Remove problematic configurations that can cause Firebase module resolution issues
   images: {
     unoptimized: true,
   },
-  // Disable server-side image optimization for static export
-  trailingSlash: true,
-  // Enable static export
-  distDir: 'dist',
+  // Keep only essential configurations
 }
 
 module.exports = nextConfig
