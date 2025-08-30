@@ -1,129 +1,40 @@
-// Firebase service functions - using dynamic imports to avoid build issues
-let firebaseConfig: any;
-let COLLECTIONS: any;
+// Simple Firebase configuration for Render compatibility
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 
-// Dynamic imports to avoid build-time module resolution issues
-let app: any;
-let auth: any;
-let db: any;
-
-// Initialize Firebase dynamically
-const initializeFirebase = async () => {
-  if (!app) {
-    const { initializeApp } = await import('firebase/app');
-    const { getAuth } = await import('firebase/auth');
-    const { getFirestore } = await import('firebase/firestore');
-    
-    // Import config
-    const config = await import('../firebase.config');
-    firebaseConfig = config.firebaseConfig;
-    COLLECTIONS = config.COLLECTIONS;
-    
-    // Initialize Firebase
-    app = initializeApp(firebaseConfig);
-    auth = getAuth(app);
-    db = getFirestore(app);
-  }
-  return { app, auth, db };
+// Firebase config
+const firebaseConfig = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Export initialized instances
-export const getFirebaseInstances = () => ({ app, auth, db });
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+export const db = getFirestore(app);
 
-// Initialize on module load
-if (typeof window !== 'undefined') {
-  initializeFirebase();
-}
+// Collections
+export const COLLECTIONS = {
+  USERS: 'users',
+  PROFILES: 'profiles',
+  GOALS: 'goals',
+  MEASUREMENTS: 'measurements',
+  PLANS: 'plans',
+  EXERCISES: 'exercises',
+  DIETS: 'diets'
+};
 
+// Simple service class
 class FirebaseService {
-  private isInitialized: boolean;
-  private currentUser: any;
-
-  constructor() {
-    this.isInitialized = false;
-    this.currentUser = null;
-    this.initialize();
-  }
-
-  async initialize() {
-    try {
-      const { auth: authInstance } = await initializeFirebase();
-      
-      // Listen for auth state changes
-      const { onAuthStateChanged } = await import('firebase/auth');
-      onAuthStateChanged(authInstance, (user) => {
-        this.currentUser = user;
-        if (user) {
-          if (typeof window !== 'undefined') {
-            localStorage.setItem('firebase_user', JSON.stringify(user));
-            localStorage.setItem('firebase_auth_status', 'logged_in');
-          }
-        } else {
-          if (typeof window !== 'undefined') {
-            localStorage.removeItem('firebase_user');
-            localStorage.removeItem('firebase_auth_status');
-          }
-        }
-      });
-
-      // Check for existing login on initialization
-      this.checkExistingLogin();
-      this.isInitialized = true;
-    } catch (error) {
-      console.error('Firebase initialization failed:', error);
-    }
-  }
-
-  // Check if user is already logged in
-  async checkExistingLogin(): Promise<void> {
-    try {
-      if (typeof window === 'undefined') return;
-      
-      // Check localStorage first
-      const storedUser = localStorage.getItem('firebase_user');
-      const authStatus = localStorage.getItem('firebase_auth_status');
-      
-      if (storedUser && authStatus === 'logged_in') {
-        const user = JSON.parse(storedUser);
-        
-        // Verify the user is still valid with Firebase
-        try {
-          const { auth: authInstance } = await initializeFirebase();
-          // Get current user from Firebase Auth
-          const currentUser = authInstance.currentUser;
-          if (currentUser && currentUser.uid === user.uid) {
-            this.currentUser = currentUser;
-            return;
-          }
-        } catch (error) {
-          console.log('Firebase auth check failed, clearing stored data');
-        }
-        
-        // If verification failed, clear stored data
-        localStorage.removeItem('firebase_user');
-        localStorage.removeItem('firebase_auth_status');
-      }
-    } catch (error) {
-      console.error('Error checking existing login:', error);
-      // Clear any corrupted data
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('firebase_user');
-        localStorage.removeItem('firebase_auth_status');
-      }
-    }
-  }
-
-  // Initialize Firebase (kept for compatibility)
-  async initializeFirebase(): Promise<boolean> {
-    return this.isInitialized;
-  }
-
-  // Authentication methods
   async createUserWithEmailAndPassword(email: string, password: string) {
     try {
       const { createUserWithEmailAndPassword: createUser } = await import('firebase/auth');
-      const { auth: authInstance } = await initializeFirebase();
-      const result = await createUser(authInstance, email, password);
+      const result = await createUser(auth, email, password);
       return { user: result.user };
     } catch (error: any) {
       throw new Error(`Tạo tài khoản thất bại: ${error.message}`);
@@ -133,8 +44,7 @@ class FirebaseService {
   async signInWithEmailAndPassword(email: string, password: string) {
     try {
       const { signInWithEmailAndPassword: signIn } = await import('firebase/auth');
-      const { auth: authInstance } = await initializeFirebase();
-      const result = await signIn(authInstance, email, password);
+      const result = await signIn(auth, email, password);
       return { user: result.user };
     } catch (error: any) {
       throw new Error(`Đăng nhập thất bại: ${error.message}`);
@@ -144,20 +54,17 @@ class FirebaseService {
   async signOut() {
     try {
       const { signOut: signOutFn } = await import('firebase/auth');
-      const { auth: authInstance } = await initializeFirebase();
-      await signOutFn(authInstance);
+      await signOutFn(auth);
       return true;
     } catch (error: any) {
       throw new Error(`Đăng xuất thất bại: ${error.message}`);
     }
   }
 
-  // User profile methods
   async createUserProfile(userId: string, profileData: any) {
     try {
       const { addDoc, collection } = await import('firebase/firestore');
-      const { db: dbInstance } = await initializeFirebase();
-      const docRef = await addDoc(collection(dbInstance, COLLECTIONS.PROFILES), {
+      const docRef = await addDoc(collection(db, COLLECTIONS.PROFILES), {
         userId,
         ...profileData,
         createdAt: new Date(),
@@ -172,8 +79,7 @@ class FirebaseService {
   async getUserProfile(userId: string) {
     try {
       const { doc, getDoc, collection } = await import('firebase/firestore');
-      const { db: dbInstance } = await initializeFirebase();
-      const docRef = doc(dbInstance, COLLECTIONS.PROFILES, userId);
+      const docRef = doc(db, COLLECTIONS.PROFILES, userId);
       const docSnap = await getDoc(docRef);
       
       if (docSnap.exists()) {
@@ -186,27 +92,10 @@ class FirebaseService {
     }
   }
 
-  async updateUserProfile(userId: string, updateData: any) {
-    try {
-      const { doc, updateDoc } = await import('firebase/firestore');
-      const { db: dbInstance } = await initializeFirebase();
-      const docRef = doc(dbInstance, COLLECTIONS.PROFILES, userId);
-      await updateDoc(docRef, {
-        ...updateData,
-        updatedAt: new Date()
-      });
-      return true;
-    } catch (error: any) {
-      throw new Error(`Cập nhật profile thất bại: ${error.message}`);
-    }
-  }
-
-  // Goal methods
   async createGoal(userId: string, goalData: any) {
     try {
       const { addDoc, collection } = await import('firebase/firestore');
-      const { db: dbInstance } = await initializeFirebase();
-      const docRef = await addDoc(collection(dbInstance, COLLECTIONS.GOALS), {
+      const docRef = await addDoc(collection(db, COLLECTIONS.GOALS), {
         userId,
         ...goalData,
         createdAt: new Date(),
@@ -221,8 +110,7 @@ class FirebaseService {
   async getUserGoals(userId: string) {
     try {
       const { collection, query, where, getDocs } = await import('firebase/firestore');
-      const { db: dbInstance } = await initializeFirebase();
-      const q = query(collection(dbInstance, COLLECTIONS.GOALS), where('userId', '==', userId));
+      const q = query(collection(db, COLLECTIONS.GOALS), where('userId', '==', userId));
       const querySnapshot = await getDocs(q);
       
       const goals: any[] = [];
@@ -236,12 +124,10 @@ class FirebaseService {
     }
   }
 
-  // Measurement methods
   async createMeasurement(userId: string, measurementData: any) {
     try {
       const { addDoc, collection } = await import('firebase/firestore');
-      const { db: dbInstance } = await initializeFirebase();
-      const docRef = await addDoc(collection(dbInstance, COLLECTIONS.MEASUREMENTS), {
+      const docRef = await addDoc(collection(db, COLLECTIONS.MEASUREMENTS), {
         userId,
         ...measurementData,
         createdAt: new Date()
@@ -255,9 +141,8 @@ class FirebaseService {
   async getUserMeasurements(userId: string) {
     try {
       const { collection, query, where, orderBy, getDocs } = await import('firebase/firestore');
-      const { db: dbInstance } = await initializeFirebase();
       const q = query(
-        collection(dbInstance, COLLECTIONS.MEASUREMENTS), 
+        collection(db, COLLECTIONS.MEASUREMENTS), 
         where('userId', '==', userId),
         orderBy('createdAt', 'desc')
       );
@@ -274,49 +159,12 @@ class FirebaseService {
     }
   }
 
-  // Plan methods
-  async createPlan(userId: string, planData: any) {
-    try {
-      const { addDoc, collection } = await import('firebase/firestore');
-      const { db: dbInstance } = await initializeFirebase();
-      const docRef = await addDoc(collection(dbInstance, COLLECTIONS.PLANS), {
-        userId,
-        ...planData,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      });
-      return { id: docRef.id };
-    } catch (error: any) {
-      throw new Error(`Tạo kế hoạch thất bại: ${error.message}`);
-    }
+  getCurrentUser() {
+    return auth.currentUser;
   }
 
-  async getUserPlans(userId: string) {
-    try {
-      const { collection, query, where, getDocs } = await import('firebase/firestore');
-      const { db: dbInstance } = await initializeFirebase();
-      const q = query(collection(dbInstance, COLLECTIONS.PLANS), where('userId', '==', userId));
-      const querySnapshot = await getDocs(q);
-      
-      const plans: any[] = [];
-      querySnapshot.forEach((doc) => {
-        plans.push({ id: doc.id, ...doc.data() });
-      });
-      
-      return plans;
-    } catch (error: any) {
-      throw new Error(`Lấy kế hoạch thất bại: ${error.message}`);
-    }
-  }
-
-  // Get current user
-  getCurrentUser(): any {
-    return this.currentUser;
-  }
-
-  // Check if user is logged in
-  isUserLoggedIn(): boolean {
-    return this.isInitialized && this.currentUser !== null;
+  isUserLoggedIn() {
+    return auth.currentUser !== null;
   }
 }
 
@@ -331,13 +179,10 @@ export const {
   signOut,
   createUserProfile,
   getUserProfile,
-  updateUserProfile,
   createGoal,
   getUserGoals,
   createMeasurement,
   getUserMeasurements,
-  createPlan,
-  getUserPlans,
   getCurrentUser,
   isUserLoggedIn
 } = firebaseService;
