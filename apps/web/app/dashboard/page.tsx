@@ -106,16 +106,11 @@ export default function DashboardPage() {
       // Import Firebase service methods
       const { getUserProfile, getUserGoals, getUserMeasurements } = await import('../../lib/firebase');
       
-      // Load user profile
+            // Load user profile
       try {
-        console.log('Loading profile for user:', currentUser.uid);
         const userProfile = await getUserProfile(currentUser.uid);
-        console.log('Profile loaded:', userProfile);
         if (userProfile && typeof userProfile === 'object' && 'name' in userProfile) {
           setProfile(userProfile as unknown as Profile);
-          console.log('Profile set successfully');
-        } else {
-          console.log('No profile found for user:', currentUser.uid);
         }
       } catch (profileError) {
         console.error('Profile load error:', profileError);
@@ -123,14 +118,9 @@ export default function DashboardPage() {
       
       // Load user goals
       try {
-        console.log('Loading goals for user:', currentUser.uid);
         const userGoals = await getUserGoals(currentUser.uid);
-        console.log('Goals loaded:', userGoals);
         if (userGoals && userGoals.length > 0) {
           setGoal(userGoals[0]); // Get the first active goal
-          console.log('Goal set successfully');
-        } else {
-          console.log('No goals found for user:', currentUser.uid);
         }
       } catch (goalsError) {
         console.error('Goals load error:', goalsError);
@@ -138,14 +128,9 @@ export default function DashboardPage() {
       
       // Load user measurements
       try {
-        console.log('Loading measurements for user:', currentUser.uid);
         const userMeasurements = await getUserMeasurements(currentUser.uid);
-        console.log('Measurements loaded:', userMeasurements);
         if (userMeasurements && userMeasurements.length > 0) {
           setMeasurements(userMeasurements);
-          console.log('Measurements set successfully');
-        } else {
-          console.log('No measurements found for user:', currentUser.uid);
         }
       } catch (measurementsError) {
         console.error('Measurements load error:', measurementsError);
@@ -271,16 +256,7 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Debug Info */}
-        {process.env.NODE_ENV === 'development' && (
-          <div style={{background: 'rgba(0,0,0,0.1)', padding: '1rem', margin: '1rem', borderRadius: '8px'}}>
-            <h4>Debug Info:</h4>
-            <p>Loading: {isLoading ? 'true' : 'false'}</p>
-            <p>Error: {error || 'none'}</p>
-            <p>Profile: {profile ? 'exists' : 'null'}</p>
-            <p>User: {user ? user.uid : 'null'}</p>
-          </div>
-        )}
+
 
         {/* No Data State */}
         {!isLoading && !error && !profile && (
