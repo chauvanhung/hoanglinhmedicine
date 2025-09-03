@@ -2,7 +2,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword as createUserFn, signInWithEmailAndPassword as signInFn, signOut as signOutFn, onAuthStateChanged, User } from 'firebase/auth';
 import { getFirestore, collection, addDoc, getDoc, getDocs, updateDoc, deleteDoc, query, where, orderBy, limit, doc, QueryConstraint, OrderByDirection } from 'firebase/firestore';
-import { firebaseConfig, COLLECTIONS } from '../firebase.config';
+import { firebaseConfig } from '../firebase.config';
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -24,12 +24,7 @@ export const COLLECTIONS = {
 class FirebaseService {
   async createUserWithEmailAndPassword(email: string, password: string) {
     try {
-<<<<<<< HEAD
       const result = await createUserFn(auth, email, password);
-=======
-      const { createUserWithEmailAndPassword: createUser } = await import('firebase/auth');
-      const result = await createUser(auth, email, password);
->>>>>>> e644bc1922005351acfe2849798171ec429fe851
       return { user: result.user };
     } catch (error: any) {
       throw new Error(`Tạo tài khoản thất bại: ${error.message}`);
@@ -38,12 +33,8 @@ class FirebaseService {
 
   async signInWithEmailAndPassword(email: string, password: string) {
     try {
-<<<<<<< HEAD
-      const result = await signInFn(auth, email, password);
-=======
       const { signInWithEmailAndPassword: signIn } = await import('firebase/auth');
       const result = await signIn(auth, email, password);
->>>>>>> e644bc1922005351acfe2849798171ec429fe851
       return { user: result.user };
     } catch (error: any) {
       throw new Error(`Đăng nhập thất bại: ${error.message}`);
@@ -52,10 +43,6 @@ class FirebaseService {
 
   async signOut() {
     try {
-<<<<<<< HEAD
-=======
-      const { signOut: signOutFn } = await import('firebase/auth');
->>>>>>> e644bc1922005351acfe2849798171ec429fe851
       await signOutFn(auth);
       return true;
     } catch (error: any) {
