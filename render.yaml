@@ -47,10 +47,30 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      - key: DATABASE_URL
+      - key: FIREBASE_API_KEY
         fromDatabase:
-          name: postgres-db
-          property: connectionString
+          name: firebase-config
+          property: apiKey
+      - key: FIREBASE_AUTH_DOMAIN
+        fromDatabase:
+          name: firebase-config
+          property: authDomain
+      - key: FIREBASE_PROJECT_ID
+        fromDatabase:
+          name: firebase-config
+          property: projectId
+      - key: FIREBASE_STORAGE_BUCKET
+        fromDatabase:
+          name: firebase-config
+          property: storageBucket
+      - key: FIREBASE_MESSAGING_SENDER_ID
+        fromDatabase:
+          name: firebase-config
+          property: messagingSenderId
+      - key: FIREBASE_APP_ID
+        fromDatabase:
+          name: firebase-config
+          property: appId
       - key: JWT_SECRET
         generateValue: true
       - key: PORT
@@ -60,11 +80,6 @@ services:
     branch: main
 
 databases:
-  - name: postgres-db
-    plan: starter
-    databaseName: hoanglinhmedicine
-    user: hoanglinhmedicine_user
-
   - name: firebase-config
     plan: starter
     databaseName: firebase_config

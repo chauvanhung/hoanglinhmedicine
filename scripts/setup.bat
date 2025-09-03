@@ -65,8 +65,13 @@ REM API .env
 if not exist "apps\api\.env" (
     echo 📝 Creating apps\api\.env template...
     (
-        echo # Database Configuration
-        echo DATABASE_URL=postgresql://username:password@localhost:5432/hoanglinhmedicine
+        echo # Firebase Configuration (same as web app)
+        echo FIREBASE_API_KEY=your_firebase_api_key_here
+        echo FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
+        echo FIREBASE_PROJECT_ID=your_project_id
+        echo FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
+        echo FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+        echo FIREBASE_APP_ID=your_firebase_app_id
         echo.
         echo # JWT Configuration
         echo JWT_SECRET=your_jwt_secret_here
@@ -75,7 +80,7 @@ if not exist "apps\api\.env" (
         echo NODE_ENV=development
         echo PORT=3001
     ) > apps\api\.env
-    echo ⚠️  Please update apps\api\.env with your database and JWT configuration
+    echo ⚠️  Please update apps\api\.env with your Firebase and JWT configuration
 )
 
 echo.
@@ -83,7 +88,7 @@ echo ✅ Setup completed successfully!
 echo.
 echo 📋 Next steps:
 echo 1. Update apps\web\.env.local with your Firebase configuration
-echo 2. Update apps\api\.env with your database configuration
+echo 2. Update apps\api\.env with your Firebase configuration
 echo 3. Run 'npm run dev' to start the development server
 echo.
 echo 🚀 Happy coding!

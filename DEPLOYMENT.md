@@ -24,8 +24,13 @@ NEXT_PUBLIC_FIREBASE_APP_ID=your_firebase_app_id
 Tạo file `.env` trong thư mục `apps/api/`:
 
 ```bash
-# Database
-DATABASE_URL=postgresql://username:password@localhost:5432/hoanglinhmedicine
+# Firebase Configuration (same as web app)
+FIREBASE_API_KEY=your_firebase_api_key
+FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
+FIREBASE_PROJECT_ID=your_project_id
+FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
+FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+FIREBASE_APP_ID=your_firebase_app_id
 
 # JWT
 JWT_SECRET=your_jwt_secret_here
@@ -41,9 +46,10 @@ PORT=3001
 1. Push code lên GitHub repository
 2. Kết nối repository với Render
 
-### Bước 2: Tạo Database
-1. Tạo PostgreSQL database trên Render
-2. Lưu connection string
+### Bước 2: Cấu hình Firebase
+1. Tạo Firebase project trên Firebase Console
+2. Lưu tất cả Firebase configuration keys
+3. Không cần tạo database riêng (dùng Firestore)
 
 ### Bước 3: Deploy Web Frontend
 1. Tạo new Web Service
@@ -59,7 +65,12 @@ PORT=3001
    - **Build Command**: `cd apps/api && npm install && npm run build`
    - **Start Command**: `cd apps/api && npm run start:prod`
    - **Environment Variables**: 
-     - `DATABASE_URL`: Connection string từ PostgreSQL
+     - `FIREBASE_API_KEY`: Firebase API Key
+     - `FIREBASE_AUTH_DOMAIN`: Firebase Auth Domain
+     - `FIREBASE_PROJECT_ID`: Firebase Project ID
+     - `FIREBASE_STORAGE_BUCKET`: Firebase Storage Bucket
+     - `FIREBASE_MESSAGING_SENDER_ID`: Firebase Messaging Sender ID
+     - `FIREBASE_APP_ID`: Firebase App ID
      - `JWT_SECRET`: Random secret key
      - `PORT`: 3001
    - **Health Check Path**: `/health`
@@ -78,13 +89,10 @@ PORT=3001
 - Kiểm tra Node.js version (khuyến nghị 18.x)
 - Đảm bảo tất cả dependencies được install đúng
 
-### Lỗi Database
-- Kiểm tra DATABASE_URL format
-- Đảm bảo database đã được tạo và accessible
-
 ### Lỗi Firebase
 - Kiểm tra tất cả Firebase environment variables
 - Đảm bảo Firebase project đã được cấu hình đúng
+- Kiểm tra Firestore rules và permissions
 
 ## 🛠️ Quick Setup
 
@@ -134,4 +142,7 @@ hoanglinhmedicine/
 - File `render.yaml` đã được tạo sẵn để cấu hình tự động
 - File `.renderignore` tối ưu quá trình build
 - Scripts setup tự động cho development
+- **Database**: Sử dụng Firebase Firestore (không cần PostgreSQL)
+- **Authentication**: Firebase Auth
+- **Storage**: Firebase Storage
 - Tất cả sensitive data nên được lưu trong Environment Variables
