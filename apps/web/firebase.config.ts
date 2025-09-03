@@ -1,11 +1,11 @@
 export const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET!,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID!
+  apiKey: "AIzaSyDug_NyDb_oVP_Pl5yXSFcy72dq7PjCYhY",
+  authDomain: "hoanglinh-obesity-care.firebaseapp.com",
+  projectId: "hoanglinh-obesity-care",
+  storageBucket: "hoanglinh-obesity-care.firebasestorage.app",
+  messagingSenderId: "860032582221",
+  appId: "1:860032582221:web:e3c5923cbe504725d91204",
+  measurementId: "G-T9Z1DMXE8P"
 };
 
 export const COLLECTIONS = {

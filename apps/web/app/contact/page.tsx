@@ -12,6 +12,7 @@ export default function ContactPage() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
+  const [activeFaq, setActiveFaq] = useState<number | null>(null)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -25,7 +26,7 @@ export default function ContactPage() {
     e.preventDefault()
     setIsSubmitting(true)
     
-    // Simulate form submission
+    // Simulate API call
     setTimeout(() => {
       setIsSubmitting(false)
       setSubmitStatus('success')
@@ -37,126 +38,83 @@ export default function ContactPage() {
         message: ''
       })
       
-      // Reset success message after 5 seconds
-      setTimeout(() => setSubmitStatus('idle'), 5000)
-    }, 2000)
+      // Reset success message after 3 seconds
+      setTimeout(() => {
+        setSubmitStatus('idle')
+      }, 3000)
+    }, 1000)
+  }
+
+  const toggleFaq = (index: number) => {
+    setActiveFaq(activeFaq === index ? null : index)
   }
 
   const contactInfo = [
     {
-      icon: '📍',
-      title: 'Địa chỉ',
-      content: '123 Đường ABC, Quận 1, TP.HCM',
-      link: 'https://maps.google.com'
-    },
-    {
       icon: '📞',
       title: 'Điện thoại',
-      content: '1900 1234',
-      link: 'tel:19001234'
+      content: '1900 1238',
+      description: 'Hỗ trợ 24/7'
     },
     {
       icon: '✉️',
       title: 'Email',
-      content: 'info@hoanglinhmedicine.com',
-      link: 'mailto:info@hoanglinhmedicine.com'
+      content: 'support@hoanglinhmedicine.com',
+      description: 'Phản hồi trong 24h'
+    },
+    {
+      icon: '📍',
+      title: 'Địa chỉ',
+      content: '123 Đường ABC, Quận 1, TP.HCM',
+      description: 'Trụ sở chính'
     },
     {
       icon: '🕒',
       title: 'Giờ làm việc',
-      content: 'Thứ 2 - Thứ 6: 8:00 - 18:00\nThứ 7: 8:00 - 12:00',
-      link: null
-    }
-  ]
-
-  const departments = [
-    {
-      name: 'Tư vấn dinh dưỡng',
-      phone: '1900 1235',
-      email: 'nutrition@hoanglinhmedicine.com'
-    },
-    {
-      name: 'Tư vấn tập luyện',
-      phone: '1900 1236',
-      email: 'fitness@hoanglinhmedicine.com'
-    },
-    {
-      name: 'Hỗ trợ kỹ thuật',
-      phone: '1900 1237',
-      email: 'support@hoanglinhmedicine.com'
-    },
-    {
-      name: 'Đặt lịch bác sĩ',
-      phone: '1900 1238',
-      email: 'booking@hoanglinhmedicine.com'
+      content: 'Thứ 2 - Thứ 6: 8:00 - 18:00',
+      description: 'Thứ 7: 8:00 - 12:00'
     }
   ]
 
   return (
-    <div className="contact-page">
-      {/* Header Navigation */}
-      <header className="contact-header-nav">
-        <nav className="nav">
-          <div className="nav-container">
-            <div className="nav-logo">
-              <div className="logo-icon">🏥</div>
-              <span className="logo-text">HoangLinh</span>
-            </div>
-            
-            <ul className="nav-menu">
-              <li><a href="/" className="nav-link">Trang chủ</a></li>
-              <li><a href="/dashboard" className="nav-link">Dashboard</a></li>
-              <li><a href="/pricing" className="nav-link">Gói cước</a></li>
-              <li><a href="/bmi" className="nav-link">Tính BMI</a></li>
-            </ul>
-            
-            <div className="nav-buttons">
-              <a href="/onboarding" className="btn btn-primary">🚀 Bắt đầu</a>
-              <a href="/login" className="btn btn-outline">🔐 Đăng nhập</a>
-            </div>
+    <div className="page-background">
+      <div className="page-container">
+        {/* Hero Section */}
+        <section className="contact-hero">
+          <div className="hero-content">
+            <h1 className="page-title">Liên hệ với chúng tôi</h1>
+            <p className="page-subtitle">
+              Chúng tôi luôn sẵn sàng lắng nghe và hỗ trợ bạn. Hãy để lại thông tin, 
+              đội ngũ chuyên gia của Hoang Linh Medicine sẽ liên hệ lại trong thời gian sớm nhất.
+            </p>
           </div>
-        </nav>
-      </header>
+        </section>
 
-      {/* Page Header */}
-      <section className="contact-header">
-        <div className="header-container">
-          <h1>📞 Liên Hệ</h1>
-          <p>Chúng tôi luôn sẵn sàng hỗ trợ bạn trên hành trình chăm sóc sức khỏe</p>
-        </div>
-      </section>
-
-      {/* Contact Information */}
-      <section className="contact-info">
-        <div className="info-container">
-          <h2>📋 Thông Tin Liên Hệ</h2>
-          <div className="info-grid">
+        {/* Contact Info Grid */}
+        <section className="contact-info-section">
+          <div className="contact-info-grid">
             {contactInfo.map((info, index) => (
-              <div key={index} className="info-card">
+              <div key={index} className="contact-info-card">
                 <div className="info-icon">{info.icon}</div>
                 <div className="info-content">
-                  <h3>{info.title}</h3>
-                  {info.link ? (
-                    <a href={info.link} className="info-link">
-                      {info.content}
-                    </a>
-                  ) : (
-                    <p className="info-text">{info.content}</p>
-                  )}
+                  <h3 className="info-title">{info.title}</h3>
+                  <p className="info-main">{info.content}</p>
+                  <p className="info-desc">{info.description}</p>
                 </div>
               </div>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Contact Form and Departments */}
-      <section className="contact-main">
-        <div className="main-container">
-          {/* Contact Form */}
-          <div className="contact-form-section">
-            <h2>📝 Gửi Tin Nhắn</h2>
-            <form onSubmit={handleSubmit} className="contact-form">
+        {/* Contact Form */}
+        <section className="contact-form-section">
+          <div className="form-container">
+            <div className="form-header">
+              <h2>Gửi tin nhắn cho chúng tôi</h2>
+              <p>Điền thông tin bên dưới, chúng tôi sẽ phản hồi sớm nhất có thể</p>
+            </div>
+
+            <form className="contact-form" onSubmit={handleSubmit}>
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="name">Họ và tên *</label>
@@ -166,11 +124,10 @@ export default function ContactPage() {
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    required
                     placeholder="Nhập họ và tên của bạn"
+                    required
                   />
                 </div>
-                
                 <div className="form-group">
                   <label htmlFor="email">Email *</label>
                   <input
@@ -179,8 +136,8 @@ export default function ContactPage() {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
+                    placeholder="Nhập địa chỉ email"
                     required
-                    placeholder="Nhập email của bạn"
                   />
                 </div>
               </div>
@@ -197,7 +154,6 @@ export default function ContactPage() {
                     placeholder="Nhập số điện thoại"
                   />
                 </div>
-                
                 <div className="form-group">
                   <label htmlFor="subject">Chủ đề *</label>
                   <select
@@ -208,13 +164,11 @@ export default function ContactPage() {
                     required
                   >
                     <option value="">Chọn chủ đề</option>
-                    <option value="general">Thông tin chung</option>
-                    <option value="pricing">Gói cước và giá cả</option>
+                    <option value="consultation">Tư vấn sức khỏe</option>
+                    <option value="service">Dịch vụ</option>
+                    <option value="billing">Thanh toán</option>
                     <option value="technical">Hỗ trợ kỹ thuật</option>
-                    <option value="nutrition">Tư vấn dinh dưỡng</option>
-                    <option value="fitness">Tư vấn tập luyện</option>
-                    <option value="booking">Đặt lịch bác sĩ</option>
-                    <option value="feedback">Góp ý và phản hồi</option>
+                    <option value="feedback">Góp ý</option>
                     <option value="other">Khác</option>
                   </select>
                 </div>
@@ -227,134 +181,70 @@ export default function ContactPage() {
                   name="message"
                   value={formData.message}
                   onChange={handleInputChange}
-                  required
+                  placeholder="Nhập nội dung tin nhắn của bạn..."
                   rows={6}
-                  placeholder="Mô tả chi tiết vấn đề hoặc câu hỏi của bạn..."
-                ></textarea>
+                  required
+                />
+                <div className="char-count">
+                  {formData.message.length}/1000 ký tự
+                </div>
               </div>
 
-              <div className="form-actions">
-                <button 
-                  type="submit" 
-                  className="btn btn-primary"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? '⏳ Đang gửi...' : '📤 Gửi tin nhắn'}
-                </button>
-              </div>
+              <button 
+                type="submit" 
+                className="submit-btn"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Đang gửi...' : 'Gửi tin nhắn'}
+              </button>
 
               {submitStatus === 'success' && (
                 <div className="success-message">
-                  ✅ Tin nhắn đã được gửi thành công! Chúng tôi sẽ phản hồi trong thời gian sớm nhất.
-                </div>
-              )}
-
-              {submitStatus === 'error' && (
-                <div className="error-message">
-                  ❌ Có lỗi xảy ra khi gửi tin nhắn. Vui lòng thử lại sau.
+                  ✅ Cảm ơn bạn! Tin nhắn đã được gửi thành công. Chúng tôi sẽ liên hệ lại sớm nhất có thể.
                 </div>
               )}
             </form>
           </div>
+        </section>
 
-          {/* Departments */}
-          <div className="departments-section">
-            <h2>🏢 Các Phòng Ban</h2>
-            <div className="departments-list">
-              {departments.map((dept, index) => (
-                <div key={index} className="department-card">
-                  <h3>{dept.name}</h3>
-                  <div className="dept-contact">
-                    <div className="dept-phone">
-                      <span className="dept-icon">📞</span>
-                      <a href={`tel:${dept.phone}`}>{dept.phone}</a>
-                    </div>
-                    <div className="dept-email">
-                      <span className="dept-icon">✉️</span>
-                      <a href={`mailto:${dept.email}`}>{dept.email}</a>
-                    </div>
-                  </div>
+        {/* FAQ Section */}
+        <section className="contact-faq-section">
+          <div className="faq-container">
+            <h2>Câu hỏi thường gặp</h2>
+            <div className="faq-list">
+              <div className={`faq-item ${activeFaq === 0 ? 'active' : ''}`}>
+                <div className="faq-question" onClick={() => toggleFaq(0)}>
+                  <h4>Thời gian phản hồi là bao lâu?</h4>
+                  <span className="faq-toggle">{activeFaq === 0 ? '−' : '+'}</span>
                 </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+                <div className="faq-answer">
+                  <p>Chúng tôi thường phản hồi trong vòng 24 giờ làm việc. Đối với các trường hợp khẩn cấp, vui lòng gọi hotline 1900 1238.</p>
+                </div>
+              </div>
 
-      {/* FAQ Section */}
-      <section className="contact-faq">
-        <div className="faq-container">
-          <h2>❓ Câu Hỏi Thường Gặp</h2>
-          
-          <div className="faq-list">
-            <div className="faq-item">
-              <div className="faq-question">
-                <h4>Thời gian phản hồi tin nhắn là bao lâu?</h4>
-                <span className="faq-toggle">+</span>
+              <div className={`faq-item ${activeFaq === 1 ? 'active' : ''}`}>
+                <div className="faq-question" onClick={() => toggleFaq(1)}>
+                  <h4>Tôi có thể đặt lịch tư vấn trực tiếp không?</h4>
+                  <span className="faq-toggle">{activeFaq === 1 ? '−' : '+'}</span>
+                </div>
+                <div className="faq-answer">
+                  <p>Có, bạn có thể đặt lịch tư vấn trực tiếp với bác sĩ chuyên khoa. Vui lòng gọi hotline hoặc điền form đặt lịch trên website.</p>
+                </div>
               </div>
-              <div className="faq-answer">
-                <p>Chúng tôi cam kết phản hồi trong vòng 24 giờ làm việc. Với các vấn đề khẩn cấp, chúng tôi sẽ phản hồi ngay lập tức.</p>
-              </div>
-            </div>
 
-            <div className="faq-item">
-              <div className="faq-question">
-                <h4>Tôi có thể đặt lịch tư vấn trực tiếp không?</h4>
-                <span className="faq-toggle">+</span>
-              </div>
-              <div className="faq-answer">
-                <p>Có, bạn có thể đặt lịch tư vấn trực tiếp với bác sĩ hoặc chuyên gia dinh dưỡng. Vui lòng liên hệ qua số 1900 1238 để đặt lịch.</p>
-              </div>
-            </div>
-
-            <div className="faq-item">
-              <div className="faq-question">
-                <h4>Dịch vụ có hoạt động vào cuối tuần không?</h4>
-                <span className="faq-toggle">+</span>
-              </div>
-              <div className="faq-answer">
-                <p>Dịch vụ tư vấn online hoạt động 24/7. Tuy nhiên, tư vấn trực tiếp chỉ có vào giờ hành chính từ thứ 2 đến thứ 6.</p>
-              </div>
-            </div>
-
-            <div className="faq-item">
-              <div className="faq-question">
-                <h4>Tôi có thể thanh toán qua những phương thức nào?</h4>
-                <span className="faq-toggle">+</span>
-              </div>
-              <div className="faq-answer">
-                <p>Chúng tôi chấp nhận thanh toán qua thẻ tín dụng, chuyển khoản ngân hàng, ví điện tử (MoMo, ZaloPay) và tiền mặt.</p>
+              <div className={`faq-item ${activeFaq === 2 ? 'active' : ''}`}>
+                <div className="faq-question" onClick={() => toggleFaq(2)}>
+                  <h4>Chi phí tư vấn như thế nào?</h4>
+                  <span className="faq-toggle">{activeFaq === 2 ? '−' : '+'}</span>
+                </div>
+                <div className="faq-answer">
+                  <p>Tư vấn qua điện thoại miễn phí. Tư vấn trực tiếp có phí theo từng gói dịch vụ. Vui lòng tham khảo bảng giá trên trang pricing.</p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Map Section */}
-      <section className="contact-map">
-        <div className="map-container">
-          <h2>🗺️ Vị Trí Của Chúng Tôi</h2>
-          <div className="map-placeholder">
-            <div className="map-content">
-              <div className="map-icon">📍</div>
-              <h3>Hoang Linh Medicine</h3>
-              <p>123 Đường ABC, Quận 1, TP.HCM</p>
-              <a href="https://maps.google.com" className="btn btn-outline" target="_blank" rel="noopener noreferrer">
-                🗺️ Xem trên Google Maps
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Navigation */}
-      <section className="contact-navigation">
-        <div className="nav-container">
-          <a href="/" className="btn btn-outline">🏠 Trang chủ</a>
-          <a href="/pricing" className="btn btn-outline">💎 Gói cước</a>
-          <a href="/dashboard" className="btn btn-outline">📊 Dashboard</a>
-        </div>
-      </section>
+        </section>
+      </div>
     </div>
   )
 }

@@ -1,6 +1,6 @@
 // Firebase service functions
 import { initializeApp } from 'firebase/app';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, User } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword as createUserFn, signInWithEmailAndPassword as signInFn, signOut as signOutFn, onAuthStateChanged, User } from 'firebase/auth';
 import { getFirestore, collection, addDoc, getDoc, getDocs, updateDoc, deleteDoc, query, where, orderBy, limit, doc, QueryConstraint, OrderByDirection } from 'firebase/firestore';
 import { firebaseConfig, COLLECTIONS } from '../firebase.config';
 
@@ -83,7 +83,7 @@ class FirebaseService {
   // Authentication methods
   async createUserWithEmailAndPassword(email: string, password: string) {
     try {
-      const result = await createUserWithEmailAndPassword(auth, email, password);
+      const result = await createUserFn(auth, email, password);
       return { user: result.user };
     } catch (error: any) {
       throw new Error(`Tạo tài khoản thất bại: ${error.message}`);
@@ -92,7 +92,7 @@ class FirebaseService {
 
   async signInWithEmailAndPassword(email: string, password: string) {
     try {
-      const result = await signInWithEmailAndPassword(auth, email, password);
+      const result = await signInFn(auth, email, password);
       return { user: result.user };
     } catch (error: any) {
       throw new Error(`Đăng nhập thất bại: ${error.message}`);
@@ -101,7 +101,7 @@ class FirebaseService {
 
   async signOut(): Promise<boolean> {
     try {
-      await signOut(auth);
+      await signOutFn(auth);
       return true;
     } catch (error: any) {
       throw new Error(`Đăng xuất thất bại: ${error.message}`);
