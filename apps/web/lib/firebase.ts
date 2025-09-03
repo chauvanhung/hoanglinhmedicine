@@ -67,12 +67,13 @@ class FirebaseService {
 
   async getUserProfile(userId: string) {
     try {
-      const { doc, getDoc, collection } = await import('firebase/firestore');
-      const docRef = doc(db, COLLECTIONS.PROFILES, userId);
-      const docSnap = await getDoc(docRef);
+      const { collection, query, where, getDocs } = await import('firebase/firestore');
+      const q = query(collection(db, COLLECTIONS.PROFILES), where('userId', '==', userId));
+      const querySnapshot = await getDocs(q);
       
-      if (docSnap.exists()) {
-        return { id: docSnap.id, ...docSnap.data() };
+      if (!querySnapshot.empty) {
+        const doc = querySnapshot.docs[0];
+        return { id: doc.id, ...doc.data() };
       } else {
         return null;
       }
