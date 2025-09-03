@@ -12,12 +12,13 @@ Tạo file `.env.local` trong thư mục `apps/web/`:
 
 ```bash
 # Firebase Config
-NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
-NEXT_PUBLIC_FIREBASE_APP_ID=your_firebase_app_id
+NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyDug_NyDb_oVP_Pl5yXSFcy72dq7PjCYhY
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=hoanglinh-obesity-care.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=hoanglinh-obesity-care
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=hoanglinh-obesity-care.firebasestorage.app
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=860032582221
+NEXT_PUBLIC_FIREBASE_APP_ID=1:860032582221:web:e3c5923cbe504725d91204
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-T9Z1DMXE8P
 ```
 
 ### 2. API Configuration

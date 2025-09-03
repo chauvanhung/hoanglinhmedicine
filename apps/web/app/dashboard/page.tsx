@@ -107,15 +107,9 @@ export default function DashboardPage() {
       const { getUserProfile, getUserGoals, getUserMeasurements } = await import('../../lib/firebase');
       
       // Load user profile
-<<<<<<< HEAD
       const userProfile = await getUserProfile(currentUser.uid);
-      if (userProfile) {
-        setProfile(userProfile);
-=======
-      const userProfile = await getUserProfile(currentUser.uid)
       if (userProfile && typeof userProfile === 'object' && 'name' in userProfile) {
-        setProfile(userProfile as unknown as Profile)
->>>>>>> e644bc1922005351acfe2849798171ec429fe851
+        setProfile(userProfile as unknown as Profile);
       }
       
       // Load user goals

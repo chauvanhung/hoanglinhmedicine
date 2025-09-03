@@ -42,12 +42,13 @@ if [ ! -f "apps/web/.env.local" ]; then
     echo "📝 Creating apps/web/.env.local template..."
     cat > apps/web/.env.local << EOF
 # Firebase Configuration
-NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key_here
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
-NEXT_PUBLIC_FIREBASE_APP_ID=your_firebase_app_id
+NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyDug_NyDb_oVP_Pl5yXSFcy72dq7PjCYhY
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=hoanglinh-obesity-care.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=hoanglinh-obesity-care
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=hoanglinh-obesity-care.firebasestorage.app
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=860032582221
+NEXT_PUBLIC_FIREBASE_APP_ID=1:860032582221:web:e3c5923cbe504725d91204
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-T9Z1DMXE8P
 EOF
     echo "⚠️  Please update apps/web/.env.local with your Firebase configuration"
 fi
@@ -57,12 +58,13 @@ if [ ! -f "apps/api/.env" ]; then
     echo "📝 Creating apps/api/.env template..."
     cat > apps/api/.env << EOF
 # Firebase Configuration (same as web app)
-FIREBASE_API_KEY=your_firebase_api_key_here
-FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
-FIREBASE_PROJECT_ID=your_project_id
-FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
-FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
-FIREBASE_APP_ID=your_firebase_app_id
+FIREBASE_API_KEY=AIzaSyDug_NyDb_oVP_Pl5yXSFcy72dq7PjCYhY
+FIREBASE_AUTH_DOMAIN=hoanglinh-obesity-care.firebaseapp.com
+FIREBASE_PROJECT_ID=hoanglinh-obesity-care
+FIREBASE_STORAGE_BUCKET=hoanglinh-obesity-care.firebasestorage.app
+FIREBASE_MESSAGING_SENDER_ID=860032582221
+FIREBASE_APP_ID=1:860032582221:web:e3c5923cbe504725d91204
+FIREBASE_MEASUREMENT_ID=G-T9Z1DMXE8P
 
 # JWT Configuration
 JWT_SECRET=your_jwt_secret_here

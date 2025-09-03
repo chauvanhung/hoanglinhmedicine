@@ -51,12 +51,13 @@ if not exist "apps\web\.env.local" (
     echo 📝 Creating apps\web\.env.local template...
     (
         echo # Firebase Configuration
-        echo NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key_here
-        echo NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
-        echo NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-        echo NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
-        echo NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
-        echo NEXT_PUBLIC_FIREBASE_APP_ID=your_firebase_app_id
+        echo NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyDug_NyDb_oVP_Pl5yXSFcy72dq7PjCYhY
+        echo NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=hoanglinh-obesity-care.firebaseapp.com
+        echo NEXT_PUBLIC_FIREBASE_PROJECT_ID=hoanglinh-obesity-care
+        echo NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=hoanglinh-obesity-care.firebasestorage.app
+        echo NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=860032582221
+        echo NEXT_PUBLIC_FIREBASE_APP_ID=1:860032582221:web:e3c5923cbe504725d91204
+        echo NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-T9Z1DMXE8P
     ) > apps\web\.env.local
     echo ⚠️  Please update apps\web\.env.local with your Firebase configuration
 )
@@ -66,12 +67,13 @@ if not exist "apps\api\.env" (
     echo 📝 Creating apps\api\.env template...
     (
         echo # Firebase Configuration (same as web app)
-        echo FIREBASE_API_KEY=your_firebase_api_key_here
-        echo FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
-        echo FIREBASE_PROJECT_ID=your_project_id
-        echo FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
-        echo FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
-        echo FIREBASE_APP_ID=your_firebase_app_id
+        echo FIREBASE_API_KEY=AIzaSyDug_NyDb_oVP_Pl5yXSFcy72dq7PjCYhY
+        echo FIREBASE_AUTH_DOMAIN=hoanglinh-obesity-care.firebaseapp.com
+        echo FIREBASE_PROJECT_ID=hoanglinh-obesity-care
+        echo FIREBASE_STORAGE_BUCKET=hoanglinh-obesity-care.firebasestorage.app
+        echo FIREBASE_MESSAGING_SENDER_ID=860032582221
+        echo FIREBASE_APP_ID=1:860032582221:web:e3c5923cbe504725d91204
+        echo FIREBASE_MEASUREMENT_ID=G-T9Z1DMXE8P
         echo.
         echo # JWT Configuration
         echo JWT_SECRET=your_jwt_secret_here

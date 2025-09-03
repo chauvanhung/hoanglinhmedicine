@@ -10,29 +10,19 @@ services:
       - key: NODE_ENV
         value: production
       - key: NEXT_PUBLIC_FIREBASE_API_KEY
-        fromDatabase:
-          name: firebase-config
-          property: apiKey
+        value: "AIzaSyDug_NyDb_oVP_Pl5yXSFcy72dq7PjCYhY"
       - key: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
-        fromDatabase:
-          name: firebase-config
-          property: authDomain
+        value: "hoanglinh-obesity-care.firebaseapp.com"
       - key: NEXT_PUBLIC_FIREBASE_PROJECT_ID
-        fromDatabase:
-          name: firebase-config
-          property: projectId
+        value: "hoanglinh-obesity-care"
       - key: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-        fromDatabase:
-          name: firebase-config
-          property: storageBucket
+        value: "hoanglinh-obesity-care.firebasestorage.app"
       - key: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
-        fromDatabase:
-          name: firebase-config
-          property: messagingSenderId
+        value: "860032582221"
       - key: NEXT_PUBLIC_FIREBASE_APP_ID
-        fromDatabase:
-          name: firebase-config
-          property: appId
+        value: "1:860032582221:web:e3c5923cbe504725d91204"
+      - key: NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+        value: "G-T9Z1DMXE8P"
     healthCheckPath: /
     autoDeploy: true
     branch: main
@@ -48,29 +38,19 @@ services:
       - key: NODE_ENV
         value: production
       - key: FIREBASE_API_KEY
-        fromDatabase:
-          name: firebase-config
-          property: apiKey
+        value: "AIzaSyDug_NyDb_oVP_Pl5yXSFcy72dq7PjCYhY"
       - key: FIREBASE_AUTH_DOMAIN
-        fromDatabase:
-          name: firebase-config
-          property: authDomain
+        value: "hoanglinh-obesity-care.firebaseapp.com"
       - key: FIREBASE_PROJECT_ID
-        fromDatabase:
-          name: firebase-config
-          property: projectId
+        value: "hoanglinh-obesity-care"
       - key: FIREBASE_STORAGE_BUCKET
-        fromDatabase:
-          name: firebase-config
-          property: storageBucket
+        value: "hoanglinh-obesity-care.firebasestorage.app"
       - key: FIREBASE_MESSAGING_SENDER_ID
-        fromDatabase:
-          name: firebase-config
-          property: messagingSenderId
+        value: "860032582221"
       - key: FIREBASE_APP_ID
-        fromDatabase:
-          name: firebase-config
-          property: appId
+        value: "1:860032582221:web:e3c5923cbe504725d91204"
+      - key: FIREBASE_MEASUREMENT_ID
+        value: "G-T9Z1DMXE8P"
       - key: JWT_SECRET
         generateValue: true
       - key: PORT
@@ -79,8 +59,4 @@ services:
     autoDeploy: true
     branch: main
 
-databases:
-  - name: firebase-config
-    plan: starter
-    databaseName: firebase_config
-    user: firebase_config_user
+# No external databases needed - using Firebase Firestore
