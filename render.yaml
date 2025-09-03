@@ -4,8 +4,8 @@ services:
     name: hoanglinhmedicine-web
     env: node
     plan: starter
-    buildCommand: chmod +x build-web.sh && ./build-web.sh
-    startCommand: chmod +x start-web.sh && ./start-web.sh
+    buildCommand: cd apps/web && npm install && npm run build
+    startCommand: cd apps/web && npm start
     envVars:
       - key: NODE_ENV
         value: production
@@ -23,6 +23,8 @@ services:
         value: "1:860032582221:web:e3c5923cbe504725d91204"
       - key: NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
         value: "G-T9Z1DMXE8P"
+      - key: PORT
+        value: "3000"
     healthCheckPath: /
     autoDeploy: true
     branch: main
