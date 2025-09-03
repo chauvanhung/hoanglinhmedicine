@@ -107,26 +107,47 @@ export default function DashboardPage() {
       const { getUserProfile, getUserGoals, getUserMeasurements } = await import('../../lib/firebase');
       
       // Load user profile
-      const userProfile = await getUserProfile(currentUser.uid);
-      if (userProfile && typeof userProfile === 'object' && 'name' in userProfile) {
-        setProfile(userProfile as unknown as Profile);
+      try {
+        const userProfile = await getUserProfile(currentUser.uid);
+        if (userProfile && typeof userProfile === 'object' && 'name' in userProfile) {
+          setProfile(userProfile as unknown as Profile);
+        } else {
+          console.log('No profile found for user:', currentUser.uid);
+        }
+      } catch (profileError) {
+        console.error('Profile load error:', profileError);
       }
       
       // Load user goals
-      const userGoals = await getUserGoals(currentUser.uid);
-      if (userGoals && userGoals.length > 0) {
-        setGoal(userGoals[0]); // Get the first active goal
+      try {
+        const userGoals = await getUserGoals(currentUser.uid);
+        if (userGoals && userGoals.length > 0) {
+          setGoal(userGoals[0]); // Get the first active goal
+        } else {
+          console.log('No goals found for user:', currentUser.uid);
+        }
+      } catch (goalsError) {
+        console.error('Goals load error:', goalsError);
       }
       
       // Load user measurements
-      const userMeasurements = await getUserMeasurements(currentUser.uid);
-      if (userMeasurements) {
-        setMeasurements(userMeasurements);
+      try {
+        const userMeasurements = await getUserMeasurements(currentUser.uid);
+        if (userMeasurements && userMeasurements.length > 0) {
+          setMeasurements(userMeasurements);
+        } else {
+          console.log('No measurements found for user:', currentUser.uid);
+        }
+      } catch (measurementsError) {
+        console.error('Measurements load error:', measurementsError);
       }
       
     } catch (error) {
-      setError('Không thể tải dữ liệu dashboard');
       console.error('Dashboard load error:', error);
+      // Only set error for critical failures, not missing data
+      if (error instanceof Error && error.message.includes('permission')) {
+        setError('Không có quyền truy cập dữ liệu');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -241,8 +262,31 @@ export default function DashboardPage() {
           </div>
         )}
 
+        {/* No Data State */}
+        {!isLoading && !error && !profile && (
+          <div className="no-data-container">
+            <div className="no-data-icon">📊</div>
+            <h2>Chào mừng đến với Dashboard!</h2>
+            <p>Bạn chưa có dữ liệu cá nhân. Hãy hoàn thành thông tin để bắt đầu theo dõi sức khỏe.</p>
+            <div className="no-data-actions">
+              <button 
+                className="btn btn-primary"
+                onClick={() => router.push('/onboarding')}
+              >
+                Hoàn thành thông tin
+              </button>
+              <button 
+                className="btn btn-secondary"
+                onClick={() => router.push('/bmi')}
+              >
+                Tính BMI
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Dashboard Content */}
-        {!isLoading && !error && (
+        {!isLoading && !error && profile && (
           <>
             {/* Welcome Section */}
             <section className="welcome-section">
