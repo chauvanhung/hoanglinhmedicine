@@ -9,7 +9,9 @@
     "start": "cd apps/web && npm start",
     "build:api": "cd apps/api && npm run build",
     "start:api": "cd apps/api && npm run start:prod",
-    "install:all": "npm install && cd apps/web && npm install && cd ../api && npm install"
+    "install:all": "npm install && cd apps/web && npm install && cd ../api && npm install",
+    "render:build": "npm run install:all && npm run build",
+    "render:start": "npm run start"
   },
   "devDependencies": {
     "typescript": "^5.2.2"

@@ -1,47 +1,71 @@
 services:
-  # Web Frontend
+  # Web Frontend (Next.js)
   - type: web
-    name: hoanglinh-web
+    name: hoanglinhmedicine-web
     env: node
-    plan: free
-    buildCommand: npm install && cd apps/web && npm install && npm run build
-    startCommand: cd apps/web && npm start
+    plan: starter
+    buildCommand: npm run render:build
+    startCommand: npm run render:start
     envVars:
       - key: NODE_ENV
         value: production
-      - key: NEXT_PUBLIC_API_URL
-        value: https://hoanglinh-api.onrender.com
+      - key: NEXT_PUBLIC_FIREBASE_API_KEY
+        fromDatabase:
+          name: firebase-config
+          property: apiKey
+      - key: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+        fromDatabase:
+          name: firebase-config
+          property: authDomain
+      - key: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+        fromDatabase:
+          name: firebase-config
+          property: projectId
+      - key: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+        fromDatabase:
+          name: firebase-config
+          property: storageBucket
+      - key: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+        fromDatabase:
+          name: firebase-config
+          property: messagingSenderId
+      - key: NEXT_PUBLIC_FIREBASE_APP_ID
+        fromDatabase:
+          name: firebase-config
+          property: appId
     healthCheckPath: /
     autoDeploy: true
+    branch: main
 
-  # API Backend
+  # API Backend (NestJS)
   - type: web
-    name: hoanglinh-api
+    name: hoanglinhmedicine-api
     env: node
-    plan: free
-    buildCommand: npm install && cd apps/api && npm install && npm run build
+    plan: starter
+    buildCommand: cd apps/api && npm install && npm run build
     startCommand: cd apps/api && npm run start:prod
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 10000
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: postgres-db
+          property: connectionString
       - key: JWT_SECRET
-        sync: false
-      - key: REDIS_URL
-        sync: false
-    healthCheckPath: /api/health
+        generateValue: true
+      - key: PORT
+        value: 3001
+    healthCheckPath: /health
     autoDeploy: true
+    branch: main
 
 databases:
-  # PostgreSQL Database
-  - name: hoanglinh-db
-    databaseName: hoanglinh_obesity
-    user: hoanglinh_user
-    plan: free
+  - name: postgres-db
+    plan: starter
+    databaseName: hoanglinhmedicine
+    user: hoanglinhmedicine_user
 
-  # Redis Cache
-  - name: hoanglinh-redis
-    plan: free
+  - name: firebase-config
+    plan: starter
+    databaseName: firebase_config
+    user: firebase_config_user
