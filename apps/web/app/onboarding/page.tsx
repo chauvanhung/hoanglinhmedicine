@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { firebaseService } from '../../lib/firebase'
+import firebaseService from '../../lib/firebase'
 
 interface UserData {
   fullName: string
@@ -153,16 +153,11 @@ export default function OnboardingPage() {
     setError('')
 
     try {
-<<<<<<< HEAD
-      // Tạo user với Firebase Auth
-      const { user } = await firebaseService.createUserWithEmailAndPassword(userData.email, userData.password);
-=======
       // Import Firebase service
       const { createUserWithEmailAndPassword, createUserProfile, createGoal, createMeasurement } = await import('../../lib/firebase');
       
       // Tạo user với Firebase Auth
       const { user } = await createUserWithEmailAndPassword(userData.email, userData.password);
->>>>>>> e644bc1922005351acfe2849798171ec429fe851
       
       // Tạo user profile
       const profileData = {
@@ -178,11 +173,7 @@ export default function OnboardingPage() {
         budget: userData.budget
       };
       
-<<<<<<< HEAD
-      await firebaseService.createUserProfile(user.uid, profileData);
-=======
       await createUserProfile(user.uid, profileData);
->>>>>>> e644bc1922005351acfe2849798171ec429fe851
       
       // Tạo user goal
       const goalData = {
@@ -195,11 +186,7 @@ export default function OnboardingPage() {
         status: 'ACTIVE'
       };
       
-<<<<<<< HEAD
-      await createUserGoal(user.uid, goalData);
-=======
       await createGoal(user.uid, goalData);
->>>>>>> e644bc1922005351acfe2849798171ec429fe851
       
       // Tạo initial measurement
       const measurementData = {
@@ -209,11 +196,7 @@ export default function OnboardingPage() {
         at: new Date().toISOString()
       };
       
-<<<<<<< HEAD
-      await createUserMeasurement(user.uid, measurementData);
-=======
       await createMeasurement(user.uid, measurementData);
->>>>>>> e644bc1922005351acfe2849798171ec429fe851
       
       // Lưu thông tin user và plan vào localStorage
       localStorage.setItem('firebase_user', JSON.stringify(user));

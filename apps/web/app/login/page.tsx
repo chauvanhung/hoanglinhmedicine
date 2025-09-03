@@ -50,10 +50,8 @@ export default function LoginPage() {
               {/* Error Display */}
               {error && (
                 <div className="error-message">
-                  <div className="error-container">
-                    <span className="error-icon">⚠️</span>
-                    <span className="error-text">{error}</span>
-                  </div>
+                  <span className="error-icon">⚠️</span>
+                  {error}
                 </div>
               )}
 
@@ -87,9 +85,9 @@ export default function LoginPage() {
                 <button 
                   type="submit" 
                   className="login-btn"
-                  disabled={loading}
+                  disabled={isLoading}
                 >
-                  {loading ? '⏳ Đang đăng nhập...' : '🔐 Đăng nhập'}
+                  {isLoading ? '⏳ Đang đăng nhập...' : '🔐 Đăng nhập'}
                 </button>
               </form>
 
@@ -97,50 +95,6 @@ export default function LoginPage() {
                 <p>Chưa có tài khoản? <a href="/onboarding" className="link-primary">Đăng ký ngay</a></p>
                 <p><a href="/forgot-password" className="link-secondary">Quên mật khẩu?</a></p>
               </div>
-<<<<<<< HEAD
-=======
-            )}
-
-            <form className="login-form" onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label htmlFor="email">Email</label>
-                <input 
-                  type="email" 
-                  id="email" 
-                  name="email" 
-                  placeholder="example@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="password">Mật khẩu</label>
-                <input 
-                  type="password" 
-                  id="password" 
-                  name="password" 
-                  placeholder="Nhập mật khẩu"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-
-              <button 
-                type="submit" 
-                className="login-btn"
-                disabled={isLoading}
-              >
-                {isLoading ? '⏳ Đang đăng nhập...' : '🔐 Đăng nhập'}
-              </button>
-            </form>
-
-            <div className="login-footer">
-              <p>Chưa có tài khoản? <a href="/onboarding" className="link-primary">Đăng ký ngay</a></p>
-              <p><a href="/forgot-password" className="link-secondary">Quên mật khẩu?</a></p>
->>>>>>> e644bc1922005351acfe2849798171ec429fe851
             </div>
           </div>
         </section>
