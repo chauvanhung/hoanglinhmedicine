@@ -39,6 +39,8 @@ export default function Footer() {
             <li><a href="/bmi">📊 Tính BMI</a></li>
             <li><a href="/dashboard">📈 Dashboard</a></li>
             <li><a href="/health">❤️ Apple Health</a></li>
+            <li><a href="/android-health">📱 Android Health</a></li>
+            <li><a href="/health-demo">🧪 Health Demo</a></li>
             <li><a href="/progress">📋 Theo dõi tiến độ</a></li>
             <li><a href="/consultations">👨‍⚕️ Tư vấn bác sĩ</a></li>
             <li><a href="/chat">🤖 Chat với AI</a></li>

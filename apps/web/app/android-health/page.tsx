@@ -1,16 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import AppleHealthIntegration from '../components/AppleHealthIntegration';
 import AndroidHealthIntegration from '../components/AndroidHealthIntegration';
-import IOSAppPromotion from '../components/IOSAppPromotion';
-import { appleHealthService, HealthData } from '../../lib/appleHealthService';
+import PWAInstall from '../components/PWAInstall';
+import HealthConnectTest from '../components/HealthConnectTest';
 import { androidHealthService, AndroidHealthData } from '../../lib/androidHealthService';
-import { Heart, Activity, TrendingUp, Calendar, Smartphone } from 'lucide-react';
+import { Smartphone, Activity, TrendingUp, Calendar, Heart } from 'lucide-react';
 
-export default function HealthPage() {
-  const [healthData, setHealthData] = useState<HealthData | null>(null);
-  const [androidHealthData, setAndroidHealthData] = useState<AndroidHealthData | null>(null);
+export default function AndroidHealthPage() {
+  const [healthData, setHealthData] = useState<AndroidHealthData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [stats, setStats] = useState({
     totalSteps: 0,
@@ -19,7 +17,7 @@ export default function HealthPage() {
     weightChange: 0
   });
 
-  const handleHealthDataSync = (data: HealthData) => {
+  const handleHealthDataSync = (data: AndroidHealthData) => {
     setHealthData(data);
     
     // Update stats
@@ -31,19 +29,7 @@ export default function HealthPage() {
     }));
   };
 
-  const handleAndroidHealthDataSync = (data: AndroidHealthData) => {
-    setAndroidHealthData(data);
-    
-    // Update stats
-    setStats(prev => ({
-      totalSteps: prev.totalSteps + data.steps,
-      totalCalories: prev.totalCalories + data.calories,
-      avgHeartRate: Math.round((prev.avgHeartRate + data.heartRate) / 2),
-      weightChange: data.weight - 68.5 // Assuming baseline weight
-    }));
-  };
-
-  const healthTips = [
+  const androidTips = [
     {
       icon: <Activity className="w-6 h-6 text-blue-500" />,
       title: "Mục tiêu 10,000 bước/ngày",
@@ -62,32 +48,32 @@ export default function HealthPage() {
   ];
 
   return (
-    <div className="health-page">
+    <div className="android-health-page">
       <div className="health-container">
         {/* Header */}
         <div className="health-header">
           <div className="header-content">
-            <h1>Apple Health Integration</h1>
-            <p>Đồng bộ và theo dõi dữ liệu sức khỏe từ Apple Health</p>
+            <h1>Android Health Connect</h1>
+            <p>Đồng bộ và theo dõi dữ liệu sức khỏe từ Android Health Connect</p>
           </div>
           <div className="header-icon">
-            <Heart className="w-12 h-12 text-red-500" />
+            <Smartphone className="w-12 h-12 text-green-500" />
           </div>
         </div>
 
-        {/* iOS App Promotion */}
-        <IOSAppPromotion />
+        {/* PWA Install Component */}
+        <PWAInstall />
 
-        {/* Apple Health Integration Component */}
-        <AppleHealthIntegration onDataSync={handleHealthDataSync} />
+        {/* Health Connect Test Component */}
+        <HealthConnectTest />
 
         {/* Android Health Integration Component */}
-        <AndroidHealthIntegration onDataSync={handleAndroidHealthDataSync} />
+        <AndroidHealthIntegration onDataSync={handleHealthDataSync} />
 
         {/* Health Stats */}
-        {(healthData || androidHealthData) && (
+        {healthData && (
           <div className="health-stats">
-            <h2>Thống kê sức khỏe</h2>
+            <h2>Thống kê sức khỏe từ Android</h2>
             <div className="stats-grid">
               <div className="stat-card">
                 <div className="stat-icon">
@@ -133,7 +119,7 @@ export default function HealthPage() {
         <div className="health-tips">
           <h2>Lời khuyên sức khỏe</h2>
           <div className="tips-grid">
-            {healthTips.map((tip, index) => (
+            {androidTips.map((tip, index) => (
               <div key={index} className="tip-card">
                 <div className="tip-icon">
                   {tip.icon}
@@ -147,29 +133,15 @@ export default function HealthPage() {
           </div>
         </div>
 
-        {/* Benefits Section */}
+        {/* Android Health Connect Benefits */}
         <div className="health-benefits">
-          <h2>Lợi ích của Apple Health</h2>
+          <h2>Lợi ích của Android Health Connect</h2>
           <div className="benefits-list">
             <div className="benefit-item">
-              <div className="benefit-icon">📊</div>
+              <div className="benefit-icon">📱</div>
               <div className="benefit-content">
-                <h3>Theo dõi tự động</h3>
-                <p>Dữ liệu sức khỏe được đồng bộ tự động từ Apple Watch và iPhone</p>
-              </div>
-            </div>
-            <div className="benefit-item">
-              <div className="benefit-icon">🎯</div>
-              <div className="benefit-content">
-                <h3>Mục tiêu cá nhân</h3>
-                <p>Đặt và theo dõi mục tiêu sức khỏe phù hợp với từng cá nhân</p>
-              </div>
-            </div>
-            <div className="benefit-item">
-              <div className="benefit-icon">📈</div>
-              <div className="benefit-content">
-                <h3>Phân tích xu hướng</h3>
-                <p>Xem xu hướng sức khỏe theo thời gian và đưa ra khuyến nghị</p>
+                <h3>Tích hợp Android</h3>
+                <p>Kết nối với tất cả ứng dụng sức khỏe trên Android</p>
               </div>
             </div>
             <div className="benefit-item">
@@ -178,6 +150,47 @@ export default function HealthPage() {
                 <h3>Bảo mật tuyệt đối</h3>
                 <p>Dữ liệu được mã hóa và chỉ bạn mới có quyền truy cập</p>
               </div>
+            </div>
+            <div className="benefit-item">
+              <div className="benefit-icon">🔄</div>
+              <div className="benefit-content">
+                <h3>Đồng bộ tự động</h3>
+                <p>Dữ liệu sức khỏe được đồng bộ tự động từ các ứng dụng</p>
+              </div>
+            </div>
+            <div className="benefit-item">
+              <div className="benefit-icon">📊</div>
+              <div className="benefit-content">
+                <h3>Phân tích xu hướng</h3>
+                <p>Xem xu hướng sức khỏe theo thời gian và đưa ra khuyến nghị</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Supported Apps */}
+        <div className="supported-apps">
+          <h2>Ứng dụng được hỗ trợ</h2>
+          <div className="apps-grid">
+            <div className="app-item">
+              <div className="app-icon">🏃‍♂️</div>
+              <h4>Google Fit</h4>
+              <p>Theo dõi hoạt động thể chất</p>
+            </div>
+            <div className="app-item">
+              <div className="app-icon">💓</div>
+              <h4>Samsung Health</h4>
+              <p>Monitor sức khỏe toàn diện</p>
+            </div>
+            <div className="app-item">
+              <div className="app-icon">⚖️</div>
+              <h4>MyFitnessPal</h4>
+              <p>Theo dõi dinh dưỡng</p>
+            </div>
+            <div className="app-item">
+              <div className="app-icon">😴</div>
+              <h4>Sleep as Android</h4>
+              <p>Monitor giấc ngủ</p>
             </div>
           </div>
         </div>
