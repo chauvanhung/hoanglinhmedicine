@@ -4,16 +4,18 @@ FROM node:18-alpine
 # Set the working directory
 WORKDIR /app
 
-# Copy package files
+# Copy package files from root and web app
 COPY package*.json ./
+COPY apps/web/package*.json ./apps/web/
 
 # Install dependencies
-RUN npm ci --only=production
+RUN npm ci
 
-# Copy the rest of the application code
-COPY . .
+# Copy the web application code
+COPY apps/web/ ./apps/web/
 
 # Build the application
+WORKDIR /app/apps/web
 RUN npm run build
 
 # Expose the port the app runs on

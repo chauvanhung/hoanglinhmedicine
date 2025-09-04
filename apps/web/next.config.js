@@ -1,10 +1,21 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Remove problematic configurations that can cause Firebase module resolution issues
+  // Production optimizations
+  output: 'standalone',
   images: {
     unoptimized: true,
   },
-  // Keep only essential configurations
+  // Firebase compatibility
+  experimental: {
+    esmExternals: false,
+  },
+  // Environment variables
+  env: {
+    CUSTOM_KEY: process.env.CUSTOM_KEY,
+  },
+  // Build optimizations
+  swcMinify: true,
+  compress: true,
 }
 
 module.exports = nextConfig

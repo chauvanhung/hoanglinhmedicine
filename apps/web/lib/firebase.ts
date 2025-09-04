@@ -6,8 +6,10 @@ import { firebaseConfig } from '../firebase.config';
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
+export const auth = getAuth(app); 
 export const db = getFirestore(app);
+
+console.log('Firebase initialized successfully');
 
 // Collections
 export const COLLECTIONS = {
@@ -33,8 +35,7 @@ class FirebaseService {
 
   async signInWithEmailAndPassword(email: string, password: string) {
     try {
-      const { signInWithEmailAndPassword: signIn } = await import('firebase/auth');
-      const result = await signIn(auth, email, password);
+      const result = await signInFn(auth, email, password);
       return { user: result.user };
     } catch (error: any) {
       throw new Error(`Đăng nhập thất bại: ${error.message}`);
@@ -52,7 +53,6 @@ class FirebaseService {
 
   async createUserProfile(userId: string, profileData: any) {
     try {
-      const { addDoc, collection } = await import('firebase/firestore');
       const docRef = await addDoc(collection(db, COLLECTIONS.PROFILES), {
         userId,
         ...profileData,
@@ -67,24 +67,31 @@ class FirebaseService {
 
   async getUserProfile(userId: string) {
     try {
-      const { collection, query, where, getDocs } = await import('firebase/firestore');
+      console.log('🔍 getUserProfile called with userId:', userId);
+      console.log('🔍 Firebase db:', db);
+      
+      console.log('🔍 Querying profiles collection for userId:', userId);
       const q = query(collection(db, COLLECTIONS.PROFILES), where('userId', '==', userId));
       const querySnapshot = await getDocs(q);
+      console.log('🔍 Query result size:', querySnapshot.size);
       
       if (!querySnapshot.empty) {
         const doc = querySnapshot.docs[0];
-        return { id: doc.id, ...doc.data() };
+        const profileData = { id: doc.id, ...doc.data() };
+        console.log('✅ Found profile:', profileData);
+        return profileData;
       } else {
+        console.log('❌ No profile found for userId:', userId);
         return null;
       }
     } catch (error: any) {
+      console.error('❌ getUserProfile error:', error);
       throw new Error(`Lấy profile thất bại: ${error.message}`);
     }
   }
 
   async createGoal(userId: string, goalData: any) {
     try {
-      const { addDoc, collection } = await import('firebase/firestore');
       const docRef = await addDoc(collection(db, COLLECTIONS.GOALS), {
         userId,
         ...goalData,
@@ -99,24 +106,28 @@ class FirebaseService {
 
   async getUserGoals(userId: string) {
     try {
-      const { collection, query, where, getDocs } = await import('firebase/firestore');
+      console.log('🔍 getUserGoals called with userId:', userId);
+      
       const q = query(collection(db, COLLECTIONS.GOALS), where('userId', '==', userId));
       const querySnapshot = await getDocs(q);
+      console.log('🔍 Goals query result size:', querySnapshot.size);
       
       const goals: any[] = [];
       querySnapshot.forEach((doc) => {
-        goals.push({ id: doc.id, ...doc.data() });
+        const goalData = { id: doc.id, ...doc.data() };
+        console.log('✅ Found goal:', goalData);
+        goals.push(goalData);
       });
       
       return goals;
     } catch (error: any) {
+      console.error('❌ getUserGoals error:', error);
       throw new Error(`Lấy mục tiêu thất bại: ${error.message}`);
     }
   }
 
   async createMeasurement(userId: string, measurementData: any) {
     try {
-      const { addDoc, collection } = await import('firebase/firestore');
       const docRef = await addDoc(collection(db, COLLECTIONS.MEASUREMENTS), {
         userId,
         ...measurementData,
@@ -130,21 +141,30 @@ class FirebaseService {
 
   async getUserMeasurements(userId: string) {
     try {
-      const { collection, query, where, orderBy, getDocs } = await import('firebase/firestore');
+      console.log('🔍 getUserMeasurements called with userId:', userId);
+      console.log('🔍 Firebase db:', db);
+      
+      // Try simple query first without orderBy
       const q = query(
         collection(db, COLLECTIONS.MEASUREMENTS), 
-        where('userId', '==', userId),
-        orderBy('createdAt', 'desc')
+        where('userId', '==', userId)
       );
+      console.log('🔍 Query created successfully');
+      
       const querySnapshot = await getDocs(q);
+      console.log('🔍 Measurements query result size:', querySnapshot.size);
       
       const measurements: any[] = [];
       querySnapshot.forEach((doc) => {
-        measurements.push({ id: doc.id, ...doc.data() });
+        const measurementData = { id: doc.id, ...doc.data() };
+        console.log('✅ Found measurement:', measurementData);
+        measurements.push(measurementData);
       });
       
+      console.log('🔍 Total measurements found:', measurements.length);
       return measurements;
     } catch (error: any) {
+      console.error('❌ getUserMeasurements error:', error);
       throw new Error(`Lấy đo lường thất bại: ${error.message}`);
     }
   }

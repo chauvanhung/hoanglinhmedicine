@@ -12,6 +12,9 @@ export default function Header() {
   useEffect(() => {
     // Check authentication status
     const checkAuthStatus = () => {
+      // Only run on client side
+      if (typeof window === 'undefined') return;
+      
       const storedUser = localStorage.getItem('firebase_user');
       const authStatus = localStorage.getItem('firebase_auth_status');
       

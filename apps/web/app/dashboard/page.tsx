@@ -37,6 +37,8 @@ interface Measurement {
 }
 
 export default function DashboardPage() {
+  console.log('🎯 Dashboard component rendered');
+  
   const [user, setUser] = useState<UserData | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [goal, setGoal] = useState<Goal | null>(null)
@@ -44,41 +46,71 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
   const router = useRouter()
+  
+  console.log('🎯 Component state:', { user, profile, goal, measurements, isLoading, error });
 
   useEffect(() => {
+    console.log('🎯 useEffect called');
+    
     // Check if user is already logged in from localStorage
     const checkExistingLogin = () => {
+      console.log('🔍 checkExistingLogin called');
+      
+      // Only run on client side
+      if (typeof window === 'undefined') {
+        console.log('❌ Running on server side, skipping checkExistingLogin');
+        return;
+      }
+      
       const storedUser = localStorage.getItem('firebase_user');
       const authStatus = localStorage.getItem('firebase_auth_status');
       
+      console.log('🔍 Stored user:', storedUser ? 'exists' : 'not found');
+      console.log('🔍 Auth status:', authStatus);
+      
       if (storedUser && authStatus === 'logged_in') {
         try {
+          console.log('✅ User is logged in, parsing user data');
           const user = JSON.parse(storedUser);
           setUser(user);
           // Load dashboard data
+          console.log('🚀 Calling loadDashboardData from checkExistingLogin');
           loadDashboardData();
         } catch (error) {
-          console.error('Error parsing stored user:', error);
+          console.error('❌ Error parsing stored user:', error);
           localStorage.removeItem('firebase_user');
           localStorage.removeItem('firebase_auth_status');
           router.push('/login');
         }
       } else {
         // No stored login, try to get from Firebase
+        console.log('🚀 No stored login, calling loadDashboardData');
         loadDashboardData();
       }
     };
 
+    console.log('🚀 About to call checkExistingLogin');
     checkExistingLogin();
   }, [])
 
   const loadDashboardData = async () => {
     try {
+      console.log('🚀 loadDashboardData called');
       setIsLoading(true)
+      
+      // Only run on client side
+      if (typeof window === 'undefined') {
+        console.log('❌ Running on server side, skipping');
+        return;
+      }
+      
+      console.log('✅ Running on client side');
       
       // Get current user from localStorage first, then Firebase
       const storedUser = localStorage.getItem('firebase_user');
       let currentUser = null;
+      
+      console.log('🔍 Stored user from localStorage:', storedUser ? 'exists' : 'not found');
       
       if (storedUser) {
         try {
@@ -104,13 +136,32 @@ export default function DashboardPage() {
       setUser(currentUser);
       
       // Import Firebase service methods
-      const { getUserProfile, getUserGoals, getUserMeasurements } = await import('../../lib/firebase');
+      console.log('Importing Firebase service methods...');
+      let getUserProfile, getUserGoals, getUserMeasurements;
+      try {
+        const firebaseModule = await import('../../lib/firebase');
+        getUserProfile = firebaseModule.getUserProfile;
+        getUserGoals = firebaseModule.getUserGoals;
+        getUserMeasurements = firebaseModule.getUserMeasurements;
+        console.log('Firebase methods imported successfully');
+      } catch (importError) {
+        console.error('Error importing Firebase methods:', importError);
+        setIsLoading(false);
+        return;
+      }
       
             // Load user profile
       try {
+        console.log('Current user UID:', currentUser.uid);
+        console.log('Current user email:', currentUser.email);
         const userProfile = await getUserProfile(currentUser.uid);
+        console.log('Loaded user profile:', userProfile);
         if (userProfile && typeof userProfile === 'object' && 'name' in userProfile) {
           setProfile(userProfile as unknown as Profile);
+          console.log('Profile set successfully:', userProfile);
+        } else {
+          console.log('No valid profile found or profile missing name field');
+          console.log('Profile data:', userProfile);
         }
       } catch (profileError) {
         console.error('Profile load error:', profileError);
@@ -119,8 +170,12 @@ export default function DashboardPage() {
       // Load user goals
       try {
         const userGoals = await getUserGoals(currentUser.uid);
+        console.log('Loaded user goals for UID:', currentUser.uid, userGoals);
         if (userGoals && userGoals.length > 0) {
           setGoal(userGoals[0]); // Get the first active goal
+          console.log('Goal set successfully:', userGoals[0]);
+        } else {
+          console.log('No goals found for UID:', currentUser.uid);
         }
       } catch (goalsError) {
         console.error('Goals load error:', goalsError);
@@ -129,8 +184,12 @@ export default function DashboardPage() {
       // Load user measurements
       try {
         const userMeasurements = await getUserMeasurements(currentUser.uid);
+        console.log('Loaded user measurements for UID:', currentUser.uid, userMeasurements);
         if (userMeasurements && userMeasurements.length > 0) {
           setMeasurements(userMeasurements);
+          console.log('Measurements set successfully:', userMeasurements.length, 'items');
+        } else {
+          console.log('No measurements found for UID:', currentUser.uid);
         }
       } catch (measurementsError) {
         console.error('Measurements load error:', measurementsError);
@@ -158,6 +217,9 @@ export default function DashboardPage() {
     return weightMeasurements.length > 0 ? weightMeasurements[0].value : profile?.currentWeight || 0
   }
 
+  // Get current weight for display
+  const currentWeight = getCurrentWeight()
+
   const getSafeUserName = () => {
     if (profile?.name) return profile.name;
     if (user?.displayName) return user.displayName;
@@ -167,13 +229,20 @@ export default function DashboardPage() {
 
   // Helper functions
   const getWeightLossProgress = () => {
-    if (!profile?.currentWeight || !goal?.targetWeight) {
-      return { current: 0, target: 0, lost: 0, progress: 0 };
+    const current = currentWeight;
+    const target = goal?.targetWeight || 0;
+    
+    if (!current || !target) {
+      return { current, target, lost: 0, progress: 0 };
     }
     
-    const current = profile.currentWeight;
-    const target = goal.targetWeight;
-    const startWeight = profile.currentWeight; // Assuming this is the starting weight
+    // Use the first measurement as starting weight, or current weight if no measurements
+    const startWeight = measurements.length > 0 ? 
+      measurements
+        .filter(m => m.type === 'WEIGHT')
+        .sort((a, b) => new Date(a.at).getTime() - new Date(b.at).getTime())[0]?.value || current
+      : current;
+    
     const lost = startWeight - current;
     const totalToLose = startWeight - target;
     const progress = totalToLose > 0 ? Math.min(100, (lost / totalToLose) * 100) : 0;
@@ -182,9 +251,9 @@ export default function DashboardPage() {
   };
 
   const getBMI = () => {
-    if (!profile?.height || !profile?.currentWeight) return 0;
+    if (!profile?.height || !currentWeight) return 0;
     const heightInMeters = profile.height / 100;
-    return profile.currentWeight / (heightInMeters * heightInMeters);
+    return currentWeight / (heightInMeters * heightInMeters);
   };
 
   const getBMIStatus = (bmi: number) => {
@@ -195,9 +264,9 @@ export default function DashboardPage() {
   };
 
   const getDailyCalories = () => {
-    if (!profile?.currentWeight || !profile?.age || !profile?.gender || !profile?.height) return 2000;
+    if (!currentWeight || !profile?.age || !profile?.gender || !profile?.height) return 2000;
     
-    const weight = profile.currentWeight;
+    const weight = currentWeight;
     const height = profile.height;
     const age = profile.age;
     
@@ -259,7 +328,7 @@ export default function DashboardPage() {
 
 
         {/* No Data State */}
-        {!isLoading && !error && !profile && (
+        {!isLoading && !error && !profile && !goal && measurements.length === 0 && (
           <div className="no-data-container">
             <div className="no-data-icon">📊</div>
             <h2>Chào mừng đến với Dashboard!</h2>
@@ -277,12 +346,27 @@ export default function DashboardPage() {
               >
                 Tính BMI
               </button>
+              <button 
+                className="btn btn-warning"
+                onClick={() => {
+                  console.log('=== DEBUG INFO ===');
+                  console.log('Current user:', user);
+                  console.log('Profile:', profile);
+                  console.log('Goal:', goal);
+                  console.log('Measurements:', measurements);
+                  console.log('localStorage user:', localStorage.getItem('firebase_user'));
+                  console.log('localStorage auth:', localStorage.getItem('firebase_auth_status'));
+                  alert('Debug info logged to console. Press F12 to see details.');
+                }}
+              >
+                🔍 Debug Info
+              </button>
             </div>
           </div>
         )}
 
         {/* Dashboard Content */}
-        {!isLoading && !error && profile && (
+        {!isLoading && !error && (profile || goal || measurements.length > 0) && (
           <>
             {/* Welcome Section */}
             <section className="welcome-section">
@@ -298,27 +382,27 @@ export default function DashboardPage() {
                 <div className="stat-card primary">
                   <div className="stat-icon">⚖️</div>
                   <div className="stat-content">
-                    <div className="stat-number">{weightProgress.current.toFixed(1)} kg</div>
+                    <div className="stat-number">{weightProgress.current > 0 ? weightProgress.current.toFixed(1) : '--'} kg</div>
                     <div className="stat-label">Cân nặng hiện tại</div>
-                    <div className="stat-change positive">-{weightProgress.lost.toFixed(1)} kg</div>
+                    <div className="stat-change positive">{weightProgress.lost > 0 ? `-${weightProgress.lost.toFixed(1)} kg` : 'Chưa có dữ liệu'}</div>
                   </div>
                 </div>
 
                 <div className="stat-card success">
                   <div className="stat-icon">🎯</div>
                   <div className="stat-content">
-                    <div className="stat-number">{goal?.targetWeight || 0} kg</div>
+                    <div className="stat-number">{goal?.targetWeight || '--'} kg</div>
                     <div className="stat-label">Mục tiêu</div>
-                    <div className="stat-progress">{weightProgress.progress}% hoàn thành</div>
+                    <div className="stat-progress">{goal ? `${weightProgress.progress.toFixed(1)}% hoàn thành` : 'Chưa có mục tiêu'}</div>
                   </div>
                 </div>
 
                 <div className="stat-card info">
                   <div className="stat-icon">📊</div>
                   <div className="stat-content">
-                    <div className="stat-number">{bmi.toFixed(1)}</div>
+                    <div className="stat-number">{bmi > 0 ? bmi.toFixed(1) : '--'}</div>
                     <div className="stat-label">BMI hiện tại</div>
-                    <div className={`stat-status ${bmiStatus.class}`}>{bmiStatus.status}</div>
+                    <div className={`stat-status ${bmiStatus.class}`}>{bmi > 0 ? bmiStatus.status : 'Chưa có dữ liệu'}</div>
                   </div>
                 </div>
 
@@ -327,7 +411,7 @@ export default function DashboardPage() {
                   <div className="stat-content">
                     <div className="stat-number">{dailyCalories}</div>
                     <div className="stat-label">Calo tiêu thụ</div>
-                    <div className="stat-target">Mục tiêu: {dailyCalories}</div>
+                    <div className="stat-target">{profile ? `Mục tiêu: ${dailyCalories}` : 'Cần hoàn thành thông tin'}</div>
                   </div>
                 </div>
               </div>
@@ -350,31 +434,37 @@ export default function DashboardPage() {
                   </div>
                   <div className="card-content">
                     <div className="progress-chart">
-                      <div className="chart-container">
-                        <div className="chart-line">
-                          {measurements
-                            .filter(m => m.type === 'WEIGHT')
-                            .slice(-10)
-                            .map((measurement, index) => {
-                              const progress = ((index + 1) / 10) * 100
-                              const weightProgress = ((measurement.value - (goal?.targetWeight || 0)) / ((profile?.currentWeight || 0) - (goal?.targetWeight || 0))) * 100
-                              return (
-                                <div 
-                                  key={measurement.id || index}
-                                  className="chart-point" 
-                                  style={{
-                                    left: `${progress}%`, 
-                                    bottom: `${Math.max(0, Math.min(100, weightProgress))}%`
-                                  }}
-                                ></div>
-                              )
-                            })}
+                      {measurements.filter(m => m.type === 'WEIGHT').length > 0 ? (
+                        <div className="chart-container">
+                          <div className="chart-line">
+                            {measurements
+                              .filter(m => m.type === 'WEIGHT')
+                              .slice(-10)
+                              .map((measurement, index) => {
+                                const progress = ((index + 1) / 10) * 100
+                                const weightProgress = ((measurement.value - (goal?.targetWeight || 0)) / ((currentWeight || 0) - (goal?.targetWeight || 0))) * 100
+                                return (
+                                  <div 
+                                    key={measurement.id || index}
+                                    className="chart-point" 
+                                    style={{
+                                      left: `${progress}%`, 
+                                      bottom: `${Math.max(0, Math.min(100, weightProgress))}%`
+                                    }}
+                                  ></div>
+                                )
+                              })}
+                          </div>
+                          <div className="chart-labels">
+                            <span>Ngày 1</span>
+                            <span>Ngày {daysSinceStart}</span>
+                          </div>
                         </div>
-                        <div className="chart-labels">
-                          <span>Ngày 1</span>
-                          <span>Ngày {daysSinceStart}</span>
+                      ) : (
+                        <div className="no-chart-data">
+                          <p>Chưa có dữ liệu đo lường. Hãy thêm dữ liệu để xem biểu đồ tiến độ.</p>
                         </div>
-                      </div>
+                      )}
                     </div>
                   </div>
                 </div>

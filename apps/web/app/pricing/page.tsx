@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 export default function PricingPage() {
   const [selectedPlan, setSelectedPlan] = useState('basic')
-  const [activeFaq, setActiveFaq] = useState<number | null>(null)
+  const [activeFaq, setActiveFaq] = useState<number[]>([])
   const [isYearly, setIsYearly] = useState(false)
 
   const plans = [
@@ -76,7 +76,11 @@ export default function PricingPage() {
   }
 
   const toggleFaq = (index: number) => {
-    setActiveFaq(activeFaq === index ? null : index)
+    setActiveFaq(prev => 
+      prev.includes(index) 
+        ? prev.filter(i => i !== index)
+        : [...prev, index]
+    )
   }
 
   const handleToggleBilling = () => {
@@ -185,40 +189,40 @@ export default function PricingPage() {
             <h2>❓ Câu hỏi thường gặp</h2>
             
             <div className="faq-list">
-              <div className={`faq-item ${activeFaq === 0 ? 'active' : ''}`}>
+              <div className={`faq-item ${activeFaq.includes(0) ? 'active' : ''}`}>
                 <div className="faq-question" onClick={() => toggleFaq(0)}>
                   <h4>Tôi có thể thay đổi gói cước không?</h4>
-                  <span className="faq-toggle">{activeFaq === 0 ? '−' : '+'}</span>
+                  <span className="faq-toggle">{activeFaq.includes(0) ? '−' : '+'}</span>
                 </div>
                 <div className="faq-answer">
                   <p>Có, bạn có thể nâng cấp hoặc hạ cấp gói cước bất cứ lúc nào. Thay đổi sẽ có hiệu lực từ chu kỳ thanh toán tiếp theo.</p>
                 </div>
               </div>
 
-              <div className={`faq-item ${activeFaq === 1 ? 'active' : ''}`}>
+              <div className={`faq-item ${activeFaq.includes(1) ? 'active' : ''}`}>
                 <div className="faq-question" onClick={() => toggleFaq(1)}>
                   <h4>Gói cước có bao gồm tư vấn bác sĩ không?</h4>
-                  <span className="faq-toggle">{activeFaq === 1 ? '−' : '+'}</span>
+                  <span className="faq-toggle">{activeFaq.includes(1) ? '−' : '+'}</span>
                 </div>
                 <div className="faq-answer">
                   <p>Gói Premium và VIP bao gồm tư vấn AI, chỉ gói VIP mới có tư vấn trực tiếp với bác sĩ chuyên khoa.</p>
                 </div>
               </div>
 
-              <div className={`faq-item ${activeFaq === 2 ? 'active' : ''}`}>
+              <div className={`faq-item ${activeFaq.includes(2) ? 'active' : ''}`}>
                 <div className="faq-question" onClick={() => toggleFaq(2)}>
                   <h4>Tôi có thể hủy gói cước bất cứ lúc nào không?</h4>
-                  <span className="faq-toggle">{activeFaq === 2 ? '−' : '+'}</span>
+                  <span className="faq-toggle">{activeFaq.includes(2) ? '−' : '+'}</span>
                 </div>
                 <div className="faq-answer">
                   <p>Có, bạn có thể hủy gói cước bất cứ lúc nào. Gói cước sẽ hoạt động đến hết chu kỳ đã thanh toán.</p>
                 </div>
               </div>
 
-              <div className={`faq-item ${activeFaq === 3 ? 'active' : ''}`}>
+              <div className={`faq-item ${activeFaq.includes(3) ? 'active' : ''}`}>
                 <div className="faq-question" onClick={() => toggleFaq(3)}>
                   <h4>Có chính sách hoàn tiền không?</h4>
-                  <span className="faq-toggle">{activeFaq === 3 ? '−' : '+'}</span>
+                  <span className="faq-toggle">{activeFaq.includes(3) ? '−' : '+'}</span>
                 </div>
                 <div className="faq-answer">
                   <p>Chúng tôi có chính sách hoàn tiền trong vòng 30 ngày đầu tiên nếu bạn không hài lòng với dịch vụ.</p>
