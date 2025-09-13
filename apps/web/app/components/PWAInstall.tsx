@@ -31,22 +31,39 @@ export default function PWAInstall() {
     setIsInstalling(true);
 
     try {
+      console.log('Starting PWA installation...');
+      console.log('Deferred prompt available:', !!deferredPrompt);
+      
       if (deferredPrompt) {
+        console.log('Showing install prompt...');
         // Show install prompt
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
         
+        console.log('Install prompt outcome:', outcome);
+        
         if (outcome === 'accepted') {
           console.log('PWA installed successfully');
+          alert('Ứng dụng đã được cài đặt thành công!');
+        } else {
+          console.log('PWA installation declined');
+          alert('Cài đặt ứng dụng đã bị hủy.');
         }
         
         setDeferredPrompt(null);
       } else {
+        console.log('No deferred prompt, trying service worker registration...');
         // Fallback: register service worker
-        await pwaService.installPWA();
+        const success = await pwaService.installPWA();
+        if (success) {
+          alert('Service Worker đã được đăng ký thành công!');
+        } else {
+          alert('Không thể đăng ký Service Worker.');
+        }
       }
     } catch (error) {
       console.error('PWA installation failed:', error);
+      alert('Lỗi cài đặt PWA: ' + error.message);
     } finally {
       setIsInstalling(false);
     }
@@ -106,6 +123,29 @@ export default function PWAInstall() {
           <div className="feature-content">
             <h4>Như app native</h4>
             <p>Trải nghiệm như ứng dụng Android thật</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Debug Info */}
+      <div className="debug-info">
+        <h4>🔍 Debug Info</h4>
+        <div className="debug-grid">
+          <div className="debug-item">
+            <span className="debug-label">Deferred Prompt:</span>
+            <span className="debug-value">{deferredPrompt ? '✅ Có' : '❌ Không'}</span>
+          </div>
+          <div className="debug-item">
+            <span className="debug-label">Service Worker:</span>
+            <span className="debug-value">{appInfo?.hasServiceWorker ? '✅ Có' : '❌ Không'}</span>
+          </div>
+          <div className="debug-item">
+            <span className="debug-label">Notifications:</span>
+            <span className="debug-value">{appInfo?.hasNotifications ? '✅ Có' : '❌ Không'}</span>
+          </div>
+          <div className="debug-item">
+            <span className="debug-label">App Installed:</span>
+            <span className="debug-value">{appInfo?.isInstalled ? '✅ Có' : '❌ Không'}</span>
           </div>
         </div>
       </div>

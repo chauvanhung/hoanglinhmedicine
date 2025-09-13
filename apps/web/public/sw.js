@@ -1,34 +1,30 @@
 // Service Worker for Android Health Connect PWA
 const CACHE_NAME = 'hlm-health-v1';
-const urlsToCache = [
-  '/',
-  '/android-health',
-  '/health',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
-  '/manifest.json'
-];
 
 // Install event
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
-      })
-  );
+  console.log('Service Worker installing...');
+  self.skipWaiting();
+});
+
+// Activate event
+self.addEventListener('activate', (event) => {
+  console.log('Service Worker activating...');
+  event.waitUntil(self.clients.claim());
 });
 
 // Fetch event
 self.addEventListener('fetch', (event) => {
+  // Only handle GET requests
+  if (event.request.method !== 'GET') {
+    return;
+  }
+  
   event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Return cached version or fetch from network
-        return response || fetch(event.request);
-      }
-    )
+    fetch(event.request).catch(() => {
+      // If network fails, try cache
+      return caches.match(event.request);
+    })
   );
 });
 
@@ -43,8 +39,6 @@ self.addEventListener('sync', (event) => {
 self.addEventListener('push', (event) => {
   const options = {
     body: event.data ? event.data.text() : 'Cập nhật dữ liệu sức khỏe mới',
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/icon-72x72.png',
     vibrate: [100, 50, 100],
     data: {
       dateOfArrival: Date.now(),
@@ -53,13 +47,11 @@ self.addEventListener('push', (event) => {
     actions: [
       {
         action: 'explore',
-        title: 'Xem chi tiết',
-        icon: '/icons/icon-192x192.png'
+        title: 'Xem chi tiết'
       },
       {
         action: 'close',
-        title: 'Đóng',
-        icon: '/icons/icon-192x192.png'
+        title: 'Đóng'
       }
     ]
   };

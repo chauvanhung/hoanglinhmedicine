@@ -5,6 +5,11 @@
   box-sizing: border-box;
 }
 
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -1186,6 +1191,14 @@ body {
   .header-container {
     padding: 1rem;
     gap: 1rem;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .header-left {
+    width: 100%;
+    display: flex;
+    justify-content: center;
   }
   
   .nav-links {
@@ -1196,11 +1209,59 @@ body {
   }
   
   .hero {
-    padding: 4rem 0;
+    padding: 3rem 0;
+  }
+  
+  .hero-container {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    text-align: center;
+    padding: 0 1rem;
   }
   
   .hero-title {
     font-size: 2.5rem;
+    line-height: 1.2;
+  }
+  
+  .hero-description {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .hero-buttons {
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .hero-buttons .btn {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  
+  .hero-trust {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+  }
+  
+  .hero-visual {
+    order: -1;
+  }
+  
+  .hero-card {
+    padding: 2rem;
+    transform: none;
+  }
+  
+  .hero-card h3 {
+    font-size: 1.5rem;
+  }
+  
+  .hero-card p {
+    font-size: 1rem;
   }
   
   .hero-stats {
@@ -1272,6 +1333,14 @@ body {
     flex-direction: column;
     gap: 1rem;
     padding: 1rem;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .header-left {
+    width: 100%;
+    display: flex;
+    justify-content: center;
   }
   
   .header-nav {
@@ -1292,16 +1361,42 @@ body {
   }
   
   .hero {
-    padding: 3rem 0;
+    padding: 2rem 0;
+  }
+  
+  .hero-container {
+    padding: 0 0.5rem;
   }
   
   .hero-title {
     font-size: 2rem;
+    line-height: 1.1;
+  }
+  
+  .hero-description {
+    font-size: 1rem;
   }
   
   .hero-badge {
     font-size: 0.8rem;
     padding: 0.75rem 1.5rem;
+  }
+  
+  .hero-buttons .btn {
+    max-width: 280px;
+    font-size: 0.9rem;
+  }
+  
+  .hero-card {
+    padding: 1.5rem;
+  }
+  
+  .hero-card h3 {
+    font-size: 1.25rem;
+  }
+  
+  .hero-card p {
+    font-size: 0.9rem;
   }
   
   .contact-form {
@@ -3983,6 +4078,55 @@ ul {
   }
 }
 
+/* Debug Info */
+.debug-info {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.debug-info h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 1rem 0;
+}
+
+.debug-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.debug-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.debug-label {
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.debug-value {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .debug-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Health Connect Test */
 .health-connect-test {
   background: linear-gradient(135deg, #ffffff 0%, #fef3c7 100%);
@@ -4374,6 +4518,264 @@ ul {
   
   .instruction-card {
     flex-direction: column;
+    text-align: center;
+  }
+}
+
+/* PWA Test Page */
+.pwa-test-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  padding: 2rem 0;
+}
+
+.test-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.test-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.test-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 1rem 0;
+}
+
+.test-header p {
+  font-size: 1.125rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.app-info {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 20px;
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.app-info h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 2rem 0;
+  text-align: center;
+}
+
+.pwa-status {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 20px;
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.pwa-status h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 2rem 0;
+  text-align: center;
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.status-item {
+  display: flex;
+  gap: 1rem;
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.status-icon {
+  flex-shrink: 0;
+}
+
+.status-content h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+}
+
+.status-content p {
+  color: #6b7280;
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.test-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.manual-instructions {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 20px;
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.manual-instructions h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 2rem 0;
+  text-align: center;
+}
+
+.instructions {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.instruction-step {
+  display: flex;
+  gap: 1rem;
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 1.125rem;
+  flex-shrink: 0;
+}
+
+.step-content h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+}
+
+.step-content p {
+  color: #6b7280;
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.logs-section {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.logs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.logs-header h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.clear-logs-button {
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.clear-logs-button:hover {
+  background: #dc2626;
+}
+
+.logs-content {
+  background: #1f2937;
+  border-radius: 12px;
+  padding: 1.5rem;
+  max-height: 400px;
+  overflow-y: auto;
+  font-family: 'Courier New', monospace;
+}
+
+.log-item {
+  color: #10b981;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+  word-break: break-all;
+}
+
+.log-item:last-child {
+  margin-bottom: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .pwa-test-page {
+    padding: 1rem 0;
+  }
+  
+  .test-container {
+    padding: 0 1rem;
+  }
+  
+  .app-info,
+  .pwa-status,
+  .manual-instructions,
+  .logs-section {
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .status-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .test-actions {
+    flex-direction: column;
+  }
+  
+  .instruction-step {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .logs-header {
+    flex-direction: column;
+    gap: 1rem;
     text-align: center;
   }
 }
@@ -5872,16 +6274,61 @@ ul {
 @media (max-width: 768px) {
   .dashboard-container {
     grid-template-columns: 1fr;
+    padding: 0 1rem;
+    gap: 1.5rem;
+  }
+  
+  .dashboard-header {
+    padding: 1.5rem 0;
   }
   
   .dashboard-header .header-container {
     flex-direction: column;
     gap: 1rem;
     text-align: center;
+    padding: 0 1rem;
+  }
+  
+  .user-info {
+    flex-direction: column;
+    gap: 1rem;
   }
   
   .quick-stats .stats-container {
     grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    padding: 0 1rem;
+  }
+  
+  .quick-stats .stat-card {
+    padding: 1.5rem;
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+  
+  .quick-stats .stat-icon {
+    width: 3rem;
+    height: 3rem;
+  }
+  
+  .quick-stats .stat-number {
+    font-size: 1.5rem;
+  }
+  
+  .dashboard-card {
+    margin: 0 1rem;
+  }
+  
+  .card-header {
+    padding: 1rem 1.5rem;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+  
+  .card-content {
+    padding: 1.5rem;
   }
   
   .actions-container {
@@ -5890,41 +6337,244 @@ ul {
 }
 
 @media (max-width: 480px) {
+  .dashboard-container {
+    padding: 0 0.5rem;
+    gap: 1rem;
+  }
+  
+  .dashboard-header {
+    padding: 1rem 0;
+  }
+  
+  .dashboard-header .header-container {
+    padding: 0 0.5rem;
+  }
+  
   .quick-stats .stats-container {
     grid-template-columns: 1fr;
+    gap: 0.75rem;
+    padding: 0 0.5rem;
+  }
+  
+  .quick-stats .stat-card {
+    padding: 1rem;
+  }
+  
+  .quick-stats .stat-number {
+    font-size: 1.25rem;
+  }
+  
+  .dashboard-card {
+    margin: 0 0.5rem;
+  }
+  
+  .card-header {
+    padding: 0.75rem 1rem;
+  }
+  
+  .card-content {
+    padding: 1rem;
   }
   
   .actions-container {
     grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}
+
+/* Admin Dashboard */
+.admin-dashboard {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc, #dbeafe, #e0e7ff);
+}
+
+/* Responsive Design for BMI Page */
+@media (max-width: 768px) {
+  .bmi-calculator {
+    padding: 1.5rem;
   }
   
-  .card-header {
+  .calculator-container {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 0 1rem;
+  }
+  
+  .calculator-form {
+    padding: 1.5rem;
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-group label {
+    font-size: 1rem;
+  }
+  
+  .form-group input {
+    font-size: 1rem;
+    padding: 0.75rem;
+  }
+  
+  .calculate-btn {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+  }
+  
+  .bmi-result {
+    padding: 1.5rem;
+  }
+  
+  .bmi-value {
+    font-size: 3rem;
+  }
+  
+  .bmi-category {
+    font-size: 1.25rem;
+  }
+  
+  .bmi-info,
+  .health-tips,
+  .bmi-cta {
+    padding: 1.5rem;
+    margin: 0 1rem 1rem;
+  }
+  
+  .tips-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .tip-card {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .bmi-calculator {
+    padding: 1rem;
+  }
+  
+  .calculator-container {
+    padding: 0 0.5rem;
+    gap: 1.5rem;
+  }
+  
+  .calculator-form {
+    padding: 1rem;
+  }
+  
+  .bmi-result {
+    padding: 1rem;
+  }
+  
+  .bmi-value {
+    font-size: 2.5rem;
+  }
+  
+  .bmi-info,
+  .health-tips,
+  .bmi-cta {
+    padding: 1rem;
+    margin: 0 0.5rem 1rem;
+  }
+  
+  .tip-card {
+    padding: 1rem;
+  }
+  
+  .page-header h1 {
+    font-size: 1.75rem;
+  }
+  
+  .bmi-info h2,
+  .health-tips h2,
+  .bmi-cta h2 {
+    font-size: 1.25rem;
+  }
+}
+
+/* Responsive Design for Login/Register Pages */
+@media (max-width: 768px) {
+  .auth-container {
+    padding: 1rem;
+  }
+  
+  .auth-card {
+    padding: 2rem 1.5rem;
+    margin: 1rem;
+  }
+  
+  .auth-header h1 {
+    font-size: 2rem;
+  }
+  
+  .auth-header p {
+    font-size: 1rem;
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-group label {
+    font-size: 1rem;
+  }
+  
+  .form-group input {
+    font-size: 1rem;
+    padding: 0.75rem;
+  }
+  
+  .auth-button {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+  }
+  
+  .auth-links {
     flex-direction: column;
     gap: 1rem;
     text-align: center;
   }
 }
 
-/* Responsive Design for BMI Page */
+@media (max-width: 480px) {
+  .auth-container {
+    padding: 0.5rem;
+  }
+  
+  .auth-card {
+    padding: 1.5rem 1rem;
+    margin: 0.5rem;
+  }
+  
+  .auth-header h1 {
+    font-size: 1.75rem;
+  }
+  
+  .form-group input {
+    padding: 0.75rem;
+  }
+  
+  .auth-button {
+    padding: 0.875rem;
+    font-size: 1rem;
+  }
+}
+
+/* Global Button Responsive */
 @media (max-width: 768px) {
-  .calculator-container {
-    grid-template-columns: 1fr;
-    gap: 2rem;
+  .btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
   }
   
-  .page-header h1 {
-    font-size: 2rem;
-  }
-  
-  .bmi-info h2,
-  .health-tips h2,
-  .bmi-cta h2 {
-    font-size: 2rem;
-  }
-  
-  .info-grid,
-  .tips-grid {
-    grid-template-columns: 1fr;
+  .btn-large {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
   }
   
   .cta-buttons {
@@ -9398,20 +10048,98 @@ input:checked + .toggle-slider:before {
   
   .plans-container {
     flex-direction: column;
+    gap: 1.5rem;
+    padding: 0 1rem;
+  }
+  
+  .pricing-card {
+    padding: 2rem 1.5rem;
+    margin: 0;
   }
   
   .pricing-card.popular {
     transform: none;
   }
   
-  .cta-actions {
-    flex-direction: column;
-    align-items: center;
+  .pricing-header {
+    padding: 0 1rem;
   }
   
-  .nav-container {
+  .pricing-header h1 {
+    font-size: 2.5rem;
+  }
+  
+  .pricing-faq {
+    margin: 0 1rem 2rem;
+    padding: 1.5rem;
+  }
+  
+  .faq-list {
+    gap: 0.75rem;
+  }
+  
+  .faq-item {
+    padding: 1rem;
+  }
+  
+  .faq-question h4 {
+    font-size: 1rem;
+  }
+  
+  .faq-answer p {
+    font-size: 0.9rem;
+  }
+  
+  .cta-actions {
     flex-direction: column;
-    align-items: center;
+    gap: 1rem;
+  }
+  
+  .cta-actions .btn {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .plans-container {
+    padding: 0 0.5rem;
+    gap: 1rem;
+  }
+  
+  .pricing-card {
+    padding: 1.5rem 1rem;
+  }
+  
+  .pricing-header {
+    padding: 0 0.5rem;
+  }
+  
+  .pricing-header h1 {
+    font-size: 2rem;
+  }
+  
+  .pricing-faq {
+    margin: 0 0.5rem 2rem;
+    padding: 1rem;
+  }
+  
+  .faq-item {
+    padding: 0.75rem;
+  }
+  
+  .faq-question h4 {
+    font-size: 0.9rem;
+  }
+  
+  .faq-answer p {
+    font-size: 0.85rem;
+  }
+  
+  .cta-actions .btn {
+    max-width: 280px;
+    font-size: 0.9rem;
   }
 }
 
@@ -9427,7 +10155,7 @@ input:checked + .toggle-slider:before {
   top: 0;
   z-index: 1000;
   backdrop-filter: blur(20px);
-  position: relative;
+  width: 100%;
   overflow: hidden;
 }
 
